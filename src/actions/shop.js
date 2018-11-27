@@ -13,6 +13,9 @@ export const ADD_TO_CART = 'ADD_TO_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 export const CHECKOUT_SUCCESS = 'CHECKOUT_SUCCESS';
 export const CHECKOUT_FAILURE = 'CHECKOUT_FAILURE';
+export const ADMIN_CREATE_ITEM = 'ADMIN_CREATE_ITEM';
+export const ADMIN_UPDATE_ITEM = 'ADMIN_UPDATE_ITEM';
+export const ADMIN_DELETE_ITEM = 'ADMIN_DELETE_ITEM';
 
 export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
@@ -22,8 +25,8 @@ export const getAllProducts = () => async (dispatch) => {
 
   // You could reformat the data in the right format as well:
   const products = (await response.json()).posts.reduce((obj, product) => {
-    obj[product.id] = product
-    return obj
+    obj[product.id] = product;
+    return obj;
   }, {});
 
   dispatch({
@@ -84,9 +87,14 @@ export const createItem = data => async dispatch => {
     body: formData
   });
 
-  console.log(await response.json());
+  const reply = await response.json();
+  const item = reply.post;
+  console.log(item);
 
-  dispatch(getAllProducts());
+  dispatch({
+    type: ADMIN_CREATE_ITEM,
+    payload: { item }
+  });
 }
 
 export const editItem = (id, data) => async dispatch => {
@@ -100,9 +108,14 @@ export const editItem = (id, data) => async dispatch => {
     body: formData
   });
 
-  console.log(await response.json());
+  const reply = await response.json();
+  const updated = reply.post;
+  console.log(updated);
 
-  dispatch(getAllProducts());
+  dispatch({
+    type: ADMIN_UPDATE_ITEM,
+    payload: { updated }
+  });
 }
 
 
@@ -111,6 +124,11 @@ export const deleteItem = key => async dispatch => {
     method: "DELETE"
   });
 
-  console.log(await response.text());
-  dispatch(getAllProducts());
+  const updated = await response.json();
+  console.log(updated);
+
+  dispatch({
+    type: ADMIN_DELETE_ITEM,
+    payload: { key }
+  });
 }

@@ -17,4 +17,5 @@ export const SharedStyles = html`
     box-sizing: border-box;
   }
   /* Add other styles shared across multiple components here */
+</style>
 `;

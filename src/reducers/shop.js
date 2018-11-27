@@ -13,7 +13,10 @@ import {
   ADD_TO_CART,
   REMOVE_FROM_CART,
   CHECKOUT_SUCCESS,
-  CHECKOUT_FAILURE
+  CHECKOUT_FAILURE,
+  ADMIN_CREATE_ITEM,
+  ADMIN_DELETE_ITEM,
+  ADMIN_UPDATE_ITEM
 } from '../actions/shop.js';
 import { createSelector } from 'reselect';
 
@@ -43,6 +46,32 @@ const shop = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         error: 'Checkout failed. Please try again'
+      };
+    case ADMIN_CREATE_ITEM:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          [action.payload.item.id]: action.payload.item
+        }
+      };
+    case ADMIN_DELETE_ITEM:
+      return {
+        ...state,
+        products: Object.entries(state.products).reduce((obj, [key, value]) => {
+          if (key !== action.payload.key) {
+            obj[key] = value;
+          }
+          return obj;
+        }, {})
+      };
+    case ADMIN_UPDATE_ITEM:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          [action.payload.item.id]: action.payload.item
+        }
       };
     default:
       return state;
@@ -136,7 +165,7 @@ export const selectedItemSelector = createSelector(
   productsSelector,
   (subPage, products) => {
     const item = products[subPage];
-    return item;
+    return item || subPage;
   }
 )
 

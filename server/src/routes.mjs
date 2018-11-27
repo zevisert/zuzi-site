@@ -105,7 +105,7 @@ export async function update(ctx) {
   post.description = body.description || post.description;
   post.price = body.price || post.price;
   post.inventory = body.inventory || post.inventory;
-  post.sizes = body.sizes || post.sizes;
+  post.sizes = JSON.parse(body.sizes) || post.sizes;
   post.active = body.active || post.active;
 
   await post.save();

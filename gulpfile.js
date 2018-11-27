@@ -37,7 +37,6 @@ gulp.task('server:dev', () => {
                 '--experimental-modules',
                 'server/src/index.mjs'
             ], {
-                stdio: 'inherit',
                 env: {
                     NODE_ENV: 'DEVELOPMENT',
                     PORT: 8080
@@ -52,6 +51,9 @@ gulp.task('server:dev', () => {
                 reject();
             }
         });
+
+        node.stdout.on('data', data => log(console.log, data, 'Node'));
+        node.stderr.on('data', data => log(console.error, data, 'Node'));
 
         resolve();
     });
