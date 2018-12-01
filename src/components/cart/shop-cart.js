@@ -27,6 +27,8 @@ import { cartItemsSelector, cartTotalSelector } from '../../reducers/shop.js';
 // These are the shared styles needed by this element.
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 
+import './shop-item';
+
 class ShopCart extends connect(store)(LitElement) {
   render() {
     return html`

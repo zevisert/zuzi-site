@@ -121,21 +121,21 @@ class AdminEdit extends connect(store)(PageViewElement) {
             <div class="block">
               <label for="title">Title</label>
               <div class="underline">
-                <input id="title" type="text" placeholder="Title" value="${this.item.title}">
+                <input id="title" type="text" placeholder="Title" .value="${this.item.title}">
               </div>
             </div>
 
             <div class="block">
               <label for="desc">Description</label>
               <div class="underline">
-                <input id="desc" type="text" placeholder="Description" value="${this.item.description}">
+                <input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
               </div>
             </div>
 
             <div class="block">
               <label for="price">Price</label>
               <div class="underline">
-                <input id="price" type="number" placeholder="Price" value="${this.item.price}">
+                <input id="price" type="number" placeholder="Price" .value="${this.item.price}">
               </div>
             </div>
 
@@ -147,7 +147,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
             <div class="block">
               <label for="inven">Inventory</label>
               <div class="underline">
-                <input id="inven" type="number" placeholder="Inventory" value="${this.item.inventory}">
+                <input id="inven" type="number" placeholder="Inventory" .value="${this.item.inventory}">
               </div>
             </div>
 
@@ -168,11 +168,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
   }
 
   async stateChanged(newState) {
-    const item = selectedItemSelector(newState); 
+    const [item, page] = selectedItemSelector(newState); 
 
     // Let the element render once so we have element references
     await this.updateComplete;
-    if (item === "new") {
+    if (item === null && page === "new") {
 
       this.item = EMPTY_ITEM;
 
@@ -189,7 +189,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
         // New item created
         store.dispatch(navigate(`/admin/${id}`));
       }      
-    } else if (item !== null) {
+    } else if (item) {
 
       this.item = item;
 

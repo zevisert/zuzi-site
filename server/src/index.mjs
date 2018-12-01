@@ -9,12 +9,13 @@ import passport from 'koa-passport';
 import LocalStrategy from 'passport-local';
 
 import path from 'path';
-import dotenv from 'dotenv';
-dotenv.config({path: 'server/process.env'});
+
+// Must be first, side effects import process.env
+import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
 import { index, create, show, update, destroy, notFound} from './routes'; 
-import { db_connect, pipe, isProtected } from './config';
+import { checkout } from './checkout.mjs';
 
 
 const app = new koa();
@@ -48,7 +49,8 @@ const dataRoutes = (new router())
     .post('/artwork', upload.single('image'), create)
     .get('/artwork/:id', show)
     .put('/artwork/:id', upload.single('image'), update)
-    .delete('/artwork/:id', destroy);
+    .delete('/artwork/:id', destroy)
+    .get('/checkout/intent', checkout);
 
 
 const loginRoutes = (new router({prefix: '/auth'}))

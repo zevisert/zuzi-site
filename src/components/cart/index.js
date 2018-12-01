@@ -19,7 +19,7 @@ import { store } from '../../store.js';
 import { checkout } from '../../actions/shop.js';
 
 // We are lazy loading its reducer.
-import shop, { cartQuantitySelector } from '../../reducers/shop.js';
+import shop, { cartQuantitySelector, cartTotalSelector } from '../../reducers/shop.js';
 store.addReducers({
   shop
 });
@@ -42,6 +42,12 @@ class Cart extends connect(store)(PageViewElement) {
           border-radius: 3px;
           padding: 8px 16px;
         }
+
+        #card-mount {
+          width: 300px;
+          padding: 10px;
+          box-shadow: 0 0 3px 0px rgba(0,0,0,0.1);
+        }
       </style>
 
       <section>
@@ -53,11 +59,12 @@ class Cart extends connect(store)(PageViewElement) {
         <p>Number of items in the cart: <b>${this._quantity}</b></p>
         <shop-cart></shop-cart>
 
-        <div>${this._error}</div>
+        <div>${this._error.message}</div>
         <p>
           <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
             Checkout
           </button>
+          <div id="card-mount"></div>
         </p>
       </section>
     `;
@@ -69,13 +76,28 @@ class Cart extends connect(store)(PageViewElement) {
     _error: { type: String },
   }}
 
+  
+  firstUpdated() {
+    const stripe = Stripe(process.env.STRIPE_PK, {
+      betas: ['payment_intent_beta_3']
+    });
+    
+    const elements = stripe.elements();
+    const cardElement = elements.create('card');
+
+    this.card = this.renderRoot.getElementById('card-mount');
+    cardElement.mount(this.card);
+  }
+
+
   _checkoutButtonClicked() {
-    store.dispatch(checkout());
+    store.dispatch(checkout({amount: this._total}, this.card));
   }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
     this._quantity = cartQuantitySelector(state);
+    this._total = parseInt(100 * cartTotalSelector(state));
     this._error = state.shop.error;
   }
 }

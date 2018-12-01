@@ -35,18 +35,34 @@ export const getAllProducts = () => async (dispatch) => {
   });
 };
 
-export const checkout = () => (dispatch) => {
-  // Here you could do things like credit card validation, etc.
-  // If that fails, dispatch CHECKOUT_FAILURE. We're simulating that
-  // by flipping a coin :)
-  const flip = Math.floor(Math.random() * 2);
-  if (flip === 0) {
-    dispatch({
-      type: CHECKOUT_FAILURE
-    });
-  } else {
+export const checkout = (params, mount) => async dispatch => {
+
+  const query = Object.entries(params).map(([key, value]) => {
+    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+  }).join('&');
+
+  const response = await fetch(`${process.env.API_URL}/checkout/intent?${query}`);
+  const reply = await response.json();
+  const clientSecret = reply.client_secret;
+
+  const stripe = Stripe(process.env.STRIPE_PK, {
+    betas: ['payment_intent_beta_3']
+  });
+
+  try {
+    const result = await stripe.handleCardPayment(clientSecret, mount);
+    if (result.error) {
+      throw result.error;
+    }
+
     dispatch({
       type: CHECKOUT_SUCCESS
+    });
+
+  } catch (error) {
+    dispatch({
+      type: CHECKOUT_FAILURE,
+      payload: { error }
     });
   }
 };

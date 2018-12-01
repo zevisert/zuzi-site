@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import request from 'request';
 import prpl from 'prpl-server';
 
+import dotenv from 'dotenv';
+dotenv.config({path: 'server/process.env'});
+
 /* 
 ====================================== API ROUTES ======================================
 |   NAME   |     PATH          |   HTTP VERB     |            PURPOSE                   |

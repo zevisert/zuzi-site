@@ -45,7 +45,7 @@ const shop = (state = INITIAL_STATE, action) => {
     case CHECKOUT_FAILURE:
       return {
         ...state,
-        error: 'Checkout failed. Please try again'
+        error: action.payload.error
       };
     case ADMIN_CREATE_ITEM:
       return {
@@ -70,7 +70,7 @@ const shop = (state = INITIAL_STATE, action) => {
         ...state,
         products: {
           ...state.products,
-          [action.payload.item.id]: action.payload.item
+          [action.payload.updated.id]: action.payload.updated
         }
       };
     default:
@@ -165,7 +165,7 @@ export const selectedItemSelector = createSelector(
   productsSelector,
   (subPage, products) => {
     const item = products[subPage];
-    return item || subPage;
+    return [item, subPage];
   }
 )
 

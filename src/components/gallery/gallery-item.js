@@ -41,7 +41,7 @@ class GalleryItem extends connect(store)(PageViewElement) {
       </style>
 
       <h2>${this.item.name}</h2>
-      <img src="/uploads/${this.item.preview}">
+      <img .src="${this.item ? `/uploads/${this.item.preview}`: ''}">
       <div class="container">
         <pre>$${this.item.price}</pre>
         <button @click="${() => store.dispatch(addToCart(this.item.id))}">Add to cart</button>
@@ -49,9 +49,17 @@ class GalleryItem extends connect(store)(PageViewElement) {
     `;
   }
 
+  constructor() {
+    super();
+  }
+
+  shouldUpdate() {
+    return !!this.item;
+  }
+
   static get properties() {
     return {
-      
+      item: Object
     }
   }
 
@@ -61,7 +69,8 @@ class GalleryItem extends connect(store)(PageViewElement) {
   }
 
   stateChanged(state) {
-    this.item = selectedItemSelector(state);
+    const [item, key] = selectedItemSelector(state);
+    this.item = item;
   }
 }
 

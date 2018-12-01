@@ -77,7 +77,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
       // https://github.com/reactjs/redux/issues/2907
-      window.process = { env: { NODE_ENV: 'production', API_URL: '/api/v1' } };
+      window.process = { env: {
+        NODE_ENV: 'production',
+        API_URL: '/api/v1',
+        STRIPE_PK: 'pk_test_yxuk5TGt3veufuAvM4mo4vJF'
+      } };
     </script>
 
     <!-- Add any global styles for body, document, etc. -->
@@ -97,6 +101,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
+    
+    <!-- Any external scripts -->
+    <script src="https://js.stripe.com/v3/"></script>
+
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <!-- Built with love using PWA Starter Kit -->
