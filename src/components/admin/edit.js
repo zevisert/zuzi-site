@@ -23,16 +23,21 @@ import { navigate } from '../../actions/app.js';
 
 const EMPTY_ITEM = {
   id: null,
-  preview: null,
+  preview: '',
   title: '',
   description: '',
-  price: NaN,
+  price: null,
   sizes: [],
-  inventory: NaN,
+  inventory: null,
   active: false,
 };
 
 class AdminEdit extends connect(store)(PageViewElement) {
+
+  static get properties() { return {
+    item: EMPTY_ITEM
+  }}
+
   render() {
     return html`
       ${SharedStyles}
@@ -73,6 +78,8 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
         input[type="text"],
         input[type="number"] {
+          font-size: 16px;
+          line-height: 2rem;
           border: 0;
           background: none;
           outline: none;
@@ -141,7 +148,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
             <div class="block">
               <label for="sizes">Sizes</label>
-              <simple-chip id="sizes"></simple-chip>
+              <simple-chip id="sizes" placeholder="Sizes" commitkeycode="Enter, Tab"></simple-chip>
             </div>
 
             <div class="block">
@@ -172,11 +179,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
     // Let the element render once so we have element references
     await this.updateComplete;
-    if (item === null && page === "new") {
+    if (item === undefined && page === "new") {
 
-      this.item = EMPTY_ITEM;
-
-      await this.elements.sizes.updateComplete;
+      await this.reset();
+    
       for (const elem of this.elements.sizes.chips) {
         elem.remove();
       }
@@ -188,7 +194,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       if (id && rest.length === 0) {
         // New item created
         store.dispatch(navigate(`/admin/${id}`));
-      }      
+      }
     } else if (item) {
 
       this.item = item;
@@ -200,12 +206,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
         elem.remove();
       }
       this.elements.sizes.addChips(sizes);
-    }
-  }
-
-  static get properties() {
-    return {
-      item: Object
     }
   }
 
@@ -221,44 +221,55 @@ class AdminEdit extends connect(store)(PageViewElement) {
   firstUpdated() {
     this.elements = {
       preview: this.renderRoot.getElementById('preview'),
-      file: this.renderRoot.getElementById('file'),
-      fileButton: this.renderRoot.getElementById('file-button'),
-      sizes: this.renderRoot.getElementById('sizes'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       price: this.renderRoot.getElementById('price'),
       inventory: this.renderRoot.getElementById('inven'),
-      active: this.renderRoot.getElementById('active')
+      active: this.renderRoot.getElementById('active'),
+      sizes: this.renderRoot.getElementById('sizes'),
+      file: this.renderRoot.getElementById('file'),
+      fileButton: this.renderRoot.getElementById('file-button')
     };
 
-    this.elements.file.addEventListener('change', (e) => {
-      this.elements.fileButton.innerText = e.target.files[0].name;
-      this.readURL(this.elements.file)
-    });
+    this.elements.file.addEventListener('change', this.readImage.bind(this));
+    this.elements.sizes.addEventListener('chip-added', this.validateChip.bind(this));
 
-    this.elements.sizes.addEventListener('chip-added', (e) => {
-      const sizeRegex = /^[0-9]+(?:\.[0-9]{1,3})?x[0-9]+(?:\.[0-9]{1,3})?$/;
-
-      if (! sizeRegex.test(e.detail.text)) {
-        e.preventDefault();
-      }
-      
-      if (this.elements.sizes.values.includes(e.detail.text)) {
-        e.preventDefault();
-      }
-    });
-
-    [
-      this.elements.title,
+    [ this.elements.title,
       this.elements.description,
       this.elements.price,
       this.elements.inventory
-    ].map(elem => {
+    ].forEach(elem => {
       elem.addEventListener('focus', this.focusUp.bind(this));
       elem.addEventListener('blur', this.focusUp.bind(this));
-    })
+    });
   }
 
+  async reset() {
+    this.item = EMPTY_ITEM;
+    this.elements.title.value = this.item.title;
+    this.elements.description.value = this.item.description
+    this.elements.price.value = this.item.price;
+    this.elements.inventory.value = this.item.inventory;
+    this.elements.active.checked = this.item.active;
+
+    if (this.elements.preview.src.startsWith('blob')) {
+      console.log('Released previous image');
+      URL.revokeObjectURL(this.elements.preview.src);
+    }
+    this.elements.preview.src = this.item.preview;
+    
+    await this.elements.sizes.updateComplete;
+    this.elements.sizes.clear();
+    this.elements.fileButton.innerText = 'Change File';
+    
+    this.elements.file.value = '';
+    if(!/safari/i.test(navigator.userAgent)) {
+      this.elements.file.type = '';
+      this.elements.file.type = 'file';
+    }
+
+    return this.requestUpdate();
+  }
 
   async submit() {
 
@@ -287,15 +298,31 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
   }
 
-  readURL(input) {
+  async readImage(fileChangeEvent) {
+    
+    this.elements.fileButton.innerText = fileChangeEvent.target.files[0].name;
+    const input = this.elements.file;
+
     if (input.files && input.files[0]) {
-      const reader = new FileReader();
+      if (this.elements.preview.src.startsWith('blob')) {
+        console.log('Released previous image');
+        URL.revokeObjectURL(this.elements.preview.src);
+      }
 
-      reader.onload = (e) => {
-        this.elements.preview.src = e.target.result;
-      };
+      const blob = await new Response(input.files[0]).blob();
+      this.elements.preview.src = URL.createObjectURL(blob);
+    }
+  }
 
-      reader.readAsDataURL(input.files[0]);
+  validateChip(e) {
+    const sizeRegex = /^[0-9]+(?:\.[0-9]{1,3})?x[0-9]+(?:\.[0-9]{1,3})?$/;
+
+    if (! sizeRegex.test(e.detail.text)) {
+      e.preventDefault();
+    }
+    
+    if (this.elements.sizes.values.includes(e.detail.text)) {
+      e.preventDefault();
     }
   }
 

@@ -14,7 +14,7 @@ export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_CREDENTIALS = 'UPDATE_CREDENTIALS';
 
-export const navigate = (path) => (dispatch) => {
+export const navigate = path => dispatch => {
   
   if (location.pathname != path) {
     history.pushState(null, null, path);
@@ -34,7 +34,7 @@ export const navigate = (path) => (dispatch) => {
   dispatch(loadPage(page, subPage ? subPage : null));
 };
 
-const loadPage = (page, subPage) => (dispatch) => {
+const loadPage = (page, subPage) => dispatch => {
   switch(page) {
     case appStr.pages.about:
       import('../components/about/index.js').then((module) => {
@@ -77,14 +77,14 @@ const updatePage = (page, subPage) => {
   };
 };
 
-export const updateOffline = (offline) => (dispatch, getState) => {
+export const updateOffline = offline => (dispatch, getState) => {
   dispatch({
     type: UPDATE_OFFLINE,
     payload: { offline }
   });
 };
 
-export const updateLayout = (wide) => (dispatch, getState) => {
+export const updateLayout = wide => (dispatch, getState) => {
   console.log(`The window changed to a ${wide ? 'wide' : 'narrow'} layout`);
 };
 
@@ -111,9 +111,9 @@ export const login =  ({username, password}) => async (dispatch, getState) => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
-export const credentials = (credentials) => {
+export const credentials = credentials => {
   sessionStorage.setItem('credentials', JSON.stringify(credentials));
   return {
     type: UPDATE_CREDENTIALS,
@@ -121,4 +121,4 @@ export const credentials = (credentials) => {
       credentials
     }
   }
-}
+};
