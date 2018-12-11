@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
 
+mongoose.set('useCreateIndex', true);
+
 export const postSchema = new mongoose.Schema({
     id: {type: String, index: true, unique: true },
     title: String,
