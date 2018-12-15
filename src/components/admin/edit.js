@@ -18,7 +18,6 @@ import { store } from '../../store.js';
 import { getAllProducts, editItem, createItem } from '../../actions/shop.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
-import 'simple-chip';
 import { navigate } from '../../actions/app.js';
 
 const EMPTY_ITEM = {
@@ -26,9 +25,14 @@ const EMPTY_ITEM = {
   preview: '',
   title: '',
   description: '',
-  price: null,
-  sizes: [],
-  inventory: null,
+  pricing: [ {
+    price: null,
+    medium: '',
+    size: {
+      width: null, 
+      height: null
+    }
+  } ],
   active: false,
 };
 
@@ -70,10 +74,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
           display: inline-block;
           width: 100px;
           text-align: right;
-        }
-
-        simple-chip {
-          display: inline-block;
         }
 
         input[type="text"],
@@ -142,19 +142,28 @@ class AdminEdit extends connect(store)(PageViewElement) {
             <div class="block">
               <label for="price">Price</label>
               <div class="underline">
-                <input id="price" type="number" placeholder="Price" .value="${this.item.price}">
+                <input id="price" type="number" placeholder="Price" .value="${this.item.pricing[0].price}">
               </div>
             </div>
 
             <div class="block">
-              <label for="sizes">Sizes</label>
-              <simple-chip id="sizes" placeholder="Sizes" commitkeycode="Enter, Tab"></simple-chip>
+              <label for="width">Width</label>
+              <div class="underline">
+                <input id="width" type="number" placeholder="Width" .value="${this.item.pricing[0].size.width}">
+              </div>
             </div>
 
             <div class="block">
-              <label for="inven">Inventory</label>
+              <label for="height">Height</label>
               <div class="underline">
-                <input id="inven" type="number" placeholder="Inventory" .value="${this.item.inventory}">
+                <input id="height" type="number" placeholder="Height" .value="${this.item.pricing[0].size.height}">
+              </div>
+            </div>
+
+            <div class="block">
+              <label for="medium">Medium</label>
+              <div class="underline">
+                <input id="medium" type="text" placeholder="Medium" .value="${this.item.pricing[0].medium}">
               </div>
             </div>
 
@@ -182,30 +191,17 @@ class AdminEdit extends connect(store)(PageViewElement) {
     if (item === undefined && page === "new") {
 
       await this.reset();
-    
-      for (const elem of this.elements.sizes.chips) {
-        elem.remove();
-      }
-      
+         
       const prevProducts = this.productKeys;
       this.productKeys = new Set(Object.keys(newState.shop.products));
 
       const [id, ...rest] = [...this.productKeys].filter(key => ! prevProducts.has(key));
       if (id && rest.length === 0) {
         // New item created
-        store.dispatch(navigate(`/admin/${id}`));
+        store.dispatch(navigate(`/admin/${newState.shop.products[id].slug}`));
       }
     } else if (item) {
-
       this.item = item;
-
-      const sizes = this.item.sizes.map(size => `${size.width}x${size.height}`);
-
-      await this.elements.sizes.updateComplete;
-      for (const elem of this.elements.sizes.chips) {
-        elem.remove();
-      }
-      this.elements.sizes.addChips(sizes);
     }
   }
 
@@ -224,20 +220,22 @@ class AdminEdit extends connect(store)(PageViewElement) {
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       price: this.renderRoot.getElementById('price'),
-      inventory: this.renderRoot.getElementById('inven'),
+      medium: this.renderRoot.getElementById('medium'),
       active: this.renderRoot.getElementById('active'),
-      sizes: this.renderRoot.getElementById('sizes'),
+      width: this.renderRoot.getElementById('width'),
+      height: this.renderRoot.getElementById('height'),
       file: this.renderRoot.getElementById('file'),
       fileButton: this.renderRoot.getElementById('file-button')
     };
 
     this.elements.file.addEventListener('change', this.readImage.bind(this));
-    this.elements.sizes.addEventListener('chip-added', this.validateChip.bind(this));
 
     [ this.elements.title,
       this.elements.description,
       this.elements.price,
-      this.elements.inventory
+      this.elements.width,
+      this.elements.height,
+      this.elements.medium
     ].forEach(elem => {
       elem.addEventListener('focus', this.focusUp.bind(this));
       elem.addEventListener('blur', this.focusUp.bind(this));
@@ -248,8 +246,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.item = EMPTY_ITEM;
     this.elements.title.value = this.item.title;
     this.elements.description.value = this.item.description
-    this.elements.price.value = this.item.price;
-    this.elements.inventory.value = this.item.inventory;
+    this.elements.price.value = this.item.pricing[0].price;
+    this.elements.medium.value = this.item.pricing[0].medium;
+    this.elements.width.value = this.item.pricing[0].size.width;
+    this.elements.height.value = this.item.pricing[0].size.height;
     this.elements.active.checked = this.item.active;
 
     if (this.elements.preview.src.startsWith('blob')) {
@@ -258,8 +258,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
     this.elements.preview.src = this.item.preview;
     
-    await this.elements.sizes.updateComplete;
-    this.elements.sizes.clear();
     this.elements.fileButton.innerText = 'Change File';
     
     this.elements.file.value = '';
@@ -273,23 +271,22 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
   async submit() {
 
-    const sizes = this.elements.sizes.values.map(str => {
-      const split = str.split('x');
-      return {
-        width: parseFloat(split[0]),
-        height: parseFloat(split[1])
-      }
-    });
-
     const data = {
       title: this.elements.title.value,
       description: this.elements.description.value,
-      price: parseFloat(this.elements.price.value),
-      sizes: JSON.stringify(sizes),
-      inventory: parseInt(this.elements.inventory.value),
+      pricing: JSON.stringify([ {
+        price: parseFloat(this.elements.price.value),
+        size: {
+          width: this.elements.width.value,
+          height: this.elements.height.value,
+        },
+        medium: this.elements.medium.value
+      } ]),       
       active: this.elements.active.checked,
       image: this.elements.file.files[0]
     };
+
+    console.log(data);
 
     if (this.item.id === null) {      
       store.dispatch(createItem(data));
@@ -311,18 +308,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
       const blob = await new Response(input.files[0]).blob();
       this.elements.preview.src = URL.createObjectURL(blob);
-    }
-  }
-
-  validateChip(e) {
-    const sizeRegex = /^[0-9]+(?:\.[0-9]{1,3})?x[0-9]+(?:\.[0-9]{1,3})?$/;
-
-    if (! sizeRegex.test(e.detail.text)) {
-      e.preventDefault();
-    }
-    
-    if (this.elements.sizes.values.includes(e.detail.text)) {
-      e.preventDefault();
     }
   }
 

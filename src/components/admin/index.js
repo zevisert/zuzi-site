@@ -68,25 +68,19 @@ class AdminView extends connect(store)(PageViewElement) {
                       <th class="column2">Post ID</th>
                       <th class="column3">Title</th>
                       <th class="column4">Description</th>
-                      <th class="column5">Price</th>
-                      <th class="column6">Sizes</th>
-                      <th class="column7">Inventory</th>
-                      <th class="column8">Active</th>
-                      <th class="column9">Delete</th>
+                      <th class="column5">Active</th>
+                      <th class="column6">Delete</th>
                     </tr>
                   </thead>
                   <tbody>
                     ${Object.values(this._postings).map(post => html`
-                      <tr @click="${() => store.dispatch(navigate(`/admin/${post.id}`))}">
+                      <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
                         <td class="column1"><img src="/uploads/${post.preview}"></td>
                         <td class="column2">${post.id}</td>
                         <td class="column3">${post.title}</td>
                         <td class="column4">${post.description}</td>
-                        <td class="column5">${post.price}</td>
-                        <td class="column6">${this.parseSizes(post.sizes)}</td>
-                        <td class="column7">${post.inventory}</td>
-                        <td class="column8">${post.active}</td>
-                        <td class="column9">
+                        <td class="column5">${post.active}</td>
+                        <td class="column6">
                           <button @click="${(e) => { this.deleteItem(post.id); e.stopPropagation(); }}">Delete</button>
                         </td>
                       </tr>`
@@ -100,10 +94,6 @@ class AdminView extends connect(store)(PageViewElement) {
       <a href="/admin/new"><button>New Posting</button></a>
       </section>
     `
-  }
-
-  parseSizes(sizes) {
-    return sizes.map(size => `${size.width}x${size.height}`).join(', ');
   }
 
   stateChanged(newState) {

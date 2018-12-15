@@ -74,7 +74,7 @@ class GalleryList extends connect(store)(LitElement) {
   }
 
   _navigateToItem(e) {
-    store.dispatch(navigate(`/gallery/${e.target.key}`));
+    store.dispatch(navigate(`/gallery/${this._products[e.target.key].slug}`));
   }
 
   // This is called every time something is updated in the store.

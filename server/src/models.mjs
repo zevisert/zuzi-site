@@ -3,15 +3,30 @@ import passportLocalMongoose from 'passport-local-mongoose';
 
 mongoose.set('useCreateIndex', true);
 
+export const sizeSchema = new mongoose.Schema({
+    width: Number,
+    height: Number,
+    unit: { type: String, default: 'cm', enum: ['cm', 'in', 'm', 'ft']}
+});
+
+export const Size = mongoose.model('Size', sizeSchema);
+
+export const pricingSchema = new mongoose.Schema({
+    price: Number,
+    size: sizeSchema,
+    medium: String
+});
+
+export const Pricing = mongoose.model('Pricing', pricingSchema);
+
 export const postSchema = new mongoose.Schema({
-    id: {type: String, index: true, unique: true },
+    id: { type: String, index: true, unique: true },
+    slug: { type: String, unique: true },
     title: String,
     description: String,
-    price: Number,
-    sizes: [{width: Number, height: Number}],
-    inventory: Number,
     active: Boolean,
-    preview: String
+    preview: String,
+    pricing: [pricingSchema]
 });
 
 export const Post = mongoose.model('Post', postSchema);

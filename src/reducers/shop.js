@@ -164,7 +164,7 @@ export const selectedItemSelector = createSelector(
   subPageSelector,
   productsSelector,
   (subPage, products) => {
-    const item = products[subPage];
+    const item = Object.values(products).filter(prod => prod.slug === subPage).pop();
     return [item, subPage];
   }
 )

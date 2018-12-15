@@ -43,7 +43,6 @@
     "reselect": "^3.0.1",
     "sharp": "^0.21.1",
     "shortid": "^2.2.14",
-    "simple-chip": "^1.2.3",
     "stripe": "^6.19.0"
   },
   "devDependencies": {
