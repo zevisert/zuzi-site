@@ -14,10 +14,14 @@ import {
   REMOVE_FROM_CART,
   CHECKOUT_SUCCESS,
   CHECKOUT_FAILURE,
+} from '../actions/shop.js';
+
+import {
   ADMIN_CREATE_ITEM,
   ADMIN_DELETE_ITEM,
   ADMIN_UPDATE_ITEM
-} from '../actions/shop.js';
+} from '../actions/admin.js';
+
 import { createSelector } from 'reselect';
 
 const INITIAL_STATE = {
@@ -57,12 +61,9 @@ const shop = (state = INITIAL_STATE, action) => {
     case ADMIN_DELETE_ITEM:
       return {
         ...state,
-        products: Object.entries(state.products).reduce((obj, [key, value]) => {
-          if (key !== action.payload.key) {
-            obj[key] = value;
-          }
-          return obj;
-        }, {})
+        products: Object.entries(state.products)
+          .filter(([key, value]) => key !== action.payload.key)
+          .reduce((obj, [key, value]) => obj[key] = value, {})
       };
     case ADMIN_UPDATE_ITEM:
       return {
@@ -81,39 +82,23 @@ const shop = (state = INITIAL_STATE, action) => {
 const cart = (state, action) => {
   switch (action.type) {
     case ADD_TO_CART: {
-
-      const productId = action.payload.productId;
-      const pricingId = action.payload.pricingId;
-      const key = `${productId}-${pricingId}`;
-      const quantity = (state[key] ? state[key].quantity : 0) + 1;
+      const key = `${action.payload.productId}-${action.payload.pricingId}`;
       return {
         ...state,
         [key]: {
-          quantity,
-          productId,
+          quantity: (state[key] ? state[key].quantity : 0) + 1,
+          productId: action.payload.productId,
           pricing: action.payload.pricing
         }
       };
     }
     case REMOVE_FROM_CART: {
-      const key = action.payload.cartKey;
-      const quantity = (state[key] ? state[key].quantity : 0) - 1;
-      
-      if (quantity <= 0) {
-        const newState = {
-          ...state
-        };
-        delete newState[key];
-        return newState;
-      } else {
-        return {
-          ...state,
-          [key]: {
-            ... state[key],
-            quantity
-          }
-        }
-      }
+      return Object.entries(state)
+        .map(([key, value]) => key === action.payload.cartKey
+                                ? [key, { ...value, quantity: value.quantity - 1 }]
+                                : [key, value])
+        .filter(([key, value]) => value.quantity > 0)
+        .reduce((obj, [key, value]) => { return { ...obj, [key]: value } }, {}); 
     }
     case CHECKOUT_SUCCESS:
       return {};

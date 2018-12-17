@@ -17,7 +17,8 @@ import { InputTextNumber, InputUnderline } from '../input-styles.js';
 
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
-import { getAllProducts, editItem, createItem } from '../../actions/shop.js';
+import { getAllProducts } from '../../actions/shop.js';
+import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
 import { navigate } from '../../actions/app.js';
