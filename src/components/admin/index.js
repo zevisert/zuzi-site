@@ -15,7 +15,8 @@ import { PageViewElement } from '../page-view-element.js';
 import { SharedStyles } from '../shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
-import { getAllProducts, deleteItem, createItem } from '../../actions/shop.js';
+import { getAllProducts } from '../../actions/shop.js';
+import { deleteItem, createItem } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 import { navigate } from '../../actions/app.js';
@@ -48,11 +49,8 @@ class AdminView extends connect(store)(PageViewElement) {
           table tbody tr td:nth-child(2):before { content: "Post ID"; }
           table tbody tr td:nth-child(3):before { content: "Title"; }
           table tbody tr td:nth-child(4):before { content: "Description"; }
-          table tbody tr td:nth-child(5):before { content: "Price"; }
-          table tbody tr td:nth-child(6):before { content: "Sizes"; }
-          table tbody tr td:nth-child(7):before { content: "Inventory"; }
-          table tbody tr td:nth-child(8):before { content: "Active"; }
-          table tbody tr td:nth-child(9):before { content: "Delete"; }
+          table tbody tr td:nth-child(5):before { content: "Active"; }
+          table tbody tr td:nth-child(6):before { content: "Delete"; }
         }
       </style>
       <section>
@@ -68,25 +66,21 @@ class AdminView extends connect(store)(PageViewElement) {
                       <th class="column2">Post ID</th>
                       <th class="column3">Title</th>
                       <th class="column4">Description</th>
-                      <th class="column5">Price</th>
-                      <th class="column6">Sizes</th>
-                      <th class="column7">Inventory</th>
-                      <th class="column8">Active</th>
-                      <th class="column9">Delete</th>
+                      <th class="column5">Active</th>
+                      <th class="column6">Delete</th>
                     </tr>
                   </thead>
                   <tbody>
                     ${Object.values(this._postings).map(post => html`
-                      <tr @click="${() => store.dispatch(navigate(`/admin/${post.id}`))}">
+                      <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
                         <td class="column1"><img src="/uploads/${post.preview}"></td>
-                        <td class="column2">${post.id}</td>
+                        <td class="column2">${post._id}</td>
                         <td class="column3">${post.title}</td>
                         <td class="column4">${post.description}</td>
-                        <td class="column5">${post.price}</td>
-                        <td class="column6">${this.parseSizes(post.sizes)}</td>
-                        <td class="column7">${post.inventory}</td>
-                        <td class="column8">${post.active}</td>
-                        <td class="column9"><button @click="${() => this.deleteItem(post.id)}">Delete</button></td>
+                        <td class="column5">${post.active}</td>
+                        <td class="column6">
+                          <button @click="${(e) => { this.deleteItem(post._id); e.stopPropagation(); }}">Delete</button>
+                        </td>
                       </tr>`
                     )}
                   </tbody>
@@ -98,10 +92,6 @@ class AdminView extends connect(store)(PageViewElement) {
       <a href="/admin/new"><button>New Posting</button></a>
       </section>
     `
-  }
-
-  parseSizes(sizes) {
-    return sizes.map(size => `${size.width}x${size.height}`).join(', ');
   }
 
   stateChanged(newState) {
@@ -125,7 +115,6 @@ class AdminView extends connect(store)(PageViewElement) {
       description: this.shadowRoot.getElementById('desc').value,
       price: this.shadowRoot.getElementById('price').value,
       sizes: this.shadowRoot.getElementById('sizes').value,
-      inventory: this.shadowRoot.getElementById('inven').value,
       active: false,
       image: this.shadowRoot.getElementById('file').files[0]
     };
@@ -133,8 +122,8 @@ class AdminView extends connect(store)(PageViewElement) {
     store.dispatch(createItem(data));
   }
 
-  async deleteItem(id) {
-    store.dispatch(deleteItem(id));
+  async deleteItem(slug) {
+    store.dispatch(deleteItem(slug));
   }
 }
 

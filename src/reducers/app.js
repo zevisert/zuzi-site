@@ -16,7 +16,7 @@ import {
 
 const INITIAL_STATE = {
   page: '',
-  offline: false,
+  offline: false
 };
 
 const app = (state = INITIAL_STATE, action) => {

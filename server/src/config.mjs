@@ -6,20 +6,20 @@ import dotenv from 'dotenv';
 dotenv.config({path: 'server/process.env'});
 
 /* 
-====================================== API ROUTES ======================================
-|   NAME   |     PATH          |   HTTP VERB     |            PURPOSE                   |
-|----------|-------------------|-----------------|--------------------------------------| 
-| Index    | /artwork          |      GET        | Lists all artwork                    |
-| Create   | /artwork          |      POST       | Creates a new artwork posting        |
-| Show     | /artwork/:id      |      GET        | Shows one specified artwork post     |
-| Update   | /artwork/:id      |      PUT        | Updates a particular artwork post    |
-| Destroy  | /artwork/:id      |      DELETE     | Deletes a particular artwork post    |
+===================================== API ROUTES ==========================================
+|   NAME   |     PATH            |   HTTP VERB     |            PURPOSE                   |
+|----------|---------------------|-----------------|--------------------------------------| 
+| Index    | /artwork            |      GET        | Lists all artwork                    |
+| Create   | /artwork            |      POST       | Creates a new artwork posting        |
+| Show     | /artwork/:slug      |      GET        | Shows one specified artwork post     |
+| Update   | /artwork/:slug      |      PUT        | Updates a particular artwork post    |
+| Destroy  | /artwork/:slug      |      DELETE     | Deletes a particular artwork post    |
 
-==================================== FRONTEND ROUTES ====================================
-|   NAME   |     PATH          |   HTTP VERB     |            PURPOSE                   |
-|----------|-------------------|-----------------|--------------------------------------| 
-| New      | /artwork/new      |      GET        | Preps form for new artwork entry     |
-| Edit     | /artwork/:id/edit |      GET        | Preps info for an artwork edit       |
+==================================== FRONTEND ROUTES ======================================
+|   NAME   |     PATH            |   HTTP VERB     |            PURPOSE                   |
+|----------|---------------------|-----------------|--------------------------------------| 
+| New      | /artwork/new        |      GET        | Preps form for new artwork entry     |
+| Edit     | /artwork/:slug/edit |      GET        | Preps info for an artwork edit       |
 */
 
 

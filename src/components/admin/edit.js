@@ -13,33 +13,49 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
+import { InputTextNumber, InputUnderline } from '../input-styles.js';
+
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
-import { getAllProducts, editItem, createItem } from '../../actions/shop.js';
+import { getAllProducts } from '../../actions/shop.js';
+import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
-import 'simple-chip';
 import { navigate } from '../../actions/app.js';
 
+import './pricing-form.js';
+import './pricing-card.js';
+
 const EMPTY_ITEM = {
-  id: null,
-  preview: null,
+  _id: null,
+  preview: '',
   title: '',
   description: '',
-  price: NaN,
-  sizes: [],
-  inventory: NaN,
+  pricings: [],
   active: false,
 };
 
+const JsonType = {
+  fromAttribute: (attr) => { return JSON.parse(attr) },
+  toAttribute:   (prop) => { return JSON.stringify(prop) }
+};
+
 class AdminEdit extends connect(store)(PageViewElement) {
+
+  static get properties() { return {
+    item: { type: JsonType }
+  }}
+
   render() {
     return html`
       ${SharedStyles}
-        
+      ${InputTextNumber}
+      ${InputUnderline}
+
       <style>
-        img {
+        #preview {
           width: 100%;
+          min-height: 20em;
           background-color: #efefef;
         }
 
@@ -51,7 +67,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
         .container {
           display: grid;
-          grid-template-columns: 600px 1fr;
+          grid-template-columns: 400px 1fr;
         }
 
         .form {
@@ -61,62 +77,39 @@ class AdminEdit extends connect(store)(PageViewElement) {
           margin: 0 3em;
         }
 
+        .pricing-group {
+          display: grid;
+          grid-gap: 1em;
+          grid-template-columns: repeat(4, 1fr);
+        }
+
         label {
           display: inline-block;
           width: 100px;
           text-align: right;
         }
 
-        simple-chip {
-          display: inline-block;
-        }
+        @media screen and (max-width: 725px) {
+          .container {
+            grid-template-columns: 1fr;
+          }
 
-        input[type="text"],
-        input[type="number"] {
-          border: 0;
-          background: none;
-          outline: none;
-        }
-
-        .underline {
-          display: inline-block;
-          position: relative;
-        }
-
-        .underline::before {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 1px;
-          bottom: 0;
-          left: 0;
-          background-color: lightgray;
-        }
-
-        .underline::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          transform: scaleX(0);
-          height: 1px;
-          bottom: 0;
-          left: 0;
-          background-color: darkcyan;
-          transform-origin: bottom right;
-          transition: transform 0.25s ease-in;
-        }
-
-        .underline.focus::after {
-          transform: scaleX(1);
-          transform-origin: bottom left;
+          .pricing-group {
+            grid-gap: 0.5em;
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
 
       </style>
       <section>
-        <h2><a href="/admin">Admin View</a> > ${this.item.id === null ? "New" : this.item.title}</h2>
+        <h2><a href="/admin">Admin View</a> > ${this.item._id === null ? "New" : this.item.title}</h2>
     
         <div class="container">
-          <img id="preview" .src="${this.item.preview ? `/uploads/${this.item.preview}` : ''}">
+          <img id="preview"
+              @click="${() => this.__els.file.click()}"
+              .src="${this.item.preview ? `/uploads/${this.item.preview}` : ''}"
+          >
+          <input id="file" type="file" hidden>
           <div class="form">
             <div class="block">
               <label for="title">Title</label>
@@ -133,37 +126,32 @@ class AdminEdit extends connect(store)(PageViewElement) {
             </div>
 
             <div class="block">
-              <label for="price">Price</label>
-              <div class="underline">
-                <input id="price" type="number" placeholder="Price" .value="${this.item.price}">
-              </div>
-            </div>
-
-            <div class="block">
-              <label for="sizes">Sizes</label>
-              <simple-chip id="sizes"></simple-chip>
-            </div>
-
-            <div class="block">
-              <label for="inven">Inventory</label>
-              <div class="underline">
-                <input id="inven" type="number" placeholder="Inventory" .value="${this.item.inventory}">
-              </div>
-            </div>
-
-            <div class="block">
               <label for="active">Active</label>
               <input id="active" type="checkbox" ?checked="${this.item.active}">
             </div>
 
+            <admin-pricing-form id="pricing"></admin-pricing-form> 
+
+
             <div class="block">
-              <button id="file-button" @click="${() => this.elements.file.click()}">Change File</button>
-              <input id="file" type="file" hidden>
+              <button @click="${e => this.__els.pricing.broadcastPricing(e) }">Add pricing</button> 
+              <button @click="${this.submit}">${this.item._id === null ? "Create Posting" : "Save Changes"}</button>
             </div>
           </div>
         </div>
-        <button @click="${this.submit}">${this.item.id === null ? "Create Posting" : "Save Changes"}</button>
+        
       </section>
+      <section class="pricing-group">
+        ${this.item.pricings.map(pricing => {
+          return html`
+            <admin-pricing-card
+              pricing="${JSON.stringify(pricing)}"
+              @admin-pricing-removed="${e => this.pricingRemoved(e)}"
+            ></admin-pricing-card>
+          `;
+        })}
+      </section>
+
     `;
   }
 
@@ -172,40 +160,20 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
     // Let the element render once so we have element references
     await this.updateComplete;
-    if (item === null && page === "new") {
+    if (item === undefined && page === "new") {
 
-      this.item = EMPTY_ITEM;
-
-      await this.elements.sizes.updateComplete;
-      for (const elem of this.elements.sizes.chips) {
-        elem.remove();
-      }
-      
+      await this.reset();
+         
       const prevProducts = this.productKeys;
       this.productKeys = new Set(Object.keys(newState.shop.products));
 
       const [id, ...rest] = [...this.productKeys].filter(key => ! prevProducts.has(key));
       if (id && rest.length === 0) {
         // New item created
-        store.dispatch(navigate(`/admin/${id}`));
-      }      
-    } else if (item) {
-
-      this.item = item;
-
-      const sizes = this.item.sizes.map(size => `${size.width}x${size.height}`);
-
-      await this.elements.sizes.updateComplete;
-      for (const elem of this.elements.sizes.chips) {
-        elem.remove();
+        store.dispatch(navigate(`/admin/${newState.shop.products[id].slug}`));
       }
-      this.elements.sizes.addChips(sizes);
-    }
-  }
-
-  static get properties() {
-    return {
-      item: Object
+    } else if (item) {
+      this.item = item;
     }
   }
 
@@ -213,89 +181,100 @@ class AdminEdit extends connect(store)(PageViewElement) {
     super();
     this.productKeys = new Set([]); 
 
-    this.item = EMPTY_ITEM;
+    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ] };
 
     store.dispatch(getAllProducts());
   }
 
   firstUpdated() {
-    this.elements = {
+    this.__els = {
       preview: this.renderRoot.getElementById('preview'),
-      file: this.renderRoot.getElementById('file'),
-      fileButton: this.renderRoot.getElementById('file-button'),
-      sizes: this.renderRoot.getElementById('sizes'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
-      price: this.renderRoot.getElementById('price'),
-      inventory: this.renderRoot.getElementById('inven'),
-      active: this.renderRoot.getElementById('active')
+      active: this.renderRoot.getElementById('active'),
+      pricing: this.renderRoot.getElementById('pricing'),
+      file: this.renderRoot.getElementById('file')
     };
 
-    this.elements.file.addEventListener('change', (e) => {
-      this.elements.fileButton.innerText = e.target.files[0].name;
-      this.readURL(this.elements.file)
-    });
+    this.__els.file.addEventListener('change', this.readImage.bind(this));
 
-    this.elements.sizes.addEventListener('chip-added', (e) => {
-      const sizeRegex = /^[0-9]+(?:\.[0-9]{1,3})?x[0-9]+(?:\.[0-9]{1,3})?$/;
+    this.__els.pricing.addEventListener('admin-pricing-added', this.pricingAdded.bind(this));
 
-      if (! sizeRegex.test(e.detail.text)) {
-        e.preventDefault();
-      }
-      
-      if (this.elements.sizes.values.includes(e.detail.text)) {
-        e.preventDefault();
-      }
-    });
-
-    [
-      this.elements.title,
-      this.elements.description,
-      this.elements.price,
-      this.elements.inventory
-    ].map(elem => {
+    [ this.__els.title,
+      this.__els.description
+    ].forEach(elem => {
       elem.addEventListener('focus', this.focusUp.bind(this));
       elem.addEventListener('blur', this.focusUp.bind(this));
-    })
+    });
   }
 
+  async reset() {
+    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ]};
+    this.__els.title.value = this.item.title;
+    this.__els.description.value = this.item.description
+    this.__els.active.checked = this.item.active;
+
+    if (this.__els.preview.src.startsWith('blob')) {
+      console.log('Released previous image');
+      URL.revokeObjectURL(this.__els.preview.src);
+    }
+    this.__els.preview.src = this.item.preview;
+    
+    this.__els.file.value = '';
+    if(!/safari/i.test(navigator.userAgent)) {
+      this.__els.file.type = '';
+      this.__els.file.type = 'file';
+    }
+
+    return this.requestUpdate();
+  }
 
   async submit() {
 
-    const sizes = this.elements.sizes.values.map(str => {
-      const split = str.split('x');
-      return {
-        width: parseFloat(split[0]),
-        height: parseFloat(split[1])
-      }
-    });
-
     const data = {
-      title: this.elements.title.value,
-      description: this.elements.description.value,
-      price: parseFloat(this.elements.price.value),
-      sizes: JSON.stringify(sizes),
-      inventory: parseInt(this.elements.inventory.value),
-      active: this.elements.active.checked,
-      image: this.elements.file.files[0]
+      title: this.__els.title.value,
+      description: this.__els.description.value,
+      pricings: JSON.stringify(this.item.pricings),     
+      active: this.__els.active.checked,
+      image: this.__els.file.files[0]
     };
 
-    if (this.item.id === null) {      
+    console.log(data);
+
+    if (this.item._id === null) {      
       store.dispatch(createItem(data));
     } else {
-      store.dispatch(editItem(this.item.id, data));
+      store.dispatch(editItem(this.item._id, data));
     }
   }
 
-  readURL(input) {
+  pricingAdded(e) {
+    const pricing = { ...e.detail.pricing, size: { ... e.detail.pricing.size } };
+    const match = p => JSON.stringify(pricing) === JSON.stringify(p);
+    if (this.item.pricings.filter(match).length === 0) {
+      this.item.pricings.push(pricing);
+      this.requestUpdate('item');
+    }
+  }
+
+  pricingRemoved(e) {
+    const drop = p => JSON.stringify(e.detail.pricing) !== JSON.stringify(p);
+    this.item.pricings = this.item.pricings.filter(drop);
+    this.requestUpdate('item');
+  }
+
+  async readImage(fileChangeEvent) {
+    
+    const input = this.__els.file;
+
     if (input.files && input.files[0]) {
-      const reader = new FileReader();
+      if (this.__els.preview.src.startsWith('blob')) {
+        console.log('Released previous image');
+        URL.revokeObjectURL(this.__els.preview.src);
+      }
 
-      reader.onload = (e) => {
-        this.elements.preview.src = e.target.result;
-      };
-
-      reader.readAsDataURL(input.files[0]);
+      const blob = await new Response(input.files[0]).blob();
+      this.__els.preview.src = URL.createObjectURL(blob);
     }
   }
 

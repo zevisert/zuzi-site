@@ -40,10 +40,9 @@ class ShopCart extends connect(store)(LitElement) {
       ${this._items.map((item) =>
         html`
           <div>
-            <shop-item .name="${item.title}" .amount="${item.amount}" .price="${item.price}" .key="${item.id}"></shop-item>
+            <shop-item .label="${item.label}" .amount="${item.amount}" .price="${item.price}"></shop-item>
             <button
-                @click="${this._removeButtonClicked}"
-                data-index="${item.id}"
+                @click="${() => this._removeButtonClicked(item.key)}"
                 title="Remove from cart">
               ${removeFromCartIcon}
             </button>
@@ -59,8 +58,8 @@ class ShopCart extends connect(store)(LitElement) {
     _total: { type: Number }
   }}
 
-  _removeButtonClicked(e) {
-    store.dispatch(removeFromCart(e.currentTarget.dataset['index']));
+  _removeButtonClicked(key) {
+    store.dispatch(removeFromCart(key));
   }
 
   // This is called every time something is updated in the store.

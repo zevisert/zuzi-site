@@ -14,7 +14,7 @@ import { LitElement, html } from '@polymer/lit-element';
 class ShopItem extends LitElement {
   render() {
     return html`
-      ${this.name}:
+      ${this.label}:
       <span ?hidden="${this.amount === 0}">${this.amount} * </span>
       $${this.price}
       </span>
@@ -23,7 +23,7 @@ class ShopItem extends LitElement {
 
   static get properties() {
     return {
-      name: { type: String },
+      label: { type: String },
       amount: { type: String },
       price: { type: String }
     }

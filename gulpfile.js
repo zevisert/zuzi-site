@@ -39,7 +39,8 @@ gulp.task('server:dev', () => {
             ], {
                 env: {
                     NODE_ENV: 'DEVELOPMENT',
-                    PORT: 8080
+                    PORT: 8080,
+                    PATH: process.env.PATH
                 }
             }
         );

@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import path from 'path';
 import del from 'del';
 
-import { Post } from './models.mjs';
+import { Post, Pricing, Size } from './models.mjs';
 import { v8n } from './validation.mjs';
 
 export async function notFound(ctx, next) {
@@ -32,8 +32,7 @@ export async function create(ctx) {
   }
 
   const body = ctx.request.body;
-  const id = shortid.generate();
-  const post = new Post({ id });
+  const post = new Post();
 
   const image = ctx.request.files.image;
   if (image) {
@@ -50,28 +49,33 @@ export async function create(ctx) {
     ctx.throw(400, { error: 'No file uploaded' });
   }
   
-  if (v8n.title(body)) ctx.throw(400, { error: `Bad title provided: ${typeof body.title}` });
-  if (v8n.descr(body)) ctx.throw(400, { error: `Bad description: ${typeof body.description}` });
-  if (v8n.price(body)) ctx.throw(400, { error: `Bad price: ${typeof body.price}` });
-  if (v8n.inven(body)) ctx.throw(400, { error: `Bad inventory count: ${typeof body.inventory}` });
-  if (v8n.sizes(body)) ctx.throw(400, { error: `Bad sizes list: ${typeof body.sizes}` });
+  const pricings = JSON.parse(body.pricings);
+  post.pricings = [];
 
+  for (const obj of pricings) {
+    const pricing = new Pricing();
+    pricing.price = obj.price;
+    pricing.medium = obj.medium;
+    pricing.size = new Size(obj.size);
+    
+    pricing.save();
+    post.pricings.push(pricing);
+  }
+
+  post.slug = body.title.toLowerCase().replace(/ /g, '-');
   post.title = body.title;
   post.description = body.description;
-  post.price = body.price;
-  post.inventory = body.inventory;
   post.active = body.active;
-  post.sizes = JSON.parse(body.sizes);
-
+  
   await post.save();
 
   ctx.body = { post };
 }
 
 export async function show(ctx) {
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
-  if (!post) ctx.throw(404, { error: 'invalid post id' });
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
+  if (!post) ctx.throw(404, { error: 'invalid post slug' });
 
   ctx.body = { post };
 }
@@ -83,8 +87,8 @@ export async function update(ctx) {
     return;
   }
 
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
 
   const body = ctx.request.body;
 
@@ -103,10 +107,25 @@ export async function update(ctx) {
 
   post.title = body.title || post.title;
   post.description = body.description || post.description;
-  post.price = body.price || post.price;
-  post.inventory = body.inventory || post.inventory;
-  post.sizes = JSON.parse(body.sizes) || post.sizes;
+  
+  if (body.pricings) {
+    const pricings = JSON.parse(body.pricings);
+    post.pricings = [];
+  
+    for (const obj of pricings) {
+      const pricing = new Pricing();
+      pricing.price = obj.price;
+      pricing.medium = obj.medium;
+      pricing.size = new Size(obj.size);
+      
+      pricing.save();
+      post.pricings.push(pricing);
+    }
+  }
+
   post.active = body.active || post.active;
+
+  post.slug = post.title.toLowerCase().replace(/ /g, '-');
 
   await post.save();
 
@@ -120,8 +139,8 @@ export async function destroy(ctx) {
     return;
   }
 
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
 

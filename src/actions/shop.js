@@ -13,9 +13,6 @@ export const ADD_TO_CART = 'ADD_TO_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 export const CHECKOUT_SUCCESS = 'CHECKOUT_SUCCESS';
 export const CHECKOUT_FAILURE = 'CHECKOUT_FAILURE';
-export const ADMIN_CREATE_ITEM = 'ADMIN_CREATE_ITEM';
-export const ADMIN_UPDATE_ITEM = 'ADMIN_UPDATE_ITEM';
-export const ADMIN_DELETE_ITEM = 'ADMIN_DELETE_ITEM';
 
 export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
@@ -25,7 +22,7 @@ export const getAllProducts = () => async (dispatch) => {
 
   // You could reformat the data in the right format as well:
   const products = (await response.json()).posts.reduce((obj, product) => {
-    obj[product.id] = product;
+    obj[product._id] = product;
     return obj;
   }, {});
 
@@ -67,84 +64,24 @@ export const checkout = (params, mount) => async dispatch => {
   }
 };
 
-export const addToCart = (productId) => (dispatch, getState) =>{
+export const addToCart = (productId, pricing) => (dispatch, getState) =>{
   const state = getState();
   // Just because the UI thinks you can add this to the cart
   // doesn't mean it's in the inventory (user could've fixed it);
-  if (state.shop.products[productId].inventory > 0) {
-    dispatch(addToCartUnsafe(productId));
-  }
+  dispatch(addToCartUnsafe(productId, pricing));
 };
 
-export const removeFromCart = (productId) => {
+export const removeFromCart = (cartKey) => {
   return {
     type: REMOVE_FROM_CART,
-    payload: { productId }
+    payload: { cartKey }
   };
 };
 
-export const addToCartUnsafe = (productId) => {
+export const addToCartUnsafe = (productId, pricing) => {
+  const pricingId = pricing._id;
   return {
     type: ADD_TO_CART,
-    payload: { productId }
+    payload: { productId, pricingId, pricing }
   };
 };
-
-
-export const createItem = data => async dispatch => {
-
-  const formData = new FormData();
-  for (const [key, value] of Object.entries(data)) {
-    formData.append(key, value);
-  }
-
-  const response = await fetch(`${process.env.API_URL}/artwork`, {
-    method: "POST",
-    body: formData
-  });
-
-  const reply = await response.json();
-  const item = reply.post;
-  console.log(item);
-
-  dispatch({
-    type: ADMIN_CREATE_ITEM,
-    payload: { item }
-  });
-}
-
-export const editItem = (id, data) => async dispatch => {
-  const formData = new FormData();
-  for (const [key, value] of Object.entries(data)) {
-    formData.append(key, value);
-  }
-
-  const response = await fetch(`${process.env.API_URL}/artwork/${id}`, {
-    method: "PUT",
-    body: formData
-  });
-
-  const reply = await response.json();
-  const updated = reply.post;
-  console.log(updated);
-
-  dispatch({
-    type: ADMIN_UPDATE_ITEM,
-    payload: { updated }
-  });
-}
-
-
-export const deleteItem = key => async dispatch => {
-  const response = await fetch(`${process.env.API_URL}/artwork/${key}`, {
-    method: "DELETE"
-  });
-
-  const updated = await response.json();
-  console.log(updated);
-
-  dispatch({
-    type: ADMIN_DELETE_ITEM,
-    payload: { key }
-  });
-}

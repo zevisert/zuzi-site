@@ -47,9 +47,9 @@ const upload = multer({dest: 'server/uploads/'});
 const dataRoutes = (new router())
     .get(['/artwork', '/'], index)
     .post('/artwork', upload.single('image'), create)
-    .get('/artwork/:id', show)
-    .put('/artwork/:id', upload.single('image'), update)
-    .delete('/artwork/:id', destroy)
+    .get('/artwork/:slug', show)
+    .put('/artwork/:slug', upload.single('image'), update)
+    .delete('/artwork/:slug', destroy)
     .get('/checkout/intent', checkout);
 
 
