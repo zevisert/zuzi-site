@@ -25,7 +25,7 @@ export const getAllProducts = () => async (dispatch) => {
 
   // You could reformat the data in the right format as well:
   const products = (await response.json()).posts.reduce((obj, product) => {
-    obj[product.id] = product;
+    obj[product._id] = product;
     return obj;
   }, {});
 
@@ -67,26 +67,25 @@ export const checkout = (params, mount) => async dispatch => {
   }
 };
 
-export const addToCart = (productId) => (dispatch, getState) =>{
+export const addToCart = (productId, pricing) => (dispatch, getState) =>{
   const state = getState();
   // Just because the UI thinks you can add this to the cart
   // doesn't mean it's in the inventory (user could've fixed it);
-  if (state.shop.products[productId].inventory > 0) {
-    dispatch(addToCartUnsafe(productId));
-  }
+  dispatch(addToCartUnsafe(productId, pricing));
 };
 
-export const removeFromCart = (productId) => {
+export const removeFromCart = (cartKey) => {
   return {
     type: REMOVE_FROM_CART,
-    payload: { productId }
+    payload: { cartKey }
   };
 };
 
-export const addToCartUnsafe = (productId) => {
+export const addToCartUnsafe = (productId, pricing) => {
+  const pricingId = pricing._id;
   return {
     type: ADD_TO_CART,
-    payload: { productId }
+    payload: { productId, pricingId, pricing }
   };
 };
 
@@ -113,13 +112,13 @@ export const createItem = data => async dispatch => {
   });
 }
 
-export const editItem = (id, data) => async dispatch => {
+export const editItem = (slug, data) => async dispatch => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
     formData.append(key, value);
   }
 
-  const response = await fetch(`${process.env.API_URL}/artwork/${id}`, {
+  const response = await fetch(`${process.env.API_URL}/artwork/${slug}`, {
     method: "PUT",
     body: formData
   });
@@ -135,8 +134,8 @@ export const editItem = (id, data) => async dispatch => {
 }
 
 
-export const deleteItem = key => async dispatch => {
-  const response = await fetch(`${process.env.API_URL}/artwork/${key}`, {
+export const deleteItem = slug => async dispatch => {
+  const response = await fetch(`${process.env.API_URL}/artwork/${slug}`, {
     method: "DELETE"
   });
 
@@ -145,6 +144,6 @@ export const deleteItem = key => async dispatch => {
 
   dispatch({
     type: ADMIN_DELETE_ITEM,
-    payload: { key }
+    payload: { slug }
   });
 }

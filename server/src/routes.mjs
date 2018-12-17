@@ -32,8 +32,7 @@ export async function create(ctx) {
   }
 
   const body = ctx.request.body;
-  const id = shortid.generate();
-  const post = new Post({ id });
+  const post = new Post();
 
   const image = ctx.request.files.image;
   if (image) {
@@ -50,8 +49,8 @@ export async function create(ctx) {
     ctx.throw(400, { error: 'No file uploaded' });
   }
   
-  const pricings = JSON.parse(body.pricing);
-  post.pricing = [];
+  const pricings = JSON.parse(body.pricings);
+  post.pricings = [];
 
   for (const obj of pricings) {
     const pricing = new Pricing();
@@ -60,7 +59,7 @@ export async function create(ctx) {
     pricing.size = new Size(obj.size);
     
     pricing.save();
-    post.pricing.push(pricing);
+    post.pricings.push(pricing);
   }
 
   post.slug = body.title.toLowerCase().replace(/ /g, '-');
@@ -74,9 +73,9 @@ export async function create(ctx) {
 }
 
 export async function show(ctx) {
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
-  if (!post) ctx.throw(404, { error: 'invalid post id' });
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
+  if (!post) ctx.throw(404, { error: 'invalid post slug' });
 
   ctx.body = { post };
 }
@@ -88,8 +87,8 @@ export async function update(ctx) {
     return;
   }
 
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
 
   const body = ctx.request.body;
 
@@ -109,9 +108,9 @@ export async function update(ctx) {
   post.title = body.title || post.title;
   post.description = body.description || post.description;
   
-  if (body.pricing) {
-    const pricings = JSON.parse(body.pricing);
-    post.pricing = [];
+  if (body.pricings) {
+    const pricings = JSON.parse(body.pricings);
+    post.pricings = [];
   
     for (const obj of pricings) {
       const pricing = new Pricing();
@@ -120,7 +119,7 @@ export async function update(ctx) {
       pricing.size = new Size(obj.size);
       
       pricing.save();
-      post.pricing.push(pricing);
+      post.pricings.push(pricing);
     }
   }
 
@@ -140,8 +139,8 @@ export async function destroy(ctx) {
     return;
   }
 
-  const id = ctx.params.id;
-  const post = await Post.findOne({id}).exec();
+  const slug = ctx.params.slug;
+  const post = await Post.findOne({slug}).exec();
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
 

@@ -54,8 +54,7 @@ class GalleryListItem extends connect(store)(LitElement) {
           <img src="/uploads/${this.item.preview}">
         </div>
         <div class="container">
-          <span>${this.item.name}</span>
-          <span>$${this.item.price}</span>
+          <span>${this.item.title}</span>
         </div>
       </div>
     `;

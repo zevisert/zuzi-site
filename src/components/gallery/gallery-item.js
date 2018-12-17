@@ -38,13 +38,28 @@ class GalleryItem extends connect(store)(PageViewElement) {
           display: flex;
           justify-content: space-between;
         }
+
+        .card {
+          box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+          transition: 0.3s;
+          margin: 1em;
+          max-height: 30vh;
+        }
       </style>
 
-      <h2>${this.item.name}</h2>
-      <img .src="${this.item ? `/uploads/${this.item.preview}`: ''}">
+      <h2>${this.item.title}</h2>
+      <img .src="/uploads/${this.item.preview}">
+
       <div class="container">
-        <pre>$${this.item.price}</pre>
-        <button @click="${() => store.dispatch(addToCart(this.item.id))}">Add to cart</button>
+        ${this.item.pricings.map(pricing => html`
+          <div class="card">
+            <div>$ ${pricing.price}</div>
+            <div>${pricing.medium}</div>
+            <div>${pricing.size.width}x${pricing.size.height} ${pricing.size.unit}</div>
+            
+            <button @click="${() => store.dispatch(addToCart(this.item._id, pricing))}">Add to cart</button>
+          </div>
+        `)}
       </div>
     `;
   }

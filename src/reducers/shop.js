@@ -38,7 +38,6 @@ const shop = (state = INITIAL_STATE, action) => {
     case CHECKOUT_SUCCESS:
       return {
         ...state,
-        products: products(state.products, action),
         cart: cart(state.cart, action),
         error: ''
       };
@@ -52,7 +51,7 @@ const shop = (state = INITIAL_STATE, action) => {
         ...state,
         products: {
           ...state.products,
-          [action.payload.item.id]: action.payload.item
+          [action.payload.item._id]: action.payload.item
         }
       };
     case ADMIN_DELETE_ITEM:
@@ -70,7 +69,7 @@ const shop = (state = INITIAL_STATE, action) => {
         ...state,
         products: {
           ...state.products,
-          [action.payload.updated.id]: action.payload.updated
+          [action.payload.updated._id]: action.payload.updated
         }
       };
     default:
@@ -79,60 +78,43 @@ const shop = (state = INITIAL_STATE, action) => {
 };
 
 // Slice reducer: it only reduces the bit of the state it's concerned about.
-const products = (state, action) => {
-  switch (action.type) {
-    case ADD_TO_CART:
-    case REMOVE_FROM_CART:
-      const productId = action.payload.productId;
-      return {
-        ...state,
-        [productId]: product(state[productId], action)
-      };
-    default:
-      return state;
-  }
-};
-
-const product = (state, action) => {
-  switch (action.type) {
-    case ADD_TO_CART:
-      return {
-        ...state,
-        inventory: state.inventory - 1
-      };
-    case REMOVE_FROM_CART:
-      return {
-        ...state,
-        inventory: state.inventory + 1
-      };
-    default:
-      return state;
-  }
-};
-
 const cart = (state, action) => {
   switch (action.type) {
-    case ADD_TO_CART:
-      const addId = action.payload.productId;
+    case ADD_TO_CART: {
+
+      const productId = action.payload.productId;
+      const pricingId = action.payload.pricingId;
+      const key = `${productId}-${pricingId}`;
+      const quantity = (state[key] ? state[key].quantity : 0) + 1;
       return {
         ...state,
-        [addId]: (state[addId] || 0) + 1
+        [key]: {
+          quantity,
+          productId,
+          pricing: action.payload.pricing
+        }
       };
-    case REMOVE_FROM_CART:
-      const removeId = action.payload.productId;
-      const quantity = (state[removeId] || 0) - 1;
+    }
+    case REMOVE_FROM_CART: {
+      const key = action.payload.cartKey;
+      const quantity = (state[key] ? state[key].quantity : 0) - 1;
+      
       if (quantity <= 0) {
         const newState = {
           ...state
         };
-        delete newState[removeId];
+        delete newState[key];
         return newState;
       } else {
         return {
           ...state,
-          [removeId]: quantity
+          [key]: {
+            ... state[key],
+            quantity
+          }
         }
       }
+    }
     case CHECKOUT_SUCCESS:
       return {};
     default:
@@ -182,22 +164,28 @@ export const cartItemsSelector = createSelector(
   cartSelector,
   productsSelector,
   (cart, products) => {
-    return Object.keys(cart).map(id => {
-      const item = products[id];
-      return {id: item.id, title: item.title, amount: cart[id], price: item.price};
-    });
+    return Object.entries(cart)
+      .map(([cartKey, cartContents])=> {
+        
+        const item = products[cartContents.productId];
+        const size = cartContents.pricing.size;
+        return {
+          label: `${item.title} (${cartContents.pricing.medium} [${size.width}x${size.height} ${size.unit}])`,
+          amount: cartContents.quantity,
+          price: cartContents.pricing.price,
+          key: cartKey
+        };
+      });
   }
 );
 
 // Return the total cost of the items in the cart
 export const cartTotalSelector = createSelector(
   cartSelector,
-  productsSelector,
-  (cart, products) => {
+  cart => {
     let total = 0;
-    Object.keys(cart).forEach(id => {
-      const item = products[id];
-      total += item.price * cart[id];
+    Object.values(cart).forEach(cartContent => {
+      total += cartContent.pricing.price * cartContent.quantity;
     });
     return Math.round(total * 100) / 100;
   }
@@ -208,8 +196,8 @@ export const cartQuantitySelector = createSelector(
   cartSelector,
   cart => {
     let num = 0;
-    Object.keys(cart).forEach(id => {
-      num += cart[id];
+    Object.values(cart).forEach(cartContent => {
+      num += cartContent.quantity;
     });
     return num;
   }

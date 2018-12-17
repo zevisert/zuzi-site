@@ -54,10 +54,7 @@ class GalleryList extends connect(store)(LitElement) {
         const item = this._products[key];
         return html`
           <gallery-list-item
-            .name="${item.title}"
-            .amount="${item.inventory}"
-            .price="${item.price}"
-            .key="${item.id}"
+            .key="${item._id}"
             @click="${this._navigateToItem}">
           </gallery-list-item>
         `

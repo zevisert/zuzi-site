@@ -20,13 +20,12 @@ export const pricingSchema = new mongoose.Schema({
 export const Pricing = mongoose.model('Pricing', pricingSchema);
 
 export const postSchema = new mongoose.Schema({
-    id: { type: String, index: true, unique: true },
     slug: { type: String, unique: true },
     title: String,
     description: String,
     active: Boolean,
     preview: String,
-    pricing: [pricingSchema]
+    pricings: [pricingSchema]
 });
 
 export const Post = mongoose.model('Post', postSchema);
