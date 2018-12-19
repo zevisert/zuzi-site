@@ -17,6 +17,8 @@ import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { login, credentials } from '../../actions/app.js';
 import { store } from '../../store.js';
 
+import '../underline-input.js';
+
 class LoginView extends PageViewElement {
   render() {
     return html`
@@ -36,15 +38,17 @@ class LoginView extends PageViewElement {
       <section>
         <h2>Admin Login</h2>
         <div class="form">
-          <label for="password">
-            Password
-          </label>
-          <input id="password" type="password" placeholder="Password">
-          <button
-            @click="${this._submitForm}">
-            Login
-          </button>
+          <label for="email">Email</label>
+          <underline-input id="email" type="email" placeholder="Email">
         </div>
+        <div class="form">
+          <label for="password">Password</label>
+          <underline-input id="password" type="password" placeholder="Password">
+        </div>
+        <button
+          @click="${this._submitForm}">
+          Login
+        </button>
       </section>
     `;
   }
@@ -55,9 +59,10 @@ class LoginView extends PageViewElement {
   }
 
   async _submitForm() {
-    const password = this.shadowRoot.getElementById('password').value;
+    const email = this.renderRoot.getElementById('email').value;
+    const password = this.renderRoot.getElementById('password').value;
 
-    store.dispatch(login({username: 'user', password}));
+    store.dispatch(login({email, password}));
   }
 }
 

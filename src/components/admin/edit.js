@@ -13,7 +13,7 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { InputTextNumber, InputUnderline } from '../input-styles.js';
+import { ButtonSharedStyles } from '../button-shared-styles.js';
 
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
@@ -23,6 +23,7 @@ import { selectedItemSelector } from '../../reducers/shop.js';
 
 import { navigate } from '../../actions/app.js';
 
+import '../underline-input.js';
 import './pricing-form.js';
 import './pricing-card.js';
 
@@ -49,20 +50,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
   render() {
     return html`
       ${SharedStyles}
-      ${InputTextNumber}
-      ${InputUnderline}
+      ${ButtonSharedStyles}
 
       <style>
         #preview {
           width: 100%;
           min-height: 20em;
           background-color: #efefef;
-        }
-
-        button {
-          border: 2px solid black;
-          border-radius: 3px;
-          padding: 8px 16px;
         }
 
         .container {
@@ -103,7 +97,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       </style>
       <section>
         <h2><a href="/admin">Admin View</a> > ${this.item._id === null ? "New" : this.item.title}</h2>
-    
+
         <div class="container">
           <img id="preview"
               @click="${() => this.__els.file.click()}"
@@ -113,16 +107,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
           <div class="form">
             <div class="block">
               <label for="title">Title</label>
-              <div class="underline">
-                <input id="title" type="text" placeholder="Title" .value="${this.item.title}">
-              </div>
+              <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}">
             </div>
 
             <div class="block">
               <label for="desc">Description</label>
-              <div class="underline">
-                <input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
-              </div>
+              <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
             </div>
 
             <div class="block">
@@ -130,16 +120,15 @@ class AdminEdit extends connect(store)(PageViewElement) {
               <input id="active" type="checkbox" ?checked="${this.item.active}">
             </div>
 
-            <admin-pricing-form id="pricing"></admin-pricing-form> 
-
+            <admin-pricing-form id="pricing"></admin-pricing-form>
 
             <div class="block">
-              <button @click="${e => this.__els.pricing.broadcastPricing(e) }">Add pricing</button> 
+              <button @click="${e => this.__els.pricing.broadcastPricing(e) }">Add pricing</button>
               <button @click="${this.submit}">${this.item._id === null ? "Create Posting" : "Save Changes"}</button>
             </div>
           </div>
         </div>
-        
+
       </section>
       <section class="pricing-group">
         ${this.item.pricings.map(pricing => {
@@ -156,14 +145,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
   }
 
   async stateChanged(newState) {
-    const [item, page] = selectedItemSelector(newState); 
+    const [item, page] = selectedItemSelector(newState);
 
     // Let the element render once so we have element references
     await this.updateComplete;
     if (item === undefined && page === "new") {
 
       await this.reset();
-         
+
       const prevProducts = this.productKeys;
       this.productKeys = new Set(Object.keys(newState.shop.products));
 
@@ -179,7 +168,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
   constructor() {
     super();
-    this.productKeys = new Set([]); 
+    this.productKeys = new Set([]);
 
     this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ] };
 
@@ -200,12 +189,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
     this.__els.pricing.addEventListener('admin-pricing-added', this.pricingAdded.bind(this));
 
-    [ this.__els.title,
-      this.__els.description
-    ].forEach(elem => {
-      elem.addEventListener('focus', this.focusUp.bind(this));
-      elem.addEventListener('blur', this.focusUp.bind(this));
-    });
   }
 
   async reset() {
@@ -219,7 +202,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       URL.revokeObjectURL(this.__els.preview.src);
     }
     this.__els.preview.src = this.item.preview;
-    
+
     this.__els.file.value = '';
     if(!/safari/i.test(navigator.userAgent)) {
       this.__els.file.type = '';
@@ -234,17 +217,17 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const data = {
       title: this.__els.title.value,
       description: this.__els.description.value,
-      pricings: JSON.stringify(this.item.pricings),     
+      pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
       image: this.__els.file.files[0]
     };
 
     console.log(data);
 
-    if (this.item._id === null) {      
+    if (this.item._id === null) {
       store.dispatch(createItem(data));
     } else {
-      store.dispatch(editItem(this.item._id, data));
+      store.dispatch(editItem(this.item.slug, data));
     }
   }
 
@@ -264,7 +247,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
   }
 
   async readImage(fileChangeEvent) {
-    
+
     const input = this.__els.file;
 
     if (input.files && input.files[0]) {
@@ -275,14 +258,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
       const blob = await new Response(input.files[0]).blob();
       this.__els.preview.src = URL.createObjectURL(blob);
-    }
-  }
-
-  focusUp(e) {
-    if (e.type === "focus") {
-      e.target.parentNode.classList.add('focus');
-    } else if (e.type === "blur") {
-      e.target.parentNode.classList.remove('focus');
     }
   }
 }

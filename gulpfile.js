@@ -20,7 +20,6 @@ function log(output, data, tag) {
     const lines = data
         .toString()
         .split('\n')
-        .map(line => line.trim())
         .filter(line => line.length > 0)
         .map(line => `${prefix} ${line}`)
         .join('\n');
@@ -66,7 +65,7 @@ gulp.task('server:pipe', async () => {
 
         serve.stdout.on('data', data => log(console.log, data, 'Pipe'));
         serve.stderr.on('data', data => log(console.error, data, 'Pipe'));
-        
+
         serve.stdout.once('data', resolve);
         serve.stderr.once('data', reject);
     });
@@ -74,5 +73,5 @@ gulp.task('server:pipe', async () => {
 
 gulp.task('default', () => {
     gulp.parallel('server:dev', 'server:pipe')();
-    gulp.watch('server/src/*.mjs', gulp.series('server:dev'));
+    gulp.watch('server/src/**/*.mjs', gulp.series('server:dev'));
 });

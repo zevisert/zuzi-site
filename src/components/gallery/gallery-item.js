@@ -28,12 +28,6 @@ class GalleryItem extends connect(store)(PageViewElement) {
           width: 100%;
         }
 
-        button {
-          border: 2px solid black;
-          border-radius: 3px;
-          padding: 8px 16px;
-        }
-
         .container {
           display: flex;
           justify-content: space-between;
@@ -56,7 +50,7 @@ class GalleryItem extends connect(store)(PageViewElement) {
             <div>$ ${pricing.price}</div>
             <div>${pricing.medium}</div>
             <div>${pricing.size.width}x${pricing.size.height} ${pricing.size.unit}</div>
-            
+
             <button @click="${() => store.dispatch(addToCart(this.item._id, pricing))}">Add to cart</button>
           </div>
         `)}

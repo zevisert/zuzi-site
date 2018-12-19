@@ -22,9 +22,10 @@ import '../gallery/gallery-list-item.js';
 import { removeFromCart } from '../../actions/shop.js';
 
 // These are the reducers needed by this element.
-import { cartItemsSelector, cartTotalSelector } from '../../reducers/shop.js';
+import { cartItemsSelector, cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
 
 // These are the shared styles needed by this element.
+import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 
 import './shop-item';
@@ -33,9 +34,12 @@ class ShopCart extends connect(store)(LitElement) {
   render() {
     return html`
       ${ButtonSharedStyles}
+      ${SharedStyles}
       <style>
         :host { display: block; }
       </style>
+      <h3>Your Cart</h3>
+      <p>Number of items in the cart: <b>${this._quantity}</b></p>
       <p ?hidden="${this._items.length !== 0}">Please add some products to cart.</p>
       ${this._items.map((item) =>
         html`
@@ -56,6 +60,7 @@ class ShopCart extends connect(store)(LitElement) {
   static get properties() { return {
     _items: { type: Array },
     _total: { type: Number }
+
   }}
 
   _removeButtonClicked(key) {
@@ -65,6 +70,7 @@ class ShopCart extends connect(store)(LitElement) {
   // This is called every time something is updated in the store.
   stateChanged(state) {
     this._items = cartItemsSelector(state);
+    this._quantity = cartQuantitySelector(state);
     this._total = cartTotalSelector(state);
   }
 }

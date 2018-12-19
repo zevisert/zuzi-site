@@ -15,9 +15,6 @@ import { connect } from 'pwa-helpers/connect-mixin.js';
 // This element is connected to the Redux store.
 import { store } from '../../store.js';
 
-// These are the actions needed by this element.
-import { checkout } from '../../actions/shop.js';
-
 // These are the elements needed by this element.
 import './gallery-list.js';
 
@@ -30,13 +27,6 @@ class Gallery extends connect(store)(PageViewElement) {
     return html`
       ${SharedStyles}
       ${ButtonSharedStyles}
-      <style>
-        button {
-          border: 2px solid black;
-          border-radius: 3px;
-          padding: 8px 16px;
-        }
-      </style>
 
       <section>
         <h2>Gallery</h2>
@@ -53,10 +43,6 @@ class Gallery extends connect(store)(PageViewElement) {
     _quantity: { type: Number },
     _error: { type: String },
   }}
-
-  _checkoutButtonClicked() {
-    store.dispatch(checkout());
-  }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {

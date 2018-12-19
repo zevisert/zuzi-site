@@ -15,7 +15,7 @@ export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_CREDENTIALS = 'UPDATE_CREDENTIALS';
 
 export const navigate = path => dispatch => {
-  
+
   if (location.pathname != path) {
     history.pushState(null, null, path);
   }
@@ -54,7 +54,11 @@ const loadPage = (page, subPage) => dispatch => {
       break;
     case appStr.pages.admin:
       if (subPage) {
-        import('../components/admin/edit.js');
+        if (subPage.split('/').includes('orders')) {
+          import('../components/admin/orders.js');
+        } else {
+          import('../components/admin/edit.js');
+        }
       } else {
         import('../components/admin/index.js');
       }
@@ -88,7 +92,7 @@ export const updateLayout = wide => (dispatch, getState) => {
   console.log(`The window changed to a ${wide ? 'wide' : 'narrow'} layout`);
 };
 
-export const login =  ({username, password}) => async (dispatch, getState) => {
+export const login =  ({email, password}) => async (dispatch, getState) => {
 
   try {
 
@@ -97,15 +101,19 @@ export const login =  ({username, password}) => async (dispatch, getState) => {
       headers: new Headers({'content-type': 'application/json'}),
       credentials: 'include',
       body: JSON.stringify({
-        username,
-        password  
+        email,
+        password
       })
     });
-    
+
     const response = await loginReq.json();
-    if (response.username === username) {
+
+    const params = (new URL(document.location)).searchParams;
+    const path = params.has('referrer') ? params.get('referrer') : '/admin';
+
+    if (response.email === email) {
       dispatch(credentials(response));
-      dispatch(navigate('/admin'));
+      dispatch(navigate(path));
     }
 
   } catch (err) {
