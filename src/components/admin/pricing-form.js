@@ -1,7 +1,7 @@
 import { html, LitElement } from '@polymer/lit-element';
-import { InputTextNumber, InputUnderline } from '../input-styles';
 import { ButtonSharedStyles } from '../button-shared-styles';
 
+import '../underline-input';
 
 const JsonType = {
   fromAttribute: (attr) => { return JSON.parse(attr) },
@@ -36,8 +36,6 @@ export class AdminPricingForm extends LitElement {
 
   render() {
     return html`
-    ${InputTextNumber}
-    ${InputUnderline}
     ${ButtonSharedStyles}
     <style>
       label {
@@ -45,51 +43,37 @@ export class AdminPricingForm extends LitElement {
         width: 100px;
         text-align: right;
       }
-
-      button {
-        border: 2px solid gray;
-        border-radius: 3px;
-        padding: 8px 16px;
-      }
-    </style> 
+    </style>
     <div class="block">
       <label for="price">Price</label>
-      <div class="underline">
-        <input id="price" type="number" placeholder="Price"
-          @input="${e => this._onChange('price', e)}"
-          .value="${this.pricing.price}"
-        >
-      </div>
+      <underline-input id="price" type="number" placeholder="Price"
+        @input="${e => this._onChange('price', e)}"
+        .value="${this.pricing.price}"
+      >
     </div>
 
     <div class="block">
       <label for="width">Width</label>
-      <div class="underline">
-        <input id="width" type="number" placeholder="Width"
-          @input="${e => this._onChange('width', e)}"
-          .value="${this.pricing.size.width}"
-        >
-      </div>
+      <underline-input id="width" type="number" placeholder="Width"
+        @input="${e => this._onChange('width', e)}"
+        .value="${this.pricing.size.width}"
+      >
     </div>
 
     <div class="block">
       <label for="height">Height</label>
-      <div class="underline">
-        <input id="height" type="number" placeholder="Height"
-          @input="${e => this._onChange('height', e)}"
-          .value="${this.pricing.size.height}"
-        >
-      </div>
+      <underline-input id="height" type="number" placeholder="Height"
+        @input="${e => this._onChange('height', e)}"
+        .value="${this.pricing.size.height}"
+      >
     </div>
 
     <div class="block">
       <label for="medium">Medium</label>
-      <div class="underline">
-        <input id="medium" type="text" placeholder="Medium"
-          @input="${e => this._onChange('medium', e)}"
-          .value="${this.pricing.medium}"
-        >
-      </div>
+      <underline-input id="medium" type="text" placeholder="Medium"
+        @input="${e => this._onChange('medium', e)}"
+        .value="${this.pricing.medium}"
+      >
     </div>
     `;
   }
@@ -101,11 +85,6 @@ export class AdminPricingForm extends LitElement {
       width: this.renderRoot.getElementById('width'),
       height: this.renderRoot.getElementById('height'),
     };
-
-    Object.values(this.__els).forEach(el => {
-      el.addEventListener('focus', this.focusUp.bind(this));
-      el.addEventListener('blur', this.focusUp.bind(this));
-    });
   }
 
   _onChange(name, e) {
@@ -113,14 +92,6 @@ export class AdminPricingForm extends LitElement {
       this.pricing.size[name] = e.path[0].value;
     } else {
       this.pricing[name] = e.path[0].value;
-    }
-  }
-
-  focusUp(e) {
-    if (e.type === "focus") {
-      e.target.parentNode.classList.add('focus');
-    } else if (e.type === "blur") {
-      e.target.parentNode.classList.remove('focus');
     }
   }
 

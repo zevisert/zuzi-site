@@ -6,7 +6,6 @@ import session from 'koa-session';
 import router from 'koa-router';
 import multer from 'koa-multer';
 import passport from 'koa-passport';
-import LocalStrategy from 'passport-local';
 
 import path from 'path';
 
@@ -14,9 +13,8 @@ import path from 'path';
 import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
-import { index, create, show, update, destroy, notFound} from './routes'; 
-import { checkout } from './checkout.mjs';
-
+import { index, create, show, update, destroy, notFound, info} from './routes'; 
+import { checkout, webhook } from './checkout';
 
 const app = new koa();
 
@@ -26,12 +24,12 @@ app.keys = [process.env.SECRET_KEY];
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(User.createStrategy());
 
 const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
-  ["body parser", body({ multipart: true })],
+  ["body parser", body({ multipart: true, rawBody: true })],
   ["static /uploads", mount('/uploads', serve(path.join(process.cwd(), 'server', 'uploads')))],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
@@ -45,27 +43,32 @@ for (const [key, value] of middleware) {
 
 const upload = multer({dest: 'server/uploads/'});
 const dataRoutes = (new router())
-    .get(['/artwork', '/'], index)
-    .post('/artwork', upload.single('image'), create)
-    .get('/artwork/:slug', show)
-    .put('/artwork/:slug', upload.single('image'), update)
-    .delete('/artwork/:slug', destroy)
-    .get('/checkout/intent', checkout);
+  .get(['/artwork', '/'], index)
+  .post('/artwork', upload.single('image'), create)
+  .get('/artwork/:slug', show)
+  .put('/artwork/:slug', upload.single('image'), update)
+  .delete('/artwork/:slug', destroy)
+  .get('/orders/', info)
+  .get('/orders/:id', info)
+  .post('/stripe/checkout/intent', checkout.stripe)
+  .post('/stripe/webhook', webhook.stripe)
+  .post('/etransfer/checkout', checkout.etransfer)
+  .post('/etransfer/webhook', webhook.etransfer);
 
 
 const loginRoutes = (new router({prefix: '/auth'}))
-    .post('/login', passport.authenticate('local', { successRedirect: 'whoami', failureRedirect: 'failed' }))
-    .get('/logout', async ctx => { ctx.logout(); ctx.redirect("/login"); })
-    .get('/whoami', async ctx => ctx.body = JSON.stringify(ctx.state.user))
-    .get('/failed', async ctx => ctx.body = { error: 'failed login' })
-    .get('/users', async ctx =>  ctx.body = { users: await User.find({}).exec() } );
+  .post('/login', passport.authenticate('local', { successRedirect: 'whoami', failureRedirect: 'failed' }))
+  .get('/logout', async ctx => { ctx.logout(); ctx.redirect("/login"); })
+  .get('/whoami', async ctx => ctx.body = JSON.stringify(ctx.state.user))
+  .get('/failed', async ctx => ctx.body = { error: 'failed login' })
+  .get('/users',  async ctx => ctx.body = { users: await User.find({}).exec() } );
     
 const apiRoutes = (new router())
-    .use('/api/v1', 
-        dataRoutes.routes(),
-        dataRoutes.allowedMethods(),
-        loginRoutes.routes(),
-        loginRoutes.allowedMethods()
+  .use('/api/v1', 
+    dataRoutes.routes(),
+    dataRoutes.allowedMethods(),
+    loginRoutes.routes(),
+    loginRoutes.allowedMethods()
 );
 
 app.use(

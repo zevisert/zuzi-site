@@ -27,7 +27,8 @@ import { createSelector } from 'reselect';
 const INITIAL_STATE = {
   products: {},
   cart: {},
-  error: ''
+  error: '',
+  message: ''
 };
 
 const shop = (state = INITIAL_STATE, action) => {
@@ -43,12 +44,14 @@ const shop = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         cart: cart(state.cart, action),
-        error: ''
+        error: '',
+        message: action.payload ? action.payload.message : ''
       };
     case CHECKOUT_FAILURE:
       return {
         ...state,
-        error: action.payload.error
+        error: action.payload.error,
+        message: ''
       };
     case ADMIN_CREATE_ITEM:
       return {
@@ -62,7 +65,7 @@ const shop = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         products: Object.entries(state.products)
-          .filter(([key, value]) => key !== action.payload.key)
+          .filter(([key, value]) => value.slug !== action.payload.slug)
           .reduce((obj, [key, value]) => obj[key] = value, {})
       };
     case ADMIN_UPDATE_ITEM:
@@ -98,7 +101,7 @@ const cart = (state, action) => {
                                 ? [key, { ...value, quantity: value.quantity - 1 }]
                                 : [key, value])
         .filter(([key, value]) => value.quantity > 0)
-        .reduce((obj, [key, value]) => { return { ...obj, [key]: value } }, {}); 
+        .reduce((obj, [key, value]) => { return { ...obj, [key]: value } }, {});
     }
     case CHECKOUT_SUCCESS:
       return {};
@@ -151,7 +154,7 @@ export const cartItemsSelector = createSelector(
   (cart, products) => {
     return Object.entries(cart)
       .map(([cartKey, cartContents])=> {
-        
+
         const item = products[cartContents.productId];
         const size = cartContents.pricing.size;
         return {

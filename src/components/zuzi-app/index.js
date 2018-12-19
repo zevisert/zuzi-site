@@ -104,13 +104,16 @@ class ZuziApp extends connect(store)(LitElement) {
     <!-- Main content -->
     <main role="main" class="main-content">
       <about-view class="page" ?active="${this._page === str.pages.about}"></about-view>
-      
+
       <gallery-view class="page" ?active="${this._page === str.pages.gallery && this._subPage === null}"></gallery-view>
       <gallery-item class="page" ?active="${this._page === str.pages.gallery && this._subPage !== null}"></gallery-item>
-      <cart-view class="page" ?active="${this._page === str.pages.cart}"></cart-view>
+      <cart-view    class="page" ?active="${this._page === str.pages.cart}">
+        <slot slot="stripe-card" name="stripe-card"></slot>
+      </cart-view>
 
-      <admin-view class="page" ?active="${this._page === str.pages.admin && this._subPage === null}"></admin-view>
-      <admin-edit class="page" ?active="${this._page === str.pages.admin && this._subPage !== null}"></admin-edit>
+      <admin-view    class="page" ?active="${this._page === str.pages.admin && this._subPage === null}"></admin-view>
+      <admin-edit    class="page" ?active="${this._page === str.pages.admin && this._subPage !== null && this._subPage.split('/').includes('orders') === false}"></admin-edit>
+      <admin-orders  class="page" ?active="${this._page === str.pages.admin && this._subPage !== null && this._subPage.split('/').includes('orders') === true }"></admin-orders>
       <login-view class="page" ?active="${this._page === str.pages.login}"></login-view>
 
       <no-view class="page" ?active="${this._page === str.pages.none}"></no-view>
@@ -119,7 +122,7 @@ class ZuziApp extends connect(store)(LitElement) {
     <footer>
       <span>
         ${this._loggedIn ?
-          html`<a href="/admin">Edit</a> <a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>` : 
+          html`<a href="/admin">Edit</a> <a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>` :
           html`<a href="/login">Login</a>`
         }
       </span>

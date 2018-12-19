@@ -3,8 +3,20 @@ import sharp from 'sharp';
 import path from 'path';
 import del from 'del';
 
-import { Post, Pricing, Size } from './models.mjs';
-import { v8n } from './validation.mjs';
+import { Post, Pricing, Size, Order } from './models';
+import { v8n } from './validation';
+
+/* 
+========================================= API ROUTES ==============================================
+|   NAME       |     PATH            |   HTTP VERB     |            PURPOSE                       |
+|--------------|---------------------|-----------------|------------------------------------------| 
+| Index        | /artwork            | GET             | Lists all artwork                        |
+| Create       | /artwork            | POST            | Creates a new artwork posting            |
+| Show         | /artwork/:slug      | GET             | Shows one specified artwork post         |
+| Update       | /artwork/:slug      | PUT             | Updates a particular artwork post        |
+| Destroy      | /artwork/:slug      | DELETE          | Deletes a particular artwork post        |
+| Info         | /orders/:id         | GET             | Fetches one specified order              |
+*/
 
 export async function notFound(ctx, next) {
   await next();
@@ -118,7 +130,7 @@ export async function update(ctx) {
       pricing.medium = obj.medium;
       pricing.size = new Size(obj.size);
       
-      pricing.save();
+      await pricing.save();
       post.pricings.push(pricing);
     }
   }
@@ -140,20 +152,54 @@ export async function destroy(ctx) {
   }
 
   const slug = ctx.params.slug;
-  const post = await Post.findOne({slug}).exec();
+  const post = await Post.findOne({slug});
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
 
-  const pathToDel = del.sync(path.join(uploadDir, post.preview), {dryRun: true})[0];
+  const [pathToDel, ...rest] = del.sync(path.join(uploadDir, post.preview), {dryRun: true});
   
-  if (pathToDel) {
+  if (pathToDel && rest.length === 0) {
     const relative = path.relative(uploadDir, pathToDel);
     if (!!relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
       await del(path.join(uploadDir, relative));
     }
   }
 
+  await Promise.all(post.pricings.map(pricing => pricing.remove()));
   await post.remove();
 
   ctx.body = { success: true }; 
+}
+
+
+export async function info(ctx) {
+  if (ctx.isUnauthenticated()) {
+    ctx.redirect("/login");
+    return;
+  }
+
+  try { 
+    if (ctx.params.id === undefined) {
+      const orders = await Order.find()
+        .sort({date: -1})
+        .limit(10)
+        .populate({path: 'items.item', select: "-pricings"})
+        .populate({path: 'items.pricing'});
+
+      ctx.body = { orders };
+
+    } else {
+      const order = await Order.findById(ctx.params.id)
+          .populate({path: 'items.item', select: "-pricings"})
+          .populate({path: 'items.pricing'});
+      if (! order ) {
+        throw new Error('no order for id');
+      }
+
+      ctx.body = { order };
+    }
+
+  } catch (err) {
+    ctx.throw(404, 'no order found');
+  }
 }

@@ -38,23 +38,25 @@ class AdminView extends connect(store)(PageViewElement) {
           font-weight: bold;
         }
 
-        button {
-          border: 2px solid black;
-          border-radius: 3px;
-          padding: 8px 16px;
-        }
-
         @media screen and (max-width: 725px) {
-          table tbody tr td:nth-child(1):before { content: "Icon"; }
-          table tbody tr td:nth-child(2):before { content: "Post ID"; }
-          table tbody tr td:nth-child(3):before { content: "Title"; }
-          table tbody tr td:nth-child(4):before { content: "Description"; }
-          table tbody tr td:nth-child(5):before { content: "Active"; }
-          table tbody tr td:nth-child(6):before { content: "Delete"; }
+          #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
+          #section-artwork table tbody tr td:nth-child(2):before { content: "Post ID"; }
+          #section-artwork table tbody tr td:nth-child(3):before { content: "Title"; }
+          #section-artwork table tbody tr td:nth-child(4):before { content: "Description"; }
+          #section-artwork table tbody tr td:nth-child(5):before { content: "Active"; }
+          #section-artwork table tbody tr td:nth-child(6):before { content: "Delete"; }
+
+          #section-orders table tbody tr td:nth-child(1):before { content: "Customer"; }
+          #section-orders table tbody tr td:nth-child(2):before { content: "Total"; }
+          #section-orders table tbody tr td:nth-child(3):before { content: "Items"; }
+          #section-orders table tbody tr td:nth-child(4):before { content: "Payment Type"; }
+          #section-orders table tbody tr td:nth-child(5):before { content: "Status"; }
+          #section-orders table tbody tr td:nth-child(6):before { content: "Order ID"; }
         }
       </style>
-      <section>
-        <h2>Admin View</h2>
+      <h2>Admin View</h2>
+      <section id="section-artwork">
+        <h3>Posted Artwork</h3>
         <div class="limiter">
           <div class="container-table100">
             <div class="wrap-table100">
@@ -79,7 +81,7 @@ class AdminView extends connect(store)(PageViewElement) {
                         <td class="column4">${post.description}</td>
                         <td class="column5">${post.active}</td>
                         <td class="column6">
-                          <button @click="${(e) => { this.deleteItem(post._id); e.stopPropagation(); }}">Delete</button>
+                          <button @click="${(e) => { this.deleteItem(post.slug); e.stopPropagation(); }}">Delete</button>
                         </td>
                       </tr>`
                     )}
@@ -91,7 +93,43 @@ class AdminView extends connect(store)(PageViewElement) {
         </div>
       <a href="/admin/new"><button>New Posting</button></a>
       </section>
-    `
+
+      <section id="section-orders">
+      <h3>Order History</h3>
+        <div class="limiter">
+          <div class="container-table100">
+            <div class="wrap-table100">
+              <div class="table100">
+                <table>
+                  <thead>
+                    <tr class="table100-head">
+                      <th class="column1">Customer</th>
+                      <th class="column2">Total</th>
+                      <th class="column3">Items</th>
+                      <th class="column4">Payment Type</th>
+                      <th class="column5">Status</th>
+                      <th class="column6">Order ID</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${this._orders.map(order => html`
+                      <tr @click="${() => store.dispatch(navigate(`/admin/orders/${order._id}`))}">
+                        <td class="column1">${order.customer.name}</td>
+                        <td class="column2">${(order.totalCents / 100).toFixed(2)}</td>
+                        <td class="column3">${order.items.reduce((count, {quantity}) => count + quantity, 0)}</td>
+                        <td class="column4">${order.type}</td>
+                        <td class="column5">${order.status}</td>
+                        <td class="column6">${order._id}</td>
+                      </tr>`
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
   }
 
   stateChanged(newState) {
@@ -100,13 +138,23 @@ class AdminView extends connect(store)(PageViewElement) {
 
   static get properties() {
     return {
-      _postings: {}
+      _postings: { type: Object, attribute: false },
+      _orders: { type: Array, attribute: false }
     }
   }
 
-  async firstUpdated() {
+  constructor() {
+    super();
     this._postings = {};
+    this._orders = [];
+  }
+
+  async firstUpdated() {
     store.dispatch(getAllProducts());
+
+    const response = await fetch(`${process.env.API_URL}/orders/`);
+    const { orders } = await response.json();
+    this._orders = orders;
   }
 
   async sendItem() {

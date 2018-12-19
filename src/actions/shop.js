@@ -28,28 +28,37 @@ export const getAllProducts = () => async (dispatch) => {
 
   dispatch({
     type: GET_PRODUCTS,
-    payload: { products } 
+    payload: { products }
   });
 };
 
-export const checkout = (params, mount) => async dispatch => {
+export const checkoutStripe = (card, { amount, metadata }) => async dispatch => {
 
-  const query = Object.entries(params).map(([key, value]) => {
-    return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-  }).join('&');
-
-  const response = await fetch(`${process.env.API_URL}/checkout/intent?${query}`);
-  const reply = await response.json();
-  const clientSecret = reply.client_secret;
-
-  const stripe = Stripe(process.env.STRIPE_PK, {
-    betas: ['payment_intent_beta_3']
+  const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
+    method: "POST",
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify({amount, metadata})
   });
 
+  const { client_secret } = await response.json();
+
+  const stripe = process.stripe;
+  if (!stripe) {
+    dispatch(checkoutFailed(`Sorry. Stripe hasn't loaded. Try again?`));
+    return;
+  }
+
   try {
-    const result = await stripe.handleCardPayment(clientSecret, mount);
-    if (result.error) {
-      throw result.error;
+    const { error } = await stripe.handleCardPayment(
+      client_secret, card, {
+        source_data: {
+          owner: { name: metadata.customer.name }
+        }
+      }
+    );
+
+    if (error) {
+      throw error;
     }
 
     dispatch({
@@ -61,6 +70,28 @@ export const checkout = (params, mount) => async dispatch => {
       type: CHECKOUT_FAILURE,
       payload: { error }
     });
+  }
+};
+
+export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
+  const response = await fetch(`${process.env.API_URL}/etransfer/checkout`, {
+    method: "POST",
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify({amount, metadata})
+  });
+
+  const reply = await response.json();
+
+  dispatch({
+    type: CHECKOUT_SUCCESS,
+    payload: { message: 'Your order has been submitted' }
+  });
+};
+
+export const checkoutFailed = message => {
+  return {
+    type: CHECKOUT_FAILURE,
+    payload: { error: { message } }
   }
 };
 
