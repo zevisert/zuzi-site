@@ -3,25 +3,8 @@ import request from 'request';
 import prpl from 'prpl-server';
 
 import dotenv from 'dotenv';
+import { User } from './models';
 dotenv.config({path: 'server/process.env'});
-
-/* 
-===================================== API ROUTES ==========================================
-|   NAME   |     PATH            |   HTTP VERB     |            PURPOSE                   |
-|----------|---------------------|-----------------|--------------------------------------| 
-| Index    | /artwork            |      GET        | Lists all artwork                    |
-| Create   | /artwork            |      POST       | Creates a new artwork posting        |
-| Show     | /artwork/:slug      |      GET        | Shows one specified artwork post     |
-| Update   | /artwork/:slug      |      PUT        | Updates a particular artwork post    |
-| Destroy  | /artwork/:slug      |      DELETE     | Deletes a particular artwork post    |
-
-==================================== FRONTEND ROUTES ======================================
-|   NAME   |     PATH            |   HTTP VERB     |            PURPOSE                   |
-|----------|---------------------|-----------------|--------------------------------------| 
-| New      | /artwork/new        |      GET        | Preps form for new artwork entry     |
-| Edit     | /artwork/:slug/edit |      GET        | Preps info for an artwork edit       |
-*/
-
 
 export const db_connect = (server) => {
     
@@ -31,6 +14,12 @@ export const db_connect = (server) => {
             pass: process.env.MONGO_PW,
             useNewUrlParser: true
         });
+
+        if ((await User.countDocuments({admin: true})) < 1) {
+            const user = new User({ email: process.env.SITE_ADMIN_EMAIL, admin: true});
+            await user.setPassword(process.env.SITE_ADMIN_DEFAULTPW);
+            await user.save();
+        }
     }
     
     server.context.db = mongoose.connection;      
@@ -47,7 +36,7 @@ let page_pipe;
 
 export const isProtected = async (ctx, next) => {
     if (ctx.path.match(/^\/admin/) && ctx.isUnauthenticated()) {
-        ctx.redirect('/login', 401);
+        ctx.redirect(`/login?referrer=${ctx.path}`, 401);
     } else {
         await next();
     }
