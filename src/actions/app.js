@@ -13,6 +13,8 @@ import * as appStr from "../components/zuzi-app/strings.js";
 export const UPDATE_PAGE = 'UPDATE_PAGE';
 export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_CREDENTIALS = 'UPDATE_CREDENTIALS';
+export const SHOW_SNACKBAR = 'SHOW_SNACKBAR';
+export const HIDE_SNACKBAR = 'HIDE_SNACKBAR';
 
 export const navigate = path => dispatch => {
 
@@ -92,7 +94,7 @@ export const updateLayout = wide => (dispatch, getState) => {
   console.log(`The window changed to a ${wide ? 'wide' : 'narrow'} layout`);
 };
 
-export const login =  ({email, password}) => async (dispatch, getState) => {
+export const login = ({email, password}) => async (dispatch, getState) => {
 
   try {
 
@@ -107,6 +109,9 @@ export const login =  ({email, password}) => async (dispatch, getState) => {
     });
 
     const response = await loginReq.json();
+    if (response.error) {
+      throw new Error(response.error);
+    }
 
     const params = (new URL(document.location)).searchParams;
     const path = params.has('referrer') ? params.get('referrer') : '/admin';
@@ -117,7 +122,7 @@ export const login =  ({email, password}) => async (dispatch, getState) => {
     }
 
   } catch (err) {
-    console.error(err);
+    dispatch(showSnackbar(err.message));
   }
 };
 
@@ -128,5 +133,27 @@ export const credentials = credentials => {
     payload: {
       credentials
     }
-  }
+  };
 };
+
+export const showSnackbar = message => {
+  if (message) {
+    return {
+      type: SHOW_SNACKBAR,
+      payload: {
+        message
+      }
+    };
+  } else {
+    throw new Error('No snackbar message');
+  }
+}
+
+export const hideSnackbar = () => {
+  return {
+    type: HIDE_SNACKBAR,
+    payload: {
+
+    }
+  }
+}

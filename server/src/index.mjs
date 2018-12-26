@@ -60,7 +60,7 @@ const loginRoutes = (new router({prefix: '/auth'}))
   .post('/login', passport.authenticate('local', { successRedirect: 'whoami', failureRedirect: 'failed' }))
   .get('/logout', async ctx => { ctx.logout(); ctx.redirect("/login"); })
   .get('/whoami', async ctx => ctx.body = JSON.stringify(ctx.state.user))
-  .get('/failed', async ctx => ctx.body = { error: 'failed login' })
+  .get('/failed', async ctx => ctx.body = { error: 'Authentication Failed' })
   .get('/users',  async ctx => ctx.body = { users: await User.find({}).exec() } );
     
 const apiRoutes = (new router())

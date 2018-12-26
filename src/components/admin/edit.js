@@ -21,7 +21,7 @@ import { getAllProducts } from '../../actions/shop.js';
 import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
-import { navigate } from '../../actions/app.js';
+import { navigate, showSnackbar } from '../../actions/app.js';
 
 import '../underline-input.js';
 import './pricing-form.js';
@@ -222,13 +222,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
       image: this.__els.file.files[0]
     };
 
-    console.log(data);
-
     if (this.item._id === null) {
       store.dispatch(createItem(data));
     } else {
       store.dispatch(editItem(this.item.slug, data));
     }
+
+    store.dispatch(showSnackbar('Item saved'));
   }
 
   pricingAdded(e) {

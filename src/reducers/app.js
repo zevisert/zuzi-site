@@ -11,12 +11,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import {
   UPDATE_PAGE,
   UPDATE_OFFLINE,
-  UPDATE_CREDENTIALS
+  UPDATE_CREDENTIALS,
+  SHOW_SNACKBAR,
+  HIDE_SNACKBAR
 } from '../actions/app.js';
 
 const INITIAL_STATE = {
   page: '',
-  offline: false
+  offline: false,
+  snackbar: {
+    active: false,
+    message: ''
+  }
 };
 
 const app = (state = INITIAL_STATE, action) => {
@@ -32,14 +38,40 @@ const app = (state = INITIAL_STATE, action) => {
         ...state,
         offline: action.payload.offline
       };
-    case UPDATE_CREDENTIALS: 
+    case UPDATE_CREDENTIALS:
       return {
         ...state,
         credentials: action.payload.credentials
-      }
+      };
+    case SHOW_SNACKBAR:
+    case HIDE_SNACKBAR:
+      return {
+        ...state,
+        snackbar: snackbar(state.snackbar, action)
+      };
     default:
       return state;
   }
 };
 
 export default app;
+
+
+const snackbar = (state, action) => {
+  switch (action.type) {
+    case SHOW_SNACKBAR:
+      return {
+        active: true,
+        message: action.payload.message
+      };
+    case HIDE_SNACKBAR:
+      return {
+        active: false,
+        message: ''
+      };
+    default:
+      return {
+        ...state
+      };
+  }
+};

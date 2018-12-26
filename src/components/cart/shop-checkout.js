@@ -5,7 +5,9 @@ import { store } from '../../store.js';
 
 // These are the actions needed by this element.
 import { checkoutEtransfer, checkoutStripe, checkoutFailed } from '../../actions/shop.js';
+import { showSnackbar } from '../../actions/app.js';
 import { cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
+
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedStyles } from '../shared-styles.js';
 
@@ -149,10 +151,10 @@ export class ShopCheckout extends connect(store)(LitElement) {
           metadata
         }));
       } else {
-        store.dispatch(checkoutFailed('Sorry. Unknown payment type.'));
+        store.dispatch(showSnackbar('Sorry. Unknown payment type.'));
       }
     } else {
-      store.dispatch(checkoutFailed('Please review the input fields in red'));
+      store.dispatch(showSnackbar('Please review the input fields in red'));
     }
   }
 
