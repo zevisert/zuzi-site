@@ -53,7 +53,7 @@ export async function webhook(ctx) {
   console.log({ accepted, orderId });
 
   const order = await Order.findById(orderId)
-    .populate({path: 'items.item', select: "title description"})
+    .populate({path: 'items.item', select: "title description preview"})
     .populate({path: 'items.pricing'});
 
   if (accepted) {
@@ -76,7 +76,7 @@ export async function webhook(ctx) {
       // Email the customer
       await email.deliver(orderRejectedTemplate(order, ctx.request.body.reason)); 
 
-      ctx.body = { order };
+      ctx.body = { orders: [ order ] };
     } else {
       ctx.throw(400, 'Rejected order must have a reason');
     }

@@ -122,7 +122,7 @@ class ZuziApp extends connect(store)(LitElement) {
     <footer>
       <span>
         ${this._loggedIn ?
-          html`<a href="/admin">Edit</a> <a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>` :
+          html`<a href="/admin">Admin Page</a> | <a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>` :
           html`<a href="/login">Login</a>`
         }
       </span>
@@ -145,6 +145,8 @@ class ZuziApp extends connect(store)(LitElement) {
     installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
     installMediaQueryWatcher(`(min-width: 460px)`,
         (matches) => store.dispatch(updateLayout(matches)));
+
+    Sentry.init({ dsn: process.env.SENTRY_DSN });
 
     if (sessionStorage.getItem('credentials')) {
       store.dispatch(credentials(JSON.parse(sessionStorage.getItem('credentials'))));

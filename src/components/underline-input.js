@@ -108,7 +108,7 @@ export class UnderlineInput extends LitElement {
   }
 
   __updateValue(e) {
-    const [target] = e.path;
+    const target = e.target;
     this.value = target.value;
   }
 

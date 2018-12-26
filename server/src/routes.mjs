@@ -26,9 +26,9 @@ export async function notFound(ctx, next) {
 
 export async function index(ctx) {
 
-  let opts = {};
+  let opts = { deletedOn: null };
   if (ctx.isUnauthenticated()) {
-    opts = {...opts, active: true};
+    opts = {...opts, active: true };
   }
 
   const posts = await Post.find(opts).exec();
@@ -85,8 +85,14 @@ export async function create(ctx) {
 }
 
 export async function show(ctx) {
+
+  let opts = { deletedOn: null };
+  if (ctx.isUnauthenticated()) {
+    opts = {...opts, active: true };
+  }
+
   const slug = ctx.params.slug;
-  const post = await Post.findOne({slug}).exec();
+  const post = await Post.findOne({slug, ...opts}).exec();
   if (!post) ctx.throw(404, { error: 'invalid post slug' });
 
   ctx.body = { post };
@@ -152,9 +158,10 @@ export async function destroy(ctx) {
   }
 
   const slug = ctx.params.slug;
-  const post = await Post.findOne({slug});
+  const post = await Post.findOne({slug}).select('+deletedOn').exec();
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
+  console.info(post);
 
   const [pathToDel, ...rest] = del.sync(path.join(uploadDir, post.preview), {dryRun: true});
   
@@ -165,8 +172,12 @@ export async function destroy(ctx) {
     }
   }
 
-  await Promise.all(post.pricings.map(pricing => pricing.remove()));
-  await post.remove();
+  post.preview = null;
+  post.active = false;
+  post.slug = `del_${post._id}`;
+  post.deletedOn = Date.now();
+  post.markModified('deletedOn');
+  await post.save();
 
   ctx.body = { success: true }; 
 }
@@ -196,7 +207,7 @@ export async function info(ctx) {
         throw new Error('no order for id');
       }
 
-      ctx.body = { order };
+      ctx.body = { orders: [ order ] };
     }
 
   } catch (err) {

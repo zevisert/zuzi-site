@@ -16,10 +16,14 @@ import { SharedStyles } from '../shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
 import { getAllProducts } from '../../actions/shop.js';
-import { deleteItem, createItem } from '../../actions/admin.js';
+import { deleteItem, createItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 import { navigate } from '../../actions/app.js';
+
+import { admin } from '../../reducers/admin.js';
+
+store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {
   render() {
@@ -112,7 +116,7 @@ class AdminView extends connect(store)(PageViewElement) {
                     </tr>
                   </thead>
                   <tbody>
-                    ${this._orders.map(order => html`
+                    ${Object.values(this._orders).map(order => html`
                       <tr @click="${() => store.dispatch(navigate(`/admin/orders/${order._id}`))}">
                         <td class="column1">${order.customer.name}</td>
                         <td class="column2">${(order.totalCents / 100).toFixed(2)}</td>
@@ -134,6 +138,7 @@ class AdminView extends connect(store)(PageViewElement) {
 
   stateChanged(newState) {
     this._postings = newState.shop.products;
+    this._orders = newState.admin.orders;
   }
 
   static get properties() {
@@ -151,10 +156,7 @@ class AdminView extends connect(store)(PageViewElement) {
 
   async firstUpdated() {
     store.dispatch(getAllProducts());
-
-    const response = await fetch(`${process.env.API_URL}/orders/`);
-    const { orders } = await response.json();
-    this._orders = orders;
+    store.dispatch(getOrders());
   }
 
   async sendItem() {
