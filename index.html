@@ -83,10 +83,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           API_URL: '/api/v1',
           STRIPE_PK: 'pk_test_yxuk5TGt3veufuAvM4mo4vJF',
           ETRANSFER_EMAIL: 'etransfer@zuzi.art',
-          ETRANSFER_PW: 'lookinggood'
+          ETRANSFER_PW: 'lookinggood',
+          SENTRY_DSN: 'https://d8e96cd4d8ed4dfebfb74350dd304e3a@sentry.io/1360131'
         },
         stripe: null
-    };
+      };
     </script>
 
     <!-- Add any global styles for body, document, etc. -->
@@ -111,6 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     <!-- Any external scripts -->
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://browser.sentry-cdn.com/4.4.2/bundle.min.js" crossorigin="anonymous"></script>
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>

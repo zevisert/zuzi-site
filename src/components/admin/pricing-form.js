@@ -89,9 +89,9 @@ export class AdminPricingForm extends LitElement {
 
   _onChange(name, e) {
     if (['width', 'height'].includes(name)) {
-      this.pricing.size[name] = e.path[0].value;
+      this.pricing.size[name] = e.target.value;
     } else {
-      this.pricing[name] = e.path[0].value;
+      this.pricing[name] = e.target.value;
     }
   }
 

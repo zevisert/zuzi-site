@@ -9,6 +9,10 @@ import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
 import '../underline-input.js';
+import { processEtransfer, getOrders } from '../../actions/admin.js';
+import { admin, orderSelector } from '../../reducers/admin.js';
+
+store.addReducers({ admin });
 
 class AdminConfirm extends connect(store)(PageViewElement) {
   render() {
@@ -28,6 +32,10 @@ class AdminConfirm extends connect(store)(PageViewElement) {
           background-color: gray;
           color: white;
           font-weight: bold;
+        }
+
+        tbody tr:hover {
+          cursor: initial;
         }
 
         @media screen and (max-width: 725px) {
@@ -93,7 +101,7 @@ class AdminConfirm extends connect(store)(PageViewElement) {
                         <td class="column3">${quantity}</td>
                         <td class="column4">${pricing.size.width} x ${pricing.size.height} ${pricing.size.unit}</td>
                         <td class="column5">${pricing.medium}</td>
-                        <td class="column6">$ ${pricing.price.toFixed(2)}</td>
+                        <td class="column6">${pricing.price ? `$${pricing.price.toFixed(2)}` : "$---"}</td>
                       </tr>`
                     )}
                   </tbody>
@@ -110,12 +118,16 @@ class AdminConfirm extends connect(store)(PageViewElement) {
 
     if (state.app.page === 'admin' && state.app.subPage) {
       const [route, orderId] = state.app.subPage.split('/');
-      if (route !== 'orders') {
+      if (orderId !== undefined && route !== 'orders') {
         throw new Error('Something wrong in /admin/orders navigation');
       }
 
-      if (this._order._id !== orderId) {
-        this._fetchOrder(orderId);
+      const order = orderSelector(orderId)(state);
+      if (order === undefined) {
+        store.dispatch(getOrders(orderId));
+      } else {
+        this._order = order;
+        this.requestUpdate('order');
       }
     }
   }
@@ -131,13 +143,6 @@ class AdminConfirm extends connect(store)(PageViewElement) {
     super();
     this._order = { items: [] };
     this._rejecting = false;
-  }
-
-  async _fetchOrder(orderId) {
-    const response = await fetch(`${process.env.API_URL}/orders/${orderId}`);
-    const { order } = await response.json();
-
-    this._order = order;
   }
 
   async _processOrder(accepted) {
@@ -160,18 +165,11 @@ class AdminConfirm extends connect(store)(PageViewElement) {
       }
     }
 
-    const response = await fetch(`${process.env.API_URL}/etransfer/webhook`, {
-      method: "POST",
-      headers: new Headers({'content-type': 'application/json'}),
-      body: JSON.stringify({
-        accepted,
-        orderId: this._order._id,
-        reason
-      })
-    });
-
-    const { order } = await response.json();
-    this._order = order;
+    store.dispatch(processEtransfer({
+      accepted,
+      orderId: this._order._id,
+      reason
+    }));
   }
 }
 

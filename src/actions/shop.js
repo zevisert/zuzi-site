@@ -18,7 +18,9 @@ export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
   // that by dispatching an async action (that you would dispatch when you
   // succesfully got the data back)
-  const response = await fetch(`${process.env.API_URL}/artwork`);
+  const response = await fetch(`${process.env.API_URL}/artwork`, {
+    credentials: "same-origin"
+  });
 
   // You could reformat the data in the right format as well:
   const products = (await response.json()).posts.reduce((obj, product) => {
@@ -36,6 +38,7 @@ export const checkoutStripe = (card, { amount, metadata }) => async dispatch => 
 
   const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
     method: "POST",
+    credentials: "same-origin",
     headers: new Headers({'content-type': 'application/json'}),
     body: JSON.stringify({amount, metadata})
   });
@@ -76,6 +79,7 @@ export const checkoutStripe = (card, { amount, metadata }) => async dispatch => 
 export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
   const response = await fetch(`${process.env.API_URL}/etransfer/checkout`, {
     method: "POST",
+    credentials: "same-origin",
     headers: new Headers({'content-type': 'application/json'}),
     body: JSON.stringify({amount, metadata})
   });

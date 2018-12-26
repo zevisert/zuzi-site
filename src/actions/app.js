@@ -98,8 +98,8 @@ export const login =  ({email, password}) => async (dispatch, getState) => {
 
     const loginReq = await fetch(`${window.process.env.API_URL}/auth/login`, {
       method: 'POST',
+      credentials: 'same-origin',
       headers: new Headers({'content-type': 'application/json'}),
-      credentials: 'include',
       body: JSON.stringify({
         email,
         password

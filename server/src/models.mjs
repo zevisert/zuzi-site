@@ -25,7 +25,8 @@ export const postSchema = new mongoose.Schema({
     description: String,
     active: Boolean,
     preview: String,
-    pricings: [pricingSchema]
+    pricings: [pricingSchema],
+    deletedOn: { type: Date, default: null, select: false }
 });
 export const Post = mongoose.model('Post', postSchema);
 
