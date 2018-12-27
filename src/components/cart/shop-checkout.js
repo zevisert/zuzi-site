@@ -5,7 +5,6 @@ import { store } from '../../store.js';
 
 // These are the actions needed by this element.
 import { checkoutEtransfer, checkoutStripe, checkoutFailed } from '../../actions/shop.js';
-import { showSnackbar } from '../../actions/app.js';
 import { cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
 
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -26,12 +25,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
           padding: 10px;
           box-shadow: 0 0 3px 0px rgba(0,0,0,0.1);
         }
-
-        .card-errors {
-          color: #d32f2f;
-          font-weight: bold;
-        }
-
       </style>
       <section>
         <underline-input type="text"  id="cust-name"         placeholder="Name${this._paymentMethod === "stripe" ? ' on card' : ''}"></underline-input>
@@ -80,14 +73,12 @@ export class ShopCheckout extends connect(store)(LitElement) {
         <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
           Checkout
         </button>
-        <div class="card-errors">${this._error.message}</div>
       </section>
     `;
   }
 
   static get properties() { return {
     _items: { type: Array },
-    _error: { type: String },
     _totalCents: { type: Number },
     _quantity: { type: Number },
     _paymentMethod: { type: String }
@@ -151,10 +142,10 @@ export class ShopCheckout extends connect(store)(LitElement) {
           metadata
         }));
       } else {
-        store.dispatch(showSnackbar('Sorry. Unknown payment type.'));
+        store.dispatch(checkoutFailed('Sorry. Unknown payment type.'));
       }
     } else {
-      store.dispatch(showSnackbar('Please review the input fields in red'));
+      store.dispatch(checkoutFailed('Please review the input fields in red'));
     }
   }
 
@@ -218,7 +209,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
   }
 
   stateChanged(state) {
-    this._error = state.shop.error;
     this._items = state.shop.cart;
     this._totalCents = parseInt(100 * cartTotalSelector(state));
     this._quantity = cartQuantitySelector(state);

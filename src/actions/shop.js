@@ -79,11 +79,12 @@ export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
   dispatch(showSnackbar('Your order has been submitted.'));
 };
 
-export const checkoutFailed = message => {
-  return {
+export const checkoutFailed = message => async dispatch => {
+  dispatch(showSnackbar(message));
+  dispatch({
     type: CHECKOUT_FAILURE,
     payload: { error: { message } }
-  }
+  });
 };
 
 export const addToCart = (productId, pricing) => (dispatch, getState) =>{
