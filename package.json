@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@koa/cors": "^2.2.2",
+    "@material/mwc-icon": "^0.3.4",
     "@polymer/lit-element": "^0.6.4",
     "@webcomponents/webcomponentsjs": "^2.2.1",
     "cors": "^2.8.5",
@@ -55,6 +56,7 @@
     "axe-core": "^3.0.0",
     "chai": "^4.2.0",
     "del": "^3.0.0",
+    "eslint": "^5.11.0",
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-nodemon": "^2.4.2",

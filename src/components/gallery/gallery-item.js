@@ -11,10 +11,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { html } from '@polymer/lit-element';
 import { connect } from 'pwa-helpers/connect-mixin';
 import { PageViewElement } from '../page-view-element';
-
 import { store } from "../../store.js";
-import { selectedItemSelector } from '../../reducers/shop';
+
 import { getAllProducts, addToCart } from '../../actions/shop';
+import { showSnackbar } from '../../actions/app';
+import { selectedItemSelector } from '../../reducers/shop';
+
 import { ButtonSharedStyles } from '../button-shared-styles';
 
 
@@ -51,7 +53,7 @@ class GalleryItem extends connect(store)(PageViewElement) {
             <div>${pricing.medium}</div>
             <div>${pricing.size.width}x${pricing.size.height} ${pricing.size.unit}</div>
 
-            <button @click="${() => store.dispatch(addToCart(this.item._id, pricing))}">Add to cart</button>
+            <button @click="${() => this._addToCart(this.item._id, pricing)}">Add to cart</button>
           </div>
         `)}
       </div>
@@ -75,6 +77,11 @@ class GalleryItem extends connect(store)(PageViewElement) {
   connectedCallback() {
     super.connectedCallback();
     store.dispatch(getAllProducts());
+  }
+
+  _addToCart(id, pricing){
+    store.dispatch(showSnackbar("Added to cart"));
+    store.dispatch(addToCart(id, pricing));
   }
 
   stateChanged(state) {

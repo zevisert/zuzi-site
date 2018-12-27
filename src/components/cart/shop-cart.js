@@ -20,6 +20,7 @@ import '../gallery/gallery-list-item.js';
 
 // These are the actions needed by this element.
 import { removeFromCart } from '../../actions/shop.js';
+import { showSnackbar } from '../../actions/app.js';
 
 // These are the reducers needed by this element.
 import { cartItemsSelector, cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
@@ -60,10 +61,10 @@ class ShopCart extends connect(store)(LitElement) {
   static get properties() { return {
     _items: { type: Array },
     _total: { type: Number }
-
   }}
 
   _removeButtonClicked(key) {
+    store.dispatch(showSnackbar("Removed from cart"));
     store.dispatch(removeFromCart(key));
   }
 
