@@ -44,7 +44,7 @@ gulp.task('server:dev', () => {
             }
         );
 
-        node.on('close', function (code) {
+        node.on('close', code => {
             if (code === 8) {
                 log(console.warn, 'Error detected, waiting for changes...', 'gulpfile');
             } else {
@@ -59,7 +59,7 @@ gulp.task('server:dev', () => {
     });
 });
 
-gulp.task('server:pipe', async () => {
+gulp.task('server:pipe', () => {
     return new Promise((resolve, reject) => {
         const serve = spawn('npx', ['polymer', 'serve']);
 
