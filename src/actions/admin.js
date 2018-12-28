@@ -89,8 +89,10 @@ export const getOrders = (orderId = '') => async (dispatch, getState) => {
     const { orders: ordersList } = await response.json();
 
     const orders = ordersList.reduce((obj, product) => {
-      obj[product._id] = product;
-      return obj;
+      return {
+        ... obj,
+        [product._id]: product
+      };
     }, {});
 
     dispatch({
@@ -120,8 +122,10 @@ export const processEtransfer = ({ accepted=false, orderId='', reason=undefined}
   const { orders: ordersList } = await response.json();
 
   const orders = ordersList.reduce((obj, product) => {
-    obj[product._id] = product;
-    return obj;
+    return {
+      ... obj,
+      [product._id]: product
+    };
   }, {});
 
   dispatch({
