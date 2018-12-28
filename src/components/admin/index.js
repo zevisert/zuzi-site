@@ -85,7 +85,7 @@ class AdminView extends connect(store)(PageViewElement) {
                         <td class="column4">${post.description}</td>
                         <td class="column5">${post.active}</td>
                         <td class="column6">
-                          <button @click="${(e) => { this.deleteItem(post.slug); e.stopPropagation(); }}">Delete</button>
+                          <button @click="${(e) => { e.stopPropagation(); this.deleteItem(post.slug); }}">Delete</button>
                         </td>
                       </tr>`
                     )}

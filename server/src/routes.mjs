@@ -161,8 +161,7 @@ export async function destroy(ctx) {
   const post = await Post.findOne({slug}).select('+deletedOn').exec();
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
-  console.info(post);
-
+  
   const [pathToDel, ...rest] = del.sync(path.join(uploadDir, post.preview), {dryRun: true});
   
   if (pathToDel && rest.length === 0) {

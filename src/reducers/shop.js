@@ -66,7 +66,7 @@ const shop = (state = INITIAL_STATE, action) => {
         ...state,
         products: Object.entries(state.products)
           .filter(([key, value]) => value.slug !== action.payload.slug)
-          .reduce((obj, [key, value]) => obj[key] = value, {})
+          .reduce((obj, [key, value]) => { return { ...obj, [key]: value } }, {})
       };
     case ADMIN_UPDATE_ITEM:
       return {
