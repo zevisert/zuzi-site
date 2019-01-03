@@ -29,10 +29,6 @@ class Gallery extends connect(store)(PageViewElement) {
       ${ButtonSharedStyles}
 
       <section>
-        <h2>Gallery</h2>
-
-      </section>
-      <section>
         <gallery-list></gallery-list>
       </section>
     `;

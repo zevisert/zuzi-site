@@ -44,7 +44,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
               checked
               @change="${e => this._radioChange(e)}"
               >
-            <label for="stripe">Stripe</label>
+            <label for="stripe">By with card</label>
           </div>
 
           <div>
@@ -63,8 +63,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
               </div>`
           : html`
               <section>
-                Continue with Interac E-Transfer. Send <code>${(this._totalCents / 100).toFixed(2)}</code> to
-                <code>${process.env.ETRANSFER_EMAIL}</code>, and use the password <code>${process.env.ETRANSFER_PW}</code>.
+                Continue with Interac E-Transfer. Instructions will be emailed to you.
                 Your order will be confirmed when the E-Transfer is completed.
               </section>
           `}

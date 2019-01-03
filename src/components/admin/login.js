@@ -25,30 +25,18 @@ class LoginView extends PageViewElement {
       ${SharedStyles}
       ${ButtonSharedStyles}
       <style>
-        .form {
+        section {
           display: grid;
-          grid-template-columns: 100%;
-        }
-
-        .form input,
-        .form button {
-          max-width: 180px;
+          grid-auto-rows: minmax(min-content, max-content);
+          justify-content: center;
+          grid-row-gap: 5px;
         }
       </style>
       <section>
         <h2>Admin Login</h2>
-        <div class="form">
-          <label for="email">Email</label>
-          <underline-input id="email" type="email" placeholder="Email">
-        </div>
-        <div class="form">
-          <label for="password">Password</label>
-          <underline-input id="password" type="password" placeholder="Password">
-        </div>
-        <button
-          @click="${this._submitForm}">
-          Login
-        </button>
+        <underline-input id="email" type="email" placeholder="Email"></underline-input>
+        <underline-input id="password" type="password" placeholder="Password"></underline-input>
+        <button @click="${this._submitForm}">Login</button>
       </section>
     `;
   }

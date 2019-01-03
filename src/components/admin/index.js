@@ -37,14 +37,14 @@ class AdminView extends connect(store)(PageViewElement) {
         }
 
         .table100-head {
-          background-color: gray;
-          color: white;
+          color: black;
+          border: 2px solid black;
           font-weight: bold;
         }
 
         @media screen and (max-width: 725px) {
           #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
-          #section-artwork table tbody tr td:nth-child(2):before { content: "Post ID"; }
+          #section-artwork table tbody tr td:nth-child(2):before { content: "Public URL"; }
           #section-artwork table tbody tr td:nth-child(3):before { content: "Title"; }
           #section-artwork table tbody tr td:nth-child(4):before { content: "Description"; }
           #section-artwork table tbody tr td:nth-child(5):before { content: "Active"; }
@@ -69,7 +69,7 @@ class AdminView extends connect(store)(PageViewElement) {
                   <thead>
                     <tr class="table100-head">
                       <th class="column1">Icon</th>
-                      <th class="column2">Post ID</th>
+                      <th class="column2">Public URL</th>
                       <th class="column3">Title</th>
                       <th class="column4">Description</th>
                       <th class="column5">Active</th>
@@ -80,7 +80,7 @@ class AdminView extends connect(store)(PageViewElement) {
                     ${Object.values(this._postings).map(post => html`
                       <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
                         <td class="column1"><img src="/uploads/${post.preview}"></td>
-                        <td class="column2">${post._id}</td>
+                        <td class="column2">https://zuzi.art/gallery/${post.slug}</td>
                         <td class="column3">${post.title}</td>
                         <td class="column4">${post.description}</td>
                         <td class="column5">${post.active}</td>

@@ -20,7 +20,6 @@ export const ButtonSharedStyles = html`
     cursor: pointer;
 
     border: 2px solid black;
-    border-radius: 3px;
     padding: 8px 16px;
   }
 </style>

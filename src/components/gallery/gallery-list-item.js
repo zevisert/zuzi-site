@@ -18,44 +18,69 @@ class GalleryListItem extends connect(store)(LitElement) {
   render() {
     return html`
       <style>
-        .card {
-          box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-          transition: 0.3s;
-          margin: 1em;
-          max-height: 30vh;
+
+        :host {
+          --tile-bg: rgba(256, 0, 0, 0.6);
         }
 
-        .card:hover {
-          box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        .tile {
+          position: relative;
         }
 
-        .card .img {
+        .tile:hover {
+          --tile-bg: transparent;
+        }
+
+        .tile .img {
           overflow: hidden;
           max-height: calc(30vh - 2em);
         }
-        
-        .card .img img {
+
+        .tile .img img {
           width: 100%;
         }
 
-        .container {
-          padding: 2px 16px;
+        .tile .img img:hover { }
+
+        header {
+          position: absolute;
+          color: white;
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          justify-content: center;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: var(--tile-bg);
         }
 
-        .container span {
-          text-transform: capitalize;
+        h2 {
+          padding-left: 40px;
+        }
+
+        h2::after {
+          content: '';
+          background-color: white;
+          height: 2px;
+          width: 100px;
+          margin-top: 2em;
+          display: block;
+        }
+
+        header p {
+          padding-left: 40px;
         }
 
       </style>
-      <div class="card">
+      <div class="tile">
         <div class="img">
           <img src="/uploads/${this.item.preview}">
         </div>
-        <div class="container">
-          <span>${this.item.title}</span>
-        </div>
+        <header class="major">
+          <h2>${this.item.title}</h2>
+          <p>${this.item.description}</p>
+        </header>
       </div>
     `;
   }

@@ -29,36 +29,66 @@ class GalleryList extends connect(store)(LitElement) {
     return html`
       ${ButtonSharedStyles}
       <style>
-        :host { 
+        :host {
+
+        }
+
+        .tiles {
           display: grid;
           grid-template-columns: 1fr;
           max-width: 1600px;
         }
 
+        .tiles gallery-list-item:nth-child(6n - 5) {
+          --tile-bg: #6fc3dfE0;
+        }
+
+        .tiles gallery-list-item:nth-child(6n - 4) {
+          --tile-bg: #8d82c4E0;
+        }
+
+        .tiles gallery-list-item:nth-child(6n - 3) {
+          --tile-bg: #ec8d81E0;
+        }
+
+        .tiles gallery-list-item:nth-child(6n - 2) {
+          --tile-bg: #e7b788E0;
+        }
+
+        .tiles gallery-list-item:nth-child(6n - 1) {
+          --tile-bg: #8ea9e8E0;
+        }
+
+        .tiles gallery-list-item:nth-child(6n) {
+          --tile-bg: #87c5a4E0;
+        }
+
         @media only screen and (min-width: 640px) {
           /* Medium layout - */
-          :host {
+          .tiles {
             grid-template-columns: 1fr 1fr;
           }
         }
 
         @media only screen and (min-width: 1280px) {
           /* Wide layout - */
-          :host {
+          .tiles {
             grid-template-columns: 1fr 1fr 1fr;
           }
         }
       </style>
 
-      ${Object.keys(this._products).map((key) => {
-        const item = this._products[key];
-        return html`
-          <gallery-list-item
-            .key="${item._id}"
-            @click="${this._navigateToItem}">
-          </gallery-list-item>
-        `
-      })}
+      <div class="tiles">
+        ${Object.keys(this._products).map((key) => {
+          const item = this._products[key];
+          return html`
+            <gallery-list-item
+              .key="${item._id}"
+              @click="${this._navigateToItem}">
+            </gallery-list-item>
+            `
+        })}
+      </div>
     `;
   }
 
