@@ -2,7 +2,8 @@
   "entrypoint": "index.html",
   "shell": "src/components/zuzi-app/index.js",
   "sources": [
-    "images/**/*"
+		"images/**/*",
+		"src/**/*"
   ],
   "extraDependencies": [
     "manifest.json",
