@@ -45,6 +45,7 @@ class ZuziApp extends connect(store)(LitElement) {
       header {
         position: fixed;
         width: 100%;
+        min-height: 85px;
         background-color: white;
         box-shadow: 0 0 20px 0px #E0E0E0;
         z-index: 1;
@@ -58,6 +59,7 @@ class ZuziApp extends connect(store)(LitElement) {
       }
 
       .site-title {
+        display: none;
         font-size: 25px;
         font-weight: bold;
         font-family: 'Julius Sans One';
@@ -98,6 +100,7 @@ class ZuziApp extends connect(store)(LitElement) {
         border-top: 1px solid #ccc;
         flex-shrink: 0;
         padding: 10px 24px;
+        background-color: white;
       }
 
       .login {
@@ -114,11 +117,15 @@ class ZuziApp extends connect(store)(LitElement) {
         color: black;
       }
 
-      /* Wide layout */
-      @media (min-width: 460px) {
+      /* Medium layout */
+      @media (min-width: 640px) {
         .fixed {
           flex-direction: row;
           justify-content: space-between;
+        }
+
+        .site-title {
+          display: block;
         }
       }
     </style>
