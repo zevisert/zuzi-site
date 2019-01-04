@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
         ]
     });
 
-    page_pipe = async (ctx, next) => prpl_pipe(ctx.req, ctx.res);
+    page_pipe = async (ctx, next) => prpl_pipe(ctx.req, ctx.res, next);
 }
 
 export const pipe = page_pipe;
