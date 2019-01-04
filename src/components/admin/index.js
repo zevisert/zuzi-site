@@ -46,7 +46,7 @@ class AdminView extends connect(store)(PageViewElement) {
           #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
           #section-artwork table tbody tr td:nth-child(2):before { content: "Public URL"; }
           #section-artwork table tbody tr td:nth-child(3):before { content: "Title"; }
-          #section-artwork table tbody tr td:nth-child(4):before { content: "Description"; }
+          #section-artwork table tbody tr td:nth-child(4):before { content: "Tags"; }
           #section-artwork table tbody tr td:nth-child(5):before { content: "Active"; }
           #section-artwork table tbody tr td:nth-child(6):before { content: "Delete"; }
 
@@ -71,7 +71,7 @@ class AdminView extends connect(store)(PageViewElement) {
                       <th class="column1">Icon</th>
                       <th class="column2">Public URL</th>
                       <th class="column3">Title</th>
-                      <th class="column4">Description</th>
+                      <th class="column4">Tags</th>
                       <th class="column5">Active</th>
                       <th class="column6">Delete</th>
                     </tr>
@@ -82,7 +82,7 @@ class AdminView extends connect(store)(PageViewElement) {
                         <td class="column1"><img src="/uploads/${post.preview}"></td>
                         <td class="column2">https://zuzi.art/gallery/${post.slug}</td>
                         <td class="column3">${post.title}</td>
-                        <td class="column4">${post.description}</td>
+                        <td class="column4">${post.tags.join(', ')}</td>
                         <td class="column5">${post.active}</td>
                         <td class="column6">
                           <button @click="${(e) => { e.stopPropagation(); this.deleteItem(post.slug); }}">Delete</button>
