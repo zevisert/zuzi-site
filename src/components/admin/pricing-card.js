@@ -21,6 +21,7 @@ export class AdminPricingCard extends LitElement {
 
     this.pricing = {
       price: null,
+      available: true,
       size: {
         width: null,
         height: null,
@@ -35,16 +36,36 @@ export class AdminPricingCard extends LitElement {
       ${ButtonSharedStyles}
       <style>
       .card {
+        display: flex;
+        flex-direction: column;
+
+        padding: 5px;
         box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
         transition: 0.3s;
         margin: 1em;
         max-height: 30vh;
       }
+
+      .card .medium {
+        font-size: large;
+      }
+
+      .card .pricing {
+        font: monospace;
+      }
+
+      .card button {
+        align-self: center;
+      }
+
       </style>
       <div class="card">
-        <div>$ ${this.pricing.price}</div>
-        <div>${this.pricing.medium}</div>
-        <div>${this.pricing.size.width}x${this.pricing.size.height} ${this.pricing.size.unit}</div>
+        <div class="medium">${this.pricing.medium}</div>
+        ${ this.pricing.available
+        ? html`<div class="pricing">$ ${this.pricing.price}</div>`
+        : html`<div class="pricing sold"> Sold </div>`
+        }
+        <div class="sizing">${this.pricing.size.width}x${this.pricing.size.height} ${this.pricing.size.unit}</div>
 
         <button @click="${e => this._removePricing(e) }">Remove pricing</button>
       </div>

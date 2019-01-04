@@ -40,7 +40,7 @@ export class UnderlineInput extends LitElement {
           content: '';
           position: absolute;
           width: 100%;
-          height: 1px;
+          height: 2px;
           bottom: 0;
           left: 0;
         }
@@ -50,7 +50,7 @@ export class UnderlineInput extends LitElement {
           position: absolute;
           width: 100%;
           transform: scaleX(0);
-          height: 1px;
+          height: 2px;
           bottom: 0;
           left: 0;
           transform-origin: bottom right;

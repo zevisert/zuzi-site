@@ -35,103 +35,210 @@ class ZuziApp extends connect(store)(LitElement) {
   render() {
     // Anything that's related to rendering should be done in here.
     return html`
-      <style>
-        :host {
-          display: flex;
-          min-height: 100vh;
-          flex-direction: column;
+    <style>
+      :host {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+
+      header {
+        position: fixed;
+        width: 100%;
+        min-height: 85px;
+        background-color: white;
+        box-shadow: 0 0 20px 0px #E0E0E0;
+        z-index: 1;
+      }
+
+      .fixed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px;
+      }
+
+      .site-title {
+        display: none;
+        font-size: 25px;
+        font-weight: bold;
+        font-family: 'Julius Sans One';
+      }
+
+      .toolbar-list > a {
+        display: inline-block;
+        color: gray;
+        text-decoration: none;
+        font-family: 'Julius Sans One';
+        padding: 0 8px;
+        border: 1px solid transparent;
+      }
+
+      .toolbar-list > a[selected] {
+        font-weight: bold;
+        color: black;
+        border: 1px solid black;
+      }
+
+      /* Workaround for IE11 displaying <main> as inline */
+      main {
+        display: block;
+        margin-top: 85px;
+        padding: 24px;
+        flex: 1 0 auto;
+      }
+
+      .page {
+        display: none;
+      }
+
+      .page[active] {
+        display: block;
+      }
+
+      footer {
+        border-top: 1px solid #ccc;
+        flex-shrink: 0;
+        padding: 10px 24px;
+        background-color: white;
+      }
+
+      footer section {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .zev {
+        color: lightgrey;
+      }
+
+      .login {
+        display: flex;
+        flex-direction: row-reverse;
+      }
+
+      .login a {
+        color: lightgray;
+        text-decoration: none;
+      }
+
+      .login a:hover {
+        color: black;
+      }
+
+      /* Medium layout */
+      @media (min-width: 640px) {
+        .fixed {
+          flex-direction: row;
+          justify-content: space-between;
         }
 
-        header {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 24px 24px 0;
-        }
-
-        .toolbar-list > a {
-          display: inline-block;
-          color: black;
-          text-decoration: none;
-          padding: 0 8px;
-        }
-
-        .toolbar-list > a[selected] {
-          font-weight: bold;
-        }
-
-        /* Workaround for IE11 displaying <main> as inline */
-        main {
+        .site-title {
           display: block;
-          padding: 24px;
-          flex: 1 0 auto;
         }
+      }
+    </style>
 
-        .page {
-          display: none;
-        }
-
-        .page[active] {
-          display: block;
-        }
-
-        footer {
-          border-top: 1px solid #ccc;
-          flex-shrink: 0;
-          padding: 10px 24px 24px;
-        }
-
-        /* Wide layout */
-        @media (min-width: 460px) {
-          header {
-            flex-direction: row;
-          }
-
-          /* The drawer button isn't shown in the wide layout, so we don't
-          need to offset the title */
-          [main-title] {
-            padding-right: 0px;
-          }
-        }
-      </style>
-
-      <header>
+    <header>
+      <div class="fixed">
         <nav class="toolbar-list">
-          <a ?selected="${this._page === str.pages.about}"   href="/${str.pages.about}">${str.pages.about}</a>
-          <a ?selected="${this._page === str.pages.gallery}" href="/${str.pages.gallery}">${str.pages.gallery}</a>
-          <a ?selected="${this._page === str.pages.cart}"    href="/${str.pages.cart}">${str.pages.cart} (${this._cartQuantity})</a>
-        </nav>
-      </header>
+          <a
+            ?selected="${this._page === str.pages.about}"
+            href="/${str.pages.about}">
+            About
+          </a>
 
-      <!-- Main content -->
-      <main role="main" class="main-content">
-        <about-view class="page" ?active="${this._page === str.pages.about}"></about-view>
+          <a
+          ?selected="${this._page === str.pages.gallery}"
+          href="/${str.pages.gallery}">
+          Gallery
+          </a>
 
-        <gallery-view class="page" ?active="${this._page === str.pages.gallery && this._subPage === null}"></gallery-view>
-        <gallery-item class="page" ?active="${this._page === str.pages.gallery && this._subPage !== null}"></gallery-item>
-        <cart-view    class="page" ?active="${this._page === str.pages.cart}">
-          <slot slot="stripe-card" name="stripe-card"></slot>
-        </cart-view>
+          <a
+          ?selected="${this._page === str.pages.cart}"
+            href="/${str.pages.cart}">
+            Checkout (${this._cartQuantity})
+          </a>
 
-        <admin-view    class="page" ?active="${this._page === str.pages.admin && this._subPage === null}"></admin-view>
-        <admin-edit    class="page" ?active="${this._page === str.pages.admin && this._subPage !== null && this._subPage.split('/').includes('orders') === false}"></admin-edit>
-        <admin-orders  class="page" ?active="${this._page === str.pages.admin && this._subPage !== null && this._subPage.split('/').includes('orders') === true }"></admin-orders>
-        <login-view class="page" ?active="${this._page === str.pages.login}"></login-view>
-
-        <no-view class="page" ?active="${this._page === str.pages.none}"></no-view>
-      </main>
-
-      <footer>
-        <span>
-          ${this._loggedIn
-          ? html`<a href="/admin">Admin Page</a> | <a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>`
-          : html`<a href="/login">Login</a>`
+          ${! this._loggedIn ? '' : html`
+          <a
+              ?selected="${this._page === str.pages.admin}"
+              href="/${str.pages.admin}">
+              Admin
+            </a>`
           }
-        </span>
-      </footer>
-      <app-snackbar></app-snackbar>
+        </nav>
+        <span class="site-title">Zuzana Riha</span>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main role="main" class="main-content">
+      <about-view class="page"
+        ?active="${this._page === str.pages.about}">
+      </about-view>
+
+      <gallery-view class="page"
+        ?active="${this._page === str.pages.gallery && this._subPage === null}">
+      </gallery-view>
+
+      <gallery-item class="page"
+        ?active="${this._page === str.pages.gallery && this._subPage !== null}">
+      </gallery-item>
+
+      <cart-view class="page"
+        ?active="${this._page === str.pages.cart}">
+        <slot slot="stripe-card" name="stripe-card"></slot>
+      </cart-view>
+
+      <admin-view class="page"
+        ?active="${this._page === str.pages.admin && this._subPage === null}">
+      </admin-view>
+
+      <admin-edit class="page"
+        ?active="${
+          this._page === str.pages.admin
+          && this._subPage !== null
+          && ! this._subPage.split('/').includes('orders')
+        }">
+      </admin-edit>
+
+      <admin-orders class="page"
+        ?active="${
+          this._page === str.pages.admin
+          && this._subPage !== null
+          && this._subPage.split('/').includes('orders')
+        }">
+      </admin-orders>
+
+      <login-view class="page"
+        ?active="${this._page === str.pages.login}">
+      </login-view>
+
+      <no-view class="page"
+        ?active="${this._page === str.pages.none}">
+      </no-view>
+    </main>
+
+    <app-snackbar></app-snackbar>
+
+    <footer>
+      <section>
+        <span class="zev">Made with ♥ by Zev Isert</span>
+        <div class="login">
+          <span>
+            ${this._loggedIn
+            ? html`<a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>`
+            : html`<a href="/${str.pages.login}">Login</a>`
+            }
+          </span>
+        </div>
+    </section>
+    </footer>
     `;
   }
+
+  static get is() { return 'zuzi-app'; }
 
   static get properties() {
     return {
@@ -144,15 +251,16 @@ class ZuziApp extends connect(store)(LitElement) {
   }
 
   firstUpdated() {
-    installRouter((location) => store.dispatch(navigate(decodeURIComponent(location.pathname))));
-    installOfflineWatcher((offline) => store.dispatch(updateOffline(offline)));
-    installMediaQueryWatcher(`(min-width: 460px)`,
-        (matches) => store.dispatch(updateLayout(matches)));
-
-    Sentry.init({ dsn: process.env.SENTRY_DSN });
+    installRouter(location => store.dispatch(navigate(decodeURIComponent(location.pathname))));
+    installOfflineWatcher(offline => store.dispatch(updateOffline(offline)));
+    installMediaQueryWatcher(`(min-width: 460px)`, matches => store.dispatch(updateLayout(matches)));
 
     if (sessionStorage.getItem('credentials')) {
       store.dispatch(credentials(JSON.parse(sessionStorage.getItem('credentials'))));
+    }
+
+    if ( process.env.SENTRY_ENABLE ) {
+      Sentry.init({ dsn: process.env.SENTRY_DSN });
     }
   }
 
@@ -175,4 +283,4 @@ class ZuziApp extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('zuzi-app', ZuziApp);
+window.customElements.define(ZuziApp.is, ZuziApp);
