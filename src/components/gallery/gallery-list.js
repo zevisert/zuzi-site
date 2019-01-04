@@ -39,27 +39,31 @@ class GalleryList extends connect(store)(LitElement) {
           max-width: 1600px;
         }
 
-        .tiles gallery-list-item:nth-child(6n - 5) {
+        .tiles gallery-list-item:nth-child(7n - 6) {
           --tile-bg: #6fc3dfE0;
         }
 
-        .tiles gallery-list-item:nth-child(6n - 4) {
+        .tiles gallery-list-item:nth-child(7n - 5) {
           --tile-bg: #8d82c4E0;
         }
 
-        .tiles gallery-list-item:nth-child(6n - 3) {
+        .tiles gallery-list-item:nth-child(7n - 4) {
+          --tile-bg: #4db6acE0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 3) {
           --tile-bg: #ec8d81E0;
         }
 
-        .tiles gallery-list-item:nth-child(6n - 2) {
+        .tiles gallery-list-item:nth-child(7n - 2) {
           --tile-bg: #e7b788E0;
         }
 
-        .tiles gallery-list-item:nth-child(6n - 1) {
+        .tiles gallery-list-item:nth-child(7n - 1) {
           --tile-bg: #8ea9e8E0;
         }
 
-        .tiles gallery-list-item:nth-child(6n) {
+        .tiles gallery-list-item:nth-child(7n) {
           --tile-bg: #87c5a4E0;
         }
 
@@ -74,6 +78,7 @@ class GalleryList extends connect(store)(LitElement) {
           /* Wide layout - */
           .tiles {
             grid-template-columns: 1fr 1fr 1fr;
+            margin: 0 auto;
           }
         }
       </style>

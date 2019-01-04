@@ -22,5 +22,10 @@ export const ButtonSharedStyles = html`
     border: 2px solid black;
     padding: 8px 16px;
   }
+
+  button:disabled {
+    border: 1px solid lightgray;
+    cursor: not-allowed;
+  }
 </style>
 `;

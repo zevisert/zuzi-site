@@ -27,22 +27,16 @@ class GalleryListItem extends connect(store)(LitElement) {
           position: relative;
         }
 
-        .tile:hover {
-          --tile-bg: transparent;
-        }
-
-        .tile .img {
+        .tile .preview {
           overflow: hidden;
           max-height: calc(30vh - 2em);
         }
 
-        .tile .img img {
+        .tile .preview img {
           width: 100%;
         }
 
-        .tile .img img:hover { }
-
-        header {
+        .major {
           position: absolute;
           color: white;
           display: flex;
@@ -52,14 +46,15 @@ class GalleryListItem extends connect(store)(LitElement) {
           left: 0;
           width: 100%;
           height: 100%;
+          transition: opacity 200ms;
           background-color: var(--tile-bg);
         }
 
-        h2 {
+        .major h2 {
           padding-left: 40px;
         }
 
-        h2::after {
+        .major h2::after {
           content: '';
           background-color: white;
           height: 2px;
@@ -68,18 +63,46 @@ class GalleryListItem extends connect(store)(LitElement) {
           display: block;
         }
 
-        header p {
+        .major p {
           padding-left: 40px;
         }
 
+        .tile:hover .major {
+          opacity: 0;
+        }
+
+        .minor {
+          color: white;
+          background-color: var(--tile-bg);
+          opacity: 0;
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 100%;
+          transition: opacity 200ms;
+        }
+
+        .minor p {
+          margin-left: 1em;
+        }
+
+        .tile:hover .minor {
+          opacity: 1.0;
+        }
+
+
       </style>
       <div class="tile">
-        <div class="img">
+        <div class="preview">
           <img src="/uploads/${this.item.preview}">
         </div>
         <header class="major">
           <h2>${this.item.title}</h2>
           <p>${this.item.description}</p>
+        </header>
+
+        <header class="minor">
+          <p>${this.item.title}</p>
         </header>
       </div>
     `;
