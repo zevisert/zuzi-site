@@ -78,7 +78,13 @@ app.use(
   apiRoutes.allowedMethods()
 );
 
-app.use(pipe);
+const staticRoutes = (new router())
+  .get('/*', pipe);
+
+app.use(
+  staticRoutes.routes(),
+  staticRoutes.allowedMethods()
+);
 
 const runningCallback = () => console.log(`Server up on port ${process.env.PORT}`); 
 
