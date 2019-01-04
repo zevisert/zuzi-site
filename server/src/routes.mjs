@@ -21,7 +21,7 @@ import { v8n } from './validation';
 export async function notFound(ctx, next) {
   await next();
   if (ctx.body || !ctx.idempotent) return;
-  ctx.throw(404, { error: '404: unknown route' });
+  ctx.throw(404, "404: Not Found", { error: '404: unknown route' });
 }
 
 export async function index(ctx) {
