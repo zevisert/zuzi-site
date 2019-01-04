@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
           .on('error', (err) => { console.log(err); throw err; }); 
     };
 } else {
-    page_pipe = prpl.makeHandler('build/', {
+    const prpl_pipe = prpl.makeHandler('build/', {
         forwardErrors: true,
         builds: [
             {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
@@ -58,6 +58,8 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
             {name: 'es5-bundled'},
         ]
     });
+
+    page_pipe = async (ctx, next) => prpl_pipe(ctx.req, ctx.res);
 }
 
 export const pipe = page_pipe;
