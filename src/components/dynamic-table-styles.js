@@ -16,11 +16,12 @@ export const SharedDynamicTable = html`
   .limiter {
     width: 100%;
     margin: 0 auto;
+    margin-bottom: 10px;
   }
 
   .container-table100 {
     width: 100%;
-    
+
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
@@ -38,7 +39,6 @@ export const SharedDynamicTable = html`
   table {
     border-spacing: 1;
     border-collapse: collapse;
-    border-radius: 10px;
     overflow: hidden;
     width: 100%;
     margin: 0 auto;
@@ -143,7 +143,7 @@ export const SharedDynamicTable = html`
 
     .column1,
     .column2,
-    .column3, 
+    .column3,
     .column4,
     .column5,
     .column6,

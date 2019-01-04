@@ -1,7 +1,7 @@
 {
-  "name": "My App",
-  "short_name": "My App",
-  "description": "My App description",
+  "name": "Zuzana Riha Art",
+  "short_name": "Zuzi Art",
+  "description": "Online store and gallery",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#3f51b5",

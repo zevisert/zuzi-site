@@ -68,11 +68,15 @@ export async function create(ctx) {
     const pricing = new Pricing();
     pricing.price = obj.price;
     pricing.medium = obj.medium;
+    pricing.available = obj.available;
     pricing.size = new Size(obj.size);
     
     pricing.save();
     post.pricings.push(pricing);
   }
+
+  const tags = JSON.parse(body.tags);
+  post.tags = tags;
 
   post.slug = body.title.toLowerCase().replace(/ /g, '-');
   post.title = body.title;
@@ -134,11 +138,17 @@ export async function update(ctx) {
       const pricing = new Pricing();
       pricing.price = obj.price;
       pricing.medium = obj.medium;
+      pricing.available = obj.available;
       pricing.size = new Size(obj.size);
       
       await pricing.save();
       post.pricings.push(pricing);
     }
+  }
+
+  if (body.tags) {
+    const tags = JSON.parse(body.tags);
+    post.tags = tags;
   }
 
   post.active = body.active || post.active;

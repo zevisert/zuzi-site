@@ -29,54 +29,104 @@ class GalleryList extends connect(store)(LitElement) {
     return html`
       ${ButtonSharedStyles}
       <style>
-        :host { 
+        :host {
+
+        }
+
+        .tiles {
           display: grid;
           grid-template-columns: 1fr;
           max-width: 1600px;
         }
 
+        .tiles gallery-list-item:nth-child(7n - 6) {
+          --tile-bg: #6fc3dfE0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 5) {
+          --tile-bg: #8d82c4E0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 4) {
+          --tile-bg: #4db6acE0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 3) {
+          --tile-bg: #ec8d81E0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 2) {
+          --tile-bg: #e7b788E0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n - 1) {
+          --tile-bg: #8ea9e8E0;
+        }
+
+        .tiles gallery-list-item:nth-child(7n) {
+          --tile-bg: #87c5a4E0;
+        }
+
         @media only screen and (min-width: 640px) {
           /* Medium layout - */
-          :host {
+          .tiles {
             grid-template-columns: 1fr 1fr;
           }
         }
 
         @media only screen and (min-width: 1280px) {
           /* Wide layout - */
-          :host {
+          .tiles {
             grid-template-columns: 1fr 1fr 1fr;
+            margin: 0 auto;
           }
         }
       </style>
 
-      ${Object.keys(this._products).map((key) => {
-        const item = this._products[key];
-        return html`
-          <gallery-list-item
-            .key="${item._id}"
-            @click="${this._navigateToItem}">
-          </gallery-list-item>
-        `
-      })}
+      <div class="tiles">
+        ${this._filterIds.map((key) => {
+          return html`
+            <gallery-list-item
+              .key="${key}"
+              @click="${this._navigateToItem}">
+            </gallery-list-item>
+            `
+        })}
+      </div>
     `;
   }
 
   static get properties() { return {
-    _products: { type: Object }
+    filter: { type: String },
+    _filterIds: { type: Array },
+    __allProducts: { type: Object }
   }}
+
+  constructor() {
+    super();
+    this.filter = undefined;
+    this._filterIds = [];
+    this.__allProducts = {};
+  }
 
   firstUpdated() {
     store.dispatch(getAllProducts());
   }
 
-  _navigateToItem(e) {
-    store.dispatch(navigate(`/gallery/${this._products[e.target.key].slug}`));
+  updated(changedProperties) {
+    if (changedProperties.has('filter') || changedProperties.has('__allProducts')) {
+      this._filterIds = Object.values(this.__allProducts)
+        .filter(item => this.filter.length == 0 || item.tags.includes(this.filter))
+        .map(item => item._id);
+    }
   }
 
-  // This is called every time something is updated in the store.
+  _navigateToItem(e) {
+    store.dispatch(navigate(`/gallery/${this.__allProducts[e.target.key].slug}`));
+  }
+
   stateChanged(state) {
-    this._products = state.shop.products;
+    this.__allProducts = state.shop.products;
   }
 }
 

@@ -20,8 +20,12 @@ export const ButtonSharedStyles = html`
     cursor: pointer;
 
     border: 2px solid black;
-    border-radius: 3px;
     padding: 8px 16px;
+  }
+
+  button:disabled {
+    border: 1px solid lightgray;
+    cursor: not-allowed;
   }
 </style>
 `;

@@ -18,51 +18,70 @@ class GalleryListItem extends connect(store)(LitElement) {
   render() {
     return html`
       <style>
-        .card {
-          box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-          transition: 0.3s;
-          margin: 1em;
-          max-height: 30vh;
+
+        :host {
+          --tile-bg: rgba(256, 0, 0, 0.6);
         }
 
-        .card:hover {
-          box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        .tile {
+          position: relative;
         }
 
-        .card .img {
+        .tile .preview {
           overflow: hidden;
           max-height: calc(30vh - 2em);
         }
-        
-        .card .img img {
+
+        .tile .preview img {
           width: 100%;
         }
 
-        .container {
-          padding: 2px 16px;
+        .minor {
+          color: white;
+          background-color: var(--tile-bg);
+          opacity: 1.0;
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 100%;
+          height: 50px;
+          transition: transform 200ms;
           display: flex;
-          justify-content: space-between;
+          align-items: center;
         }
 
-        .container span {
-          text-transform: capitalize;
+        .minor span {
+          margin-left: 1em;
+          font-size: 22px;
         }
+
+        .tile:hover .minor {
+          transform: translateY(50px);
+        }
+
 
       </style>
-      <div class="card">
-        <div class="img">
+      <div class="tile">
+        <div class="preview">
           <img src="/uploads/${this.item.preview}">
         </div>
-        <div class="container">
+        <header class="minor">
           <span>${this.item.title}</span>
-        </div>
+        </header>
       </div>
     `;
   }
 
   static get properties() {
     return {
-      key: { type: Number }
+      key: { type: String },
+      item: { type: Object }
+    }
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('key')) {
+      this.item = store.getState().shop.products[this.key];
     }
   }
 

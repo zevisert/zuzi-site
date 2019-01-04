@@ -1,21 +1,11 @@
-<!--
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>My app</title>
-    <meta name="generator" content="PWA Starter Kit">
+    <title>Zuzi Art</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="My App description">
+    <meta name="description" content="Artwork by Zuzana">
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
@@ -37,12 +27,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="My App">
+    <meta name="application-name" content="Zuzi Art">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="My App">
+    <meta name="apple-mobile-web-app-title" content="Zuzi Art">
 
     <!-- Homescreen icons -->
     <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
@@ -58,13 +48,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Default twitter cards -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="@username">
+    <meta name="twitter:title" content="Zuzana Riha's gallery and online store">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="my-app">
+    <meta property="og:site_name" content="Zuzi Art">
     <meta property="og:image" content="images/manifest/icon-144x144.png" />
 
     <!-- Performance tip: hint to the browser to start the handshake for the fonts site -->
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700" rel="stylesheet">
     <script>
       // Load and register pre-caching Service Worker
       if ('serviceWorker' in navigator) {
@@ -82,9 +73,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           NODE_ENV: 'production',
           API_URL: '/api/v1',
           STRIPE_PK: 'pk_test_yxuk5TGt3veufuAvM4mo4vJF',
-          ETRANSFER_EMAIL: 'etransfer@zuzi.art',
-          ETRANSFER_PW: 'lookinggood',
-          SENTRY_DSN: 'https://d8e96cd4d8ed4dfebfb74350dd304e3a@sentry.io/1360131'
+          SENTRY_DSN: 'https://d8e96cd4d8ed4dfebfb74350dd304e3a@sentry.io/1360131',
+          SENTRY_ENABLE: false
         },
         stripe: null
       };
@@ -95,7 +85,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       body {
         margin: 0;
         /* This is a font-stack that tries to use the system-default sans-serifs first */
-        font-family: Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        font-family: 'Thasadith', Helvetica, Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
         line-height: 1.5;
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
