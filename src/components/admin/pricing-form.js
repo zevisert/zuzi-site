@@ -27,7 +27,8 @@ export class AdminPricingForm extends LitElement {
         height: null,
         unit: 'in'
       },
-      medium: null
+      medium: '',
+      available: true
     };
 
     // Non-properties
@@ -75,6 +76,14 @@ export class AdminPricingForm extends LitElement {
         .value="${this.pricing.medium}"
       >
     </div>
+
+    <div class="block">
+      <label for="available">Available</label>
+      <input id="available" type="checkbox"
+        @input="${e => this._onChange('available', e)}"
+        .checked="${this.pricing.available}"
+      >
+    </div>
     `;
   }
 
@@ -84,14 +93,28 @@ export class AdminPricingForm extends LitElement {
       medium: this.renderRoot.getElementById('medium'),
       width: this.renderRoot.getElementById('width'),
       height: this.renderRoot.getElementById('height'),
+      available: this.renderRoot.getElementById('available')
     };
   }
 
   _onChange(name, e) {
-    if (['width', 'height'].includes(name)) {
-      this.pricing.size[name] = e.target.value;
-    } else {
-      this.pricing[name] = e.target.value;
+    switch (name) {
+      case 'width':
+      case 'height':
+        this.pricing.size[name] = e.target.value;
+        break;
+
+      case 'available':
+        this.pricing[name] = e.target.checked;
+        break;
+
+      case 'price':
+      case 'medium':
+        this.pricing[name] = e.target.value;
+        break;
+
+      default:
+        throw new Error(`Pricing change for bad key ${name}`);
     }
   }
 
@@ -104,9 +127,34 @@ export class AdminPricingForm extends LitElement {
       })
     );
 
-    for (const el of Object.values(this.__els)) {
+    this.reset();
+  }
+
+  async reset() {
+
+    [
+      this.__els.price,
+      this.__els.medium,
+      this.__els.width,
+      this.__els.height
+    ].map(el => {
       el.value = '';
-    }
+    });
+
+    this.__els.available.checked = true;
+
+    this.pricing = {
+      price: null,
+      size: {
+        width: null,
+        height: null,
+        unit: 'in'
+      },
+      medium: null,
+      available: true
+    };
+
+    return this.updateComplete;
   }
 }
 

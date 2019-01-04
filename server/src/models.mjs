@@ -14,7 +14,8 @@ export const Size = mongoose.model('Size', sizeSchema);
 export const pricingSchema = new mongoose.Schema({
     price: Number,
     size: sizeSchema,
-    medium: String
+    medium: String,
+    available: Boolean
 });
 export const Pricing = mongoose.model('Pricing', pricingSchema);
 

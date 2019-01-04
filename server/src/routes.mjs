@@ -68,6 +68,7 @@ export async function create(ctx) {
     const pricing = new Pricing();
     pricing.price = obj.price;
     pricing.medium = obj.medium;
+    pricing.available = obj.available;
     pricing.size = new Size(obj.size);
     
     pricing.save();
@@ -137,6 +138,7 @@ export async function update(ctx) {
       const pricing = new Pricing();
       pricing.price = obj.price;
       pricing.medium = obj.medium;
+      pricing.available = obj.available;
       pricing.size = new Size(obj.size);
       
       await pricing.save();
