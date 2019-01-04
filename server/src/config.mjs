@@ -59,9 +59,8 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
         ]
     });
 
-    page_pipe = async (ctx, next) => { 
-        ctx.respond = false;
-        prpl_pipe(ctx.req, ctx.res, next);
+    page_pipe = async ctx => { 
+        prpl_pipe(ctx.req, ctx.res);
     };
 }
 

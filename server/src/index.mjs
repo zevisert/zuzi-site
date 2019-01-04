@@ -8,7 +8,7 @@ import multer from 'koa-multer';
 import passport from 'koa-passport';
 
 import path from 'path';
-import https from 'https';
+import h2p from 'http2';
 import fs from 'fs';
 
 // Must be first, side effects import process.env
@@ -85,8 +85,7 @@ const runningCallback = () => console.log(`Server up on port ${process.env.PORT}
 if (process.env.NODE_ENV === 'DEVELOPMENT') {
   app.listen(process.env.PORT, runningCallback);
 } else {
-  https
-    .createServer({
+  h2p.createSecureServer({
       key: fs.readFileSync(process.env.CERT_PRIVKEY_PATH, 'utf8').toString(),
       cert: fs.readFileSync(process.env.CERT_FULLCHAIN_PATH, 'utf8').toString(),
     }, app.callback())
