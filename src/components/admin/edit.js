@@ -25,6 +25,7 @@ import { navigate, showSnackbar } from '../../actions/app.js';
 
 import 'simple-chip';
 import '../underline-input.js';
+import '../toggle-input.js';
 import './pricing-form.js';
 import './pricing-card.js';
 
@@ -130,7 +131,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
             <div class="block">
               <label for="active">Active</label>
-              <input id="active" type="checkbox" ?checked="${this.item.active}">
+              <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
             </div>
 
             <admin-pricing-form id="pricing"></admin-pricing-form>

@@ -2,6 +2,7 @@ import { html, LitElement } from '@polymer/lit-element';
 import { ButtonSharedStyles } from '../button-shared-styles';
 
 import '../underline-input';
+import '../toggle-input';
 
 const JsonType = {
   fromAttribute: (attr) => { return JSON.parse(attr) },
@@ -22,13 +23,13 @@ export class AdminPricingForm extends LitElement {
 
     this.pricing = {
       price: null,
+      available: true,
+      medium: '',
       size: {
         width: null,
         height: null,
         unit: 'in'
-      },
-      medium: '',
-      available: true
+      }
     };
 
     // Non-properties
@@ -79,8 +80,8 @@ export class AdminPricingForm extends LitElement {
 
     <div class="block">
       <label for="available">Available</label>
-      <input id="available" type="checkbox"
-        @input="${e => this._onChange('available', e)}"
+      <toggle-input id="available" type="checkbox"
+        @changed="${e => this._onChange('available', e)}"
         .checked="${this.pricing.available}"
       >
     </div>
@@ -145,13 +146,13 @@ export class AdminPricingForm extends LitElement {
 
     this.pricing = {
       price: null,
+      available: true,
+      medium: null,
       size: {
         width: null,
         height: null,
         unit: 'in'
-      },
-      medium: null,
-      available: true
+      }
     };
 
     return this.updateComplete;
