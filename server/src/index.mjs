@@ -8,6 +8,8 @@ import multer from 'koa-multer';
 import passport from 'koa-passport';
 
 import path from 'path';
+import https from 'https';
+import fs from 'fs';
 
 // Must be first, side effects import process.env
 import { db_connect, pipe, isProtected } from './config';
@@ -78,4 +80,15 @@ app.use(
 
 app.use(pipe);
 
-app.listen(process.env.PORT, () => console.log(`Server up on port ${process.env.PORT}`));
+const runningCallback = () => console.log(`Server up on port ${process.env.PORT}`); 
+
+if (process.env.NODE_ENV === 'DEVELOPMENT') {
+  app.listen(process.env.PORT, runningCallback);
+} else {
+  https
+    .createServer({
+      key: fs.readFileSync(process.env.CERT_PRIVKEY_PATH, 'utf8').toString(),
+      cert: fs.readFileSync(process.env.CERT_FULLCHAIN_PATH, 'utf8').toString(),
+    }, app.callback())
+    .listen(process.env.PORT, runningCallback);
+}

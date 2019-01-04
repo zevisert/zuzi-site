@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
           .on('error', (err) => { console.log(err); throw err; }); 
     };
 } else {
-    page_pipe = prpl.makeHandler('server/build/', {
+    page_pipe = prpl.makeHandler('build/', {
         forwardErrors: true,
         builds: [
             {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
