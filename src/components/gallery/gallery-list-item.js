@@ -36,58 +36,27 @@ class GalleryListItem extends connect(store)(LitElement) {
           width: 100%;
         }
 
-        .major {
-          position: absolute;
-          color: white;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          transition: opacity 200ms;
-          background-color: var(--tile-bg);
-        }
-
-        .major h2 {
-          padding-left: 40px;
-        }
-
-        .major h2::after {
-          content: '';
-          background-color: white;
-          height: 2px;
-          width: 100px;
-          margin-top: 2em;
-          display: block;
-        }
-
-        .major p {
-          padding-left: 40px;
-        }
-
-        .tile:hover .major {
-          opacity: 0;
-        }
-
         .minor {
           color: white;
           background-color: var(--tile-bg);
-          opacity: 0;
+          opacity: 1.0;
           position: absolute;
           bottom: 0;
           right: 0;
           width: 100%;
-          transition: opacity 200ms;
+          height: 50px;
+          transition: transform 200ms;
+          display: flex;
+          align-items: center;
         }
 
-        .minor p {
+        .minor span {
           margin-left: 1em;
+          font-size: 22px;
         }
 
         .tile:hover .minor {
-          opacity: 1.0;
+          transform: translateY(50px);
         }
 
 
@@ -96,13 +65,8 @@ class GalleryListItem extends connect(store)(LitElement) {
         <div class="preview">
           <img src="/uploads/${this.item.preview}">
         </div>
-        <header class="major">
-          <h2>${this.item.title}</h2>
-          <p>${this.item.description}</p>
-        </header>
-
         <header class="minor">
-          <p>${this.item.title}</p>
+          <span>${this.item.title}</span>
         </header>
       </div>
     `;
