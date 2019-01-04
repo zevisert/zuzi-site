@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
     };
 } else {
     const prpl_pipe = prpl.makeHandler('build/', {
-        forwardErrors: true,
+        forwardErrors: false,
         builds: [
             {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
             {name: 'es6-bundled', browserCapabilities: ['es2015']},
@@ -59,9 +59,10 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
         ]
     });
 
-    page_pipe = async ctx => { 
-        prpl_pipe(ctx.req, ctx.res);
-    };
+    page_pipe = async (ctx, next) => {
+        ctx.respond = false;
+        prpl_pipe(ctx.req, ctx.res, next);
+    }
 }
 
 export const pipe = page_pipe;
