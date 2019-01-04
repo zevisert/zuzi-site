@@ -50,18 +50,24 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
           .on('error', (err) => { console.log(err); throw err; }); 
     };
 } else {
-    const prpl_pipe = prpl.makeHandler('build/', {
-        forwardErrors: true,
-        builds: [
-            {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
-            {name: 'es6-bundled', browserCapabilities: ['es2015']},
-            {name: 'es5-bundled'},
-        ]
-    });
+    // const prpl_pipe = prpl.makeHandler('build/', {
+    //     forwardErrors: true,
+    //     builds: [
+    //         {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
+    //         {name: 'es6-bundled', browserCapabilities: ['es2015']},
+    //         {name: 'es5-bundled'},
+    //     ]
+    // });
 
-    page_pipe = async (ctx, next) => {
-        prpl_pipe(ctx.req, ctx.res, next);
-    }
+    // page_pipe = async (ctx, next) => {
+    //     prpl_pipe(ctx.req, ctx.res, next);
+    // }
+    page_pipe = async ctx => {
+        const uri = `http://localhost:8080${ctx.request.originalUrl}`;
+        ctx.body = ctx.req
+          .pipe(request(uri))
+          .on('error', (err) => { console.log(err); throw err; }); 
+    };
 }
 
 export const pipe = page_pipe;
