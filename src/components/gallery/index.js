@@ -29,6 +29,11 @@ class Gallery extends connect(store)(PageViewElement) {
       ${ButtonSharedStyles}
       <style>
 
+      .filter {
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
       .tags,
       .filter-hint {
         display: flex;
@@ -54,11 +59,10 @@ class Gallery extends connect(store)(PageViewElement) {
       .tags:hover span:not(:hover) {
         opacity: 0.5;
       }
+
       </style>
-      <section>
-        <span class="filter-hint">Filter</span>
-      </section>
-      <section>
+      <section class="filter">
+        <span class="filter-hint">Filter by</span>
         <div class="tags">
           ${this.filter.length == 0
           ? this._tags.map(t => html`
@@ -68,6 +72,8 @@ class Gallery extends connect(store)(PageViewElement) {
           : html`<span @click=${() => this.tagClicked('')}>Clear</span>`
           }
         </div>
+      </section>
+      <section>
         <gallery-list filter=${this.filter}></gallery-list>
       </section>
     `;
