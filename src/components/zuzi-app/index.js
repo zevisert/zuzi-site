@@ -103,6 +103,15 @@ class ZuziApp extends connect(store)(LitElement) {
         background-color: white;
       }
 
+      footer section {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .zev {
+        color: lightgrey;
+      }
+
       .login {
         display: flex;
         flex-direction: row-reverse;
@@ -214,14 +223,17 @@ class ZuziApp extends connect(store)(LitElement) {
     <app-snackbar></app-snackbar>
 
     <footer>
-      <div class="login">
-        <span>
-          ${this._loggedIn ?
-            html`<a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>` :
-            html`<a href="/${str.pages.login}">Login</a>`
-          }
-        </span>
-      </div>
+      <section>
+        <span class="zev">Made with ♥ by Zev Isert</span>
+        <div class="login">
+          <span>
+            ${this._loggedIn
+            ? html`<a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>`
+            : html`<a href="/${str.pages.login}">Login</a>`
+            }
+          </span>
+        </div>
+    </section>
     </footer>
     `;
   }
