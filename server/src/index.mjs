@@ -78,12 +78,12 @@ app.use(
   apiRoutes.allowedMethods()
 );
 
-const staticRoutes = (new router())
+const prplServer = (new router())
   .get('/*', pipe);
 
 app.use(
-  staticRoutes.routes(),
-  staticRoutes.allowedMethods()
+  prplServer.routes(),
+  prplServer.allowedMethods()
 );
 
 const runningCallback = () => console.log(`Server up on port ${process.env.PORT}`); 
