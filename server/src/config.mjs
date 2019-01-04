@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
           .on('error', (err) => { console.log(err); throw err; }); 
     };
 } else {
-    page_pipe = prpl.makeHandler('build/', {
+    const prpl_pipe = prpl.makeHandler('build/', {
         forwardErrors: true,
         builds: [
             {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
@@ -59,10 +59,9 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
         ]
     });
 
-    // page_pipe = async (ctx, next) => {
-    //     ctx.respond = false;
-    //     prpl_pipe(ctx.req, ctx.res, next);
-    // }
+    page_pipe = async (ctx, next) => {
+        prpl_pipe(ctx.req, ctx.res, next);
+    }
 }
 
 export const pipe = page_pipe;
