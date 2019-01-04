@@ -22,6 +22,7 @@ export const Pricing = mongoose.model('Pricing', pricingSchema);
 export const postSchema = new mongoose.Schema({
     slug: { type: String, unique: true },
     title: String,
+    tags: [String],
     description: String,
     active: Boolean,
     preview: String,

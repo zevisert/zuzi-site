@@ -27,22 +27,71 @@ class Gallery extends connect(store)(PageViewElement) {
     return html`
       ${SharedStyles}
       ${ButtonSharedStyles}
+      <style>
 
+      .tags,
+      .filter-hint {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .filter-hint {
+        font-size: small;
+        font-style: oblique;
+        opacity: 0.5;
+        padding: 0 1em;
+      }
+
+      .tags span {
+        padding: 0 1rem;
+        transition: opacity 0.2s;
+      }
+
+      .tags span:not(:last-child) {
+        border-right: 2px solid #d2d5e4;
+      }
+
+      .tags:hover span:not(:hover) {
+        opacity: 0.5;
+      }
+      </style>
       <section>
-        <gallery-list></gallery-list>
+        <span class="filter-hint">Filter</span>
+      </section>
+      <section>
+        <div class="tags">
+          ${this.filter.length == 0
+          ? this._tags.map(t => html`
+              <span @click=${() => this.tagClicked(t)}>${t}</span>
+            `)
+
+          : html`<span @click=${() => this.tagClicked('')}>Clear</span>`
+          }
+        </div>
+        <gallery-list filter=${this.filter}></gallery-list>
       </section>
     `;
   }
 
   static get properties() { return {
-    // This is the data from the store.
-    _quantity: { type: Number },
-    _error: { type: String },
+    _tags: { type: Array },
+    filter: { type: String }
   }}
+
+  constructor() {
+    super();
+    this.filter = '';
+    this._tags = [];
+  }
+
+  tagClicked(tag) {
+    this.filter = tag;
+  }
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-
+    const allTags = Object.values(state.shop.products).reduce((tags, item) => [... tags, ... item.tags], []);
+    this._tags = [... (new Set(allTags)).keys()];
   }
 }
 

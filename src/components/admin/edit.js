@@ -23,6 +23,7 @@ import { selectedItemSelector } from '../../reducers/shop.js';
 
 import { navigate, showSnackbar } from '../../actions/app.js';
 
+import 'simple-chip';
 import '../underline-input.js';
 import './pricing-form.js';
 import './pricing-card.js';
@@ -32,6 +33,7 @@ const EMPTY_ITEM = {
   preview: '',
   title: '',
   description: '',
+  tags: [],
   pricings: [],
   active: false,
 };
@@ -57,6 +59,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
           width: 100%;
           min-height: 20em;
           background-color: #efefef;
+        }
+
+        #tags {
+          min-width: 195px;
+          --chip-input-display: inline-block;
+          --chip-input-border-bottom-height: 2px;
         }
 
         .container {
@@ -116,6 +124,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
             </div>
 
             <div class="block">
+              <label for="tags">Tags</label>
+              <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space">
+            </div>
+
+            <div class="block">
               <label for="active">Active</label>
               <input id="active" type="checkbox" ?checked="${this.item.active}">
             </div>
@@ -163,6 +176,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
       }
     } else if (item) {
       this.item = item;
+
+      await this.__els.tags.updateComplete;
+      this.__els.tags.clear();
+      this.__els.tags.addChips(item.tags);
     }
   }
 
@@ -170,7 +187,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     super();
     this.productKeys = new Set([]);
 
-    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ] };
+    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ], tags: [ ... EMPTY_ITEM.tags ] };
 
     store.dispatch(getAllProducts());
   }
@@ -180,6 +197,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       preview: this.renderRoot.getElementById('preview'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
+      tags: this.renderRoot.getElementById('tags'),
       active: this.renderRoot.getElementById('active'),
       pricing: this.renderRoot.getElementById('pricing'),
       file: this.renderRoot.getElementById('file')
@@ -209,6 +227,8 @@ class AdminEdit extends connect(store)(PageViewElement) {
       this.__els.file.type = 'file';
     }
 
+    this.__els.tags.clear();
+
     return this.requestUpdate();
   }
 
@@ -217,6 +237,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const data = {
       title: this.__els.title.value,
       description: this.__els.description.value,
+      tags: JSON.stringify(this.__els.tags.values),
       pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
       image: this.__els.file.files[0]

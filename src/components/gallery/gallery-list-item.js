@@ -87,7 +87,14 @@ class GalleryListItem extends connect(store)(LitElement) {
 
   static get properties() {
     return {
-      key: { type: Number }
+      key: { type: String },
+      item: { type: Object }
+    }
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('key')) {
+      this.item = store.getState().shop.products[this.key];
     }
   }
 

@@ -79,11 +79,10 @@ class GalleryList extends connect(store)(LitElement) {
       </style>
 
       <div class="tiles">
-        ${Object.keys(this._products).map((key) => {
-          const item = this._products[key];
+        ${this._filterIds.map((key) => {
           return html`
             <gallery-list-item
-              .key="${item._id}"
+              .key="${key}"
               @click="${this._navigateToItem}">
             </gallery-list-item>
             `
@@ -93,20 +92,36 @@ class GalleryList extends connect(store)(LitElement) {
   }
 
   static get properties() { return {
-    _products: { type: Object }
+    filter: { type: String },
+    _filterIds: { type: Array },
+    __allProducts: { type: Object }
   }}
+
+  constructor() {
+    super();
+    this.filter = undefined;
+    this._filterIds = [];
+    this.__allProducts = {};
+  }
 
   firstUpdated() {
     store.dispatch(getAllProducts());
   }
 
-  _navigateToItem(e) {
-    store.dispatch(navigate(`/gallery/${this._products[e.target.key].slug}`));
+  updated(changedProperties) {
+    if (changedProperties.has('filter') || changedProperties.has('__allProducts')) {
+      this._filterIds = Object.values(this.__allProducts)
+        .filter(item => this.filter.length == 0 || item.tags.includes(this.filter))
+        .map(item => item._id);
+    }
   }
 
-  // This is called every time something is updated in the store.
+  _navigateToItem(e) {
+    store.dispatch(navigate(`/gallery/${this.__allProducts[e.target.key].slug}`));
+  }
+
   stateChanged(state) {
-    this._products = state.shop.products;
+    this.__allProducts = state.shop.products;
   }
 }
 
