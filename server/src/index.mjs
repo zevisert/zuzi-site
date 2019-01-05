@@ -8,7 +8,7 @@ import multer from 'koa-multer';
 import passport from 'koa-passport';
 
 import path from 'path';
-import h2p from 'http2';
+import h2 from 'http2';
 import fs from 'fs';
 
 // Must be first, side effects import process.env
@@ -78,22 +78,7 @@ app.use(
   apiRoutes.allowedMethods()
 );
 
-const prplServer = (new router())
-  .get('/*', pipe);
+// Pipe unmatched requests to polymer
+app.use(pipe);
 
-app.use(
-  prplServer.routes(),
-  prplServer.allowedMethods()
-);
-
-const runningCallback = () => console.log(`Server up on port ${process.env.PORT}`); 
-
-if (process.env.NODE_ENV === 'DEVELOPMENT') {
-  app.listen(process.env.PORT, runningCallback);
-} else {
-  h2p.createSecureServer({
-      key: fs.readFileSync(process.env.CERT_PRIVKEY_PATH, 'utf8').toString(),
-      cert: fs.readFileSync(process.env.CERT_FULLCHAIN_PATH, 'utf8').toString(),
-    }, app.callback())
-    .listen(process.env.PORT, runningCallback);
-}
+app.listen(process.env.PORT, console.log(`Server up on port ${process.env.PORT}`));

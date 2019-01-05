@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import request from 'request';
-import prpl from 'prpl-server';
 
 import dotenv from 'dotenv';
 import { User } from './models';
@@ -50,16 +49,12 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
           .on('error', (err) => { console.log(err); throw err; }); 
     };
 } else {
-    const prpl_pipe = prpl.makeHandler('build/', {
-        forwardErrors: true,
-        builds: [
-            {name: 'esm-bundled', browserCapabilities: ['es2015', 'modules']},
-            {name: 'es6-bundled', browserCapabilities: ['es2015']},
-            {name: 'es5-bundled'},
-        ]
-    });
-
-    page_pipe = async (ctx, next) => prpl_pipe(ctx.req, ctx.res, next);
+    page_pipe = async ctx => {
+        console.error('Should not be receiving requests in non-development.');
+        console.warn(ctx.request.originalUrl);
+    };
 }
+
+
 
 export const pipe = page_pipe;
