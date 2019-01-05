@@ -228,6 +228,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       this.__els.file.type = 'file';
     }
 
+    await this.__els.tags.updateComplete;
     this.__els.tags.clear();
 
     return this.requestUpdate();
