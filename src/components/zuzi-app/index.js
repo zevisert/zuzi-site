@@ -228,7 +228,7 @@ class ZuziApp extends connect(store)(LitElement) {
         <div class="login">
           <span>
             ${this._loggedIn
-            ? html`<a href="${process.env.API_URL}/auth/logout" rel="external">Logout</a>`
+            ? html`<a href="${process.env.API_URL}/auth/logout" target="_self">Logout</a>`
             : html`<a href="/${str.pages.login}">Login</a>`
             }
           </span>
