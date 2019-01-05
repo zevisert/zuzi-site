@@ -26,19 +26,6 @@
       "addPushManifest": true
     },
     {
-      "name": "2018-ps",
-      "browserCapabilities": ["es2018", "push", "serviceworker"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2018",
-        "transformModulesToAmd": true
-      },
-      "bundle": false,
-      "addServiceWorker": true,
-      "addPushManifest": true
-    },
-    {
       "name": "2018-pm",
       "browserCapabilities": ["es2018", "push", "modules"],
       "html": { "minify": true },
@@ -75,32 +62,6 @@
       },
       "bundle": false,
       "addServiceWorker": true,
-      "addPushManifest": true
-    },
-    {
-      "name": "2017-ps",
-      "browserCapabilities": ["es2017", "push", "serviceworker"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2017",
-        "transformModulesToAmd": true
-      },
-      "bundle": false,
-      "addServiceWorker": true,
-      "addPushManifest": true
-    },
-    {
-      "name": "2017-pm",
-      "browserCapabilities": ["es2017", "push", "modules"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2017",
-        "transformModulesToAmd": false
-      },
-      "bundle": false,
-      "addServiceWorker": false,
       "addPushManifest": true
     },
     {
@@ -143,19 +104,6 @@
       "addPushManifest": false
     },
     {
-      "name": "2016-s",
-      "browserCapabilities": ["es2016", "serviceworker"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2016",
-        "transformModulesToAmd": true
-      },
-      "bundle": true,
-      "addServiceWorker": true,
-      "addPushManifest": false
-    },
-    {
       "name": "2016-m",
       "browserCapabilities": ["es2016", "modules"],
       "html": { "minify": true },
@@ -192,32 +140,6 @@
       },
       "bundle": true,
       "addServiceWorker": true,
-      "addPushManifest": false
-    },
-    {
-      "name": "2015-s",
-      "browserCapabilities": ["es2015", "serviceworker"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2015",
-        "transformModulesToAmd": true
-      },
-      "bundle": true,
-      "addServiceWorker": true,
-      "addPushManifest": false
-    },
-    {
-      "name": "2015-m",
-      "browserCapabilities": ["es2015", "modules"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2015",
-        "transformModulesToAmd": false
-      },
-      "bundle": true,
-      "addServiceWorker": false,
       "addPushManifest": false
     },
     {
