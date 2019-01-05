@@ -8,14 +8,12 @@ import multer from 'koa-multer';
 import passport from 'koa-passport';
 
 import path from 'path';
-import h2 from 'http2';
-import fs from 'fs';
 
 // Must be first, side effects import process.env
 import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
-import { index, create, show, update, destroy, notFound, info} from './routes'; 
+import { index, create, show, update, destroy, notFound, info, env} from './routes'; 
 import { checkout, webhook } from './checkout';
 
 const app = new koa();
@@ -50,6 +48,7 @@ const dataRoutes = (new router())
   .get('/artwork/:slug', show)
   .put('/artwork/:slug', upload.single('image'), update)
   .delete('/artwork/:slug', destroy)
+  .get('/env', env)
   .get('/orders/', info)
   .get('/orders/:id', info)
   .post('/stripe/checkout/intent', checkout.stripe)

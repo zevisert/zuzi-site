@@ -71,13 +71,15 @@
       window.process = {
         env: {
           NODE_ENV: 'production',
-          API_URL: '/api/v1',
-          STRIPE_PK: 'pk_test_yxuk5TGt3veufuAvM4mo4vJF',
-          SENTRY_DSN: 'https://d8e96cd4d8ed4dfebfb74350dd304e3a@sentry.io/1360131',
-          SENTRY_ENABLE: false
+          API_URL: '/api/v1'
         },
         stripe: null
       };
+
+      (async () => { 
+        const { env } = await fetch(`${process.env.API_URL}/env`);
+        window.process.env = { ...window.process.env, ...env };
+      })();
     </script>
 
     <!-- Add any global styles for body, document, etc. -->

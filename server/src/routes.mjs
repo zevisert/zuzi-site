@@ -223,3 +223,14 @@ export async function info(ctx) {
     ctx.throw(404, 'no order found');
   }
 }
+
+
+export async function env(ctx) {
+  ctx.body = {
+    env: {
+      STRIPE_PK: process.env.STRIPE_PK,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE
+    }
+  }
+}
