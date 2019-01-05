@@ -77,7 +77,7 @@
       };
 
       (async () => { 
-        const { env } = await fetch(`${process.env.API_URL}/env`);
+        const { env } = await (await fetch(`${process.env.API_URL}/env`)).json();
         window.process.env = { ...window.process.env, ...env };
       })();
     </script>
