@@ -52,21 +52,8 @@
       "addPushManifest": false
     },
     {
-      "name": "2017-psm",
-      "browserCapabilities": ["es2017", "push", "serviceworker", "modules"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2017",
-        "transformModulesToAmd": false
-      },
-      "bundle": false,
-      "addServiceWorker": true,
-      "addPushManifest": true
-    },
-    {
-      "name": "2017-sm",
-      "browserCapabilities": ["es2017", "serviceworker", "modules"],
+      "name": "2017-m",
+      "browserCapabilities": ["es2017", "modules"],
       "html": { "minify": true },
       "css":  { "minify": true },
       "js":   { "minify": true,
@@ -74,7 +61,7 @@
         "transformModulesToAmd": false
       },
       "bundle": true,
-      "addServiceWorker": true,
+      "addServiceWorker": false,
       "addPushManifest": false
     },
     {
@@ -88,19 +75,6 @@
       },
       "bundle": true,
       "addServiceWorker": false,
-      "addPushManifest": false
-    },
-    {
-      "name": "2016-sm",
-      "browserCapabilities": ["es2016", "serviceworker", "modules"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2016",
-        "transformModulesToAmd": false
-      },
-      "bundle": true,
-      "addServiceWorker": true,
       "addPushManifest": false
     },
     {
@@ -127,19 +101,6 @@
       },
       "bundle": true,
       "addServiceWorker": false,
-      "addPushManifest": false
-    },
-    {
-      "name": "2015-sm",
-      "browserCapabilities": ["es2015", "serviceworker", "modules"],
-      "html": { "minify": true },
-      "css":  { "minify": true },
-      "js":   { "minify": true,
-        "compile": "es2015",
-        "transformModulesToAmd": false
-      },
-      "bundle": true,
-      "addServiceWorker": true,
       "addPushManifest": false
     },
     {
