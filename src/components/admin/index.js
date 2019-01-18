@@ -95,7 +95,7 @@ class AdminView extends connect(store)(PageViewElement) {
             </div>
           </div>
         </div>
-      <a href="/admin/new"><button>New Posting</button></a>
+        <a href="/admin/new"><button>New Posting</button></a>
       </section>
 
       <section id="section-orders">
