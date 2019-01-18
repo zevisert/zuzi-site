@@ -14,7 +14,25 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 
-class About extends PageViewElement {
+import { connect } from 'pwa-helpers/connect-mixin';
+import { store } from '../../store.js';
+import { getAboutText } from '../../actions/app.js';
+
+class About extends connect(store)(PageViewElement) {
+
+  static get is() { return 'about-page'; }
+
+  static get properties() {
+    return {
+      __lines: { type: Array }
+    }
+  }
+
+  constructor() {
+    super();
+    this.__lines = [];
+  }
+
   render() {
     return html`
       ${SharedStyles}
@@ -51,16 +69,19 @@ class About extends PageViewElement {
           <h2 class="title">Welcome to Zuzana Riha Art</h2>
           <img class="about-img" src="images/about-bg.jpg">
           <p>
-            I'm Zuzana Riha, a multi-media artist from Revelstoke, BC.<br>
-            <br>
-            My wish for 2019 is that people can understand their connection to nature.<br>
-            I believe that all beings are equal on this planet and we need to see eye to eye.<br>
-            It’s a beautiful place we share with beautiful beings.<br>
-            May you all find joy in your connections to the natural world this year!
+            ${this.__lines.map(line => html`${line}<br>`)}
           </p>
         </article>
       </section>
     `;
+  }
+
+  firstUpdated() {
+    store.dispatch(getAboutText());
+  }
+
+  stateChanged(newState) {
+    this.__lines = newState.app.about.lines;
   }
 }
 

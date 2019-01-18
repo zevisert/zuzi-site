@@ -15,6 +15,7 @@ export const UPDATE_OFFLINE = 'UPDATE_OFFLINE';
 export const UPDATE_CREDENTIALS = 'UPDATE_CREDENTIALS';
 export const SHOW_SNACKBAR = 'SHOW_SNACKBAR';
 export const HIDE_SNACKBAR = 'HIDE_SNACKBAR';
+export const UPDATE_ABOUT_TEXT = 'UPDATE_ABOUT_TEXT';
 
 export const navigate = path => dispatch => {
 
@@ -156,4 +157,42 @@ export const hideSnackbar = () => {
 
     }
   }
+}
+
+export const getAboutText = () => async dispatch => {
+  const aboutTextReq = await fetch(`${window.process.env.API_URL}/about/text`, {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: new Headers({'content-type': 'application/json'})
+  });
+
+  const { lines: about_lines } = await aboutTextReq.json();
+
+  dispatch({
+    type: UPDATE_ABOUT_TEXT,
+    payload: {
+      lines: about_lines
+    }
+  });
+}
+
+export const updateAboutText = lines => async dispatch => {
+
+  const textUpdateReq = await fetch(`${window.process.env.API_URL}/about/text`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify({
+      lines
+    })
+  });
+
+  const { lines: about_lines } = await textUpdateReq.json();
+
+  dispatch({
+    type: UPDATE_ABOUT_TEXT,
+    payload: {
+      lines: about_lines
+    }
+  });
 }

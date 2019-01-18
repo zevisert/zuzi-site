@@ -13,7 +13,7 @@ import path from 'path';
 import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
-import { index, create, show, update, destroy, notFound, info, env} from './routes'; 
+import { index, create, show, update, destroy, notFound, info, env, about } from './routes'; 
 import { checkout, webhook } from './checkout';
 
 const app = new koa();
@@ -43,6 +43,8 @@ for (const [key, value] of middleware) {
 
 const upload = multer({ dest: 'server/uploads/' });
 const dataRoutes = (new router())
+  .get('/about/text', about)
+  .post('/about/text', about)
   .get(['/artwork', '/'], index)
   .post('/artwork', upload.single('image'), create)
   .get('/artwork/:slug', show)

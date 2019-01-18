@@ -3,6 +3,11 @@ import passportLocalMongoose from 'passport-local-mongoose';
 
 mongoose.set('useCreateIndex', true);
 
+export const aboutSchema = new mongoose.Schema({
+    lines: {type: [String], default: []}
+});
+export const AboutPage = mongoose.model('AboutPage', aboutSchema);
+
 export const sizeSchema = new mongoose.Schema({
     width: Number,
     height: Number,

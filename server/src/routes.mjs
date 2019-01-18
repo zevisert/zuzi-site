@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import path from 'path';
 import del from 'del';
 
-import { Post, Pricing, Size, Order } from './models';
+import { Post, Pricing, Size, Order, AboutPage } from './models';
 import { v8n } from './validation';
 
 /* 
@@ -233,4 +233,22 @@ export async function env(ctx) {
       SENTRY_ENABLE: process.env.SENTRY_ENABLE
     }
   }
+}
+
+
+export async function about(ctx) {
+
+  let aboutPage = await AboutPage.findOne();
+  if (!aboutPage) {
+    aboutPage = new AboutPage();
+  }
+
+  if (ctx.method === "POST") {
+    const body = ctx.request.body;
+    const lines = body.lines;
+    aboutPage.lines = lines;
+    await aboutPage.save();
+  }
+
+  ctx.body = { lines: aboutPage.lines };
 }
