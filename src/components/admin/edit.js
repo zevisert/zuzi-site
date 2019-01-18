@@ -361,7 +361,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       const extension = /(?:\.([^.]+))?$/.exec(input.files[0].name)[0];
 
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
-        await import('tiff.js/tiff.min.js');
+        await import('https://unpkg.com/tiff.js@1.0.0/tiff.min.js');
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
         Tiff.initialize({ TOTAL_MEMORY: 1e9 });
