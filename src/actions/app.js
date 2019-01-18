@@ -195,4 +195,6 @@ export const updateAboutText = lines => async dispatch => {
       lines: about_lines
     }
   });
+
+  dispatch(showSnackbar("About page text updated"));
 }
