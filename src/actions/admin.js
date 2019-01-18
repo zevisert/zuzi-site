@@ -1,3 +1,5 @@
+import { showSnackbar } from './app.js';
+
 export const ADMIN_CREATE_ITEM = 'ADMIN_CREATE_ITEM';
 export const ADMIN_UPDATE_ITEM = 'ADMIN_UPDATE_ITEM';
 export const ADMIN_DELETE_ITEM = 'ADMIN_DELETE_ITEM';
@@ -27,6 +29,8 @@ export const createItem = data => async dispatch => {
       item
     }
   });
+
+  dispatch(showSnackbar('Item saved'));
 }
 
 export const editItem = (slug, data) => async dispatch => {
@@ -51,6 +55,8 @@ export const editItem = (slug, data) => async dispatch => {
       updated
     }
   });
+
+  dispatch(showSnackbar('Item saved'));
 }
 
 

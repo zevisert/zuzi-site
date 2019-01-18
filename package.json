@@ -46,7 +46,8 @@
     "sharp": "^0.21.1",
     "shortid": "^2.2.14",
     "simple-chip": "^1.2.3",
-    "stripe": "^6.19.0"
+    "stripe": "^6.19.0",
+    "tiff.js": "^1.0.0"
   },
   "devDependencies": {
     "@polymer/test-fixture": "^4.0.2",
