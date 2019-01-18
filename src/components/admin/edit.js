@@ -255,7 +255,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       this.item = item;
 
       if (this.item.preview) {
-        this.loadImage(`uploads/${this.item.preview}`);
+        this.loadImage(`/uploads/${this.item.preview}`);
       }
 
       await this.__els.tags.updateComplete;
