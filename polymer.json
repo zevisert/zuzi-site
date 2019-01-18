@@ -19,7 +19,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2018",
-        "transformModulesToAmd": false
+        "transformModulesToAmd": false,
+        "exclude": []
       },
       "bundle": false,
       "addServiceWorker": true,
@@ -32,7 +33,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2018",
-        "transformModulesToAmd": false
+        "transformModulesToAmd": false,
+        "exclude": []
       },
       "bundle": false,
       "addServiceWorker": false,
@@ -45,7 +47,22 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2018",
-        "transformModulesToAmd": false
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": true,
+      "addPushManifest": false
+    },
+    {
+      "name": "2017-sm",
+      "browserCapabilities": ["es2017", "serviceworker", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2017",
+        "transformModulesToAmd": false,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": true,
@@ -58,7 +75,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2017",
-        "transformModulesToAmd": false
+        "transformModulesToAmd": false,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
@@ -71,7 +89,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2017",
-        "transformModulesToAmd": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
@@ -84,7 +103,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2016",
-        "transformModulesToAmd": false
+        "transformModulesToAmd": false,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
@@ -97,7 +117,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2016",
-        "transformModulesToAmd": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
@@ -110,7 +131,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es2015",
-        "transformModulesToAmd": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
@@ -123,7 +145,8 @@
       "css":  { "minify": true },
       "js":   { "minify": true,
         "compile": "es5",
-        "transformModulesToAmd": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
       "addServiceWorker": false,
