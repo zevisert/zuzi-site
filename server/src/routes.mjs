@@ -50,7 +50,7 @@ export async function create(ctx) {
   if (image) {
     const uploadName = `${shortid.generate()}.jpg`;
     await sharp(image.path)
-      .resize({width: 600})
+      .resize({width: 1000})
       .jpeg({
         progressive: true,
         quality: 100
@@ -118,7 +118,7 @@ export async function update(ctx) {
   if (image) {
     const uploadName = `${shortid.generate()}.jpg`;
     await sharp(image.path)
-      .resize({width: 600})
+      .resize({width: 1000})
       .jpeg({
         progressive: true,
         quality: 100

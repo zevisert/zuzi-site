@@ -29,7 +29,7 @@ passport.use(User.createStrategy());
 const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
-  ["body parser", body({ multipart: true, rawBody: true })],
+  ["body parser", body({ multipart: true, rawBody: true, formidable: { maxFileSize: Infinity } })],
   ["static /uploads", mount('/uploads', serve(path.join(process.cwd(), 'server', 'uploads')))],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
@@ -41,7 +41,7 @@ for (const [key, value] of middleware) {
   app.use(value);
 }
 
-const upload = multer({dest: 'server/uploads/'});
+const upload = multer({ dest: 'server/uploads/' });
 const dataRoutes = (new router())
   .get(['/artwork', '/'], index)
   .post('/artwork', upload.single('image'), create)
