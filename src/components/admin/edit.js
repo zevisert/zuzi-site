@@ -361,7 +361,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
       const extension = /(?:\.([^.]+))?$/.exec(input.files[0].name)[0];
 
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
-        await import('tiff.js/tiff.min.js');
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
         Tiff.initialize({ TOTAL_MEMORY: 1e9 });
@@ -377,6 +376,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
             resolve(blob);
           });
         });
+
       } else {
         blob = await new Response(input.files[0]).blob();
       }
