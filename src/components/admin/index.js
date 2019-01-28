@@ -19,7 +19,7 @@ import { getAllProducts } from '../../actions/shop.js';
 import { deleteItem, createItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
-import { navigate } from '../../actions/app.js';
+import { navigate, updateAboutText, getAboutText } from '../../actions/app.js';
 
 import { admin } from '../../reducers/admin.js';
 
@@ -32,6 +32,11 @@ class AdminView extends connect(store)(PageViewElement) {
       ${ButtonSharedStyles}
       ${SharedDynamicTable}
       <style>
+        #about-text {
+          border: 2px solid black;
+          min-width: 1162px;
+        }
+
         td img {
           max-width: 40px;
         }
@@ -59,6 +64,15 @@ class AdminView extends connect(store)(PageViewElement) {
         }
       </style>
       <h2>Admin View</h2>
+
+      <section id="section-about-text">
+        <h3>About Page</h3>
+        <div>
+          <textarea id="about-text" placeholder="Text below image on about page" .value=${store.getState().app.about.lines.join('\n')}></textarea>
+        </div>
+        <button @click="${(e) => this.submitAboutText() }">Update Welcome Text</button>
+      </section>
+
       <section id="section-artwork">
         <h3>Posted Artwork</h3>
         <div class="limiter">
@@ -95,7 +109,7 @@ class AdminView extends connect(store)(PageViewElement) {
             </div>
           </div>
         </div>
-      <a href="/admin/new"><button>New Posting</button></a>
+        <a href="/admin/new"><button>New Posting</button></a>
       </section>
 
       <section id="section-orders">
@@ -155,6 +169,7 @@ class AdminView extends connect(store)(PageViewElement) {
   }
 
   async firstUpdated() {
+    store.dispatch(getAboutText());
     store.dispatch(getAllProducts());
     store.dispatch(getOrders());
   }
@@ -174,6 +189,11 @@ class AdminView extends connect(store)(PageViewElement) {
 
   async deleteItem(slug) {
     store.dispatch(deleteItem(slug));
+  }
+
+  async submitAboutText() {
+    const lines = this.shadowRoot.getElementById('about-text').value;
+    store.dispatch(updateAboutText(lines.split('\n')));
   }
 }
 

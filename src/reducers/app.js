@@ -13,12 +13,16 @@ import {
   UPDATE_OFFLINE,
   UPDATE_CREDENTIALS,
   SHOW_SNACKBAR,
-  HIDE_SNACKBAR
+  HIDE_SNACKBAR,
+  UPDATE_ABOUT_TEXT,
 } from '../actions/app.js';
 
 const INITIAL_STATE = {
   page: '',
   offline: false,
+  about: {
+    lines: []
+  },
   snackbar: {
     active: false,
     message: ''
@@ -49,6 +53,13 @@ const app = (state = INITIAL_STATE, action) => {
         ...state,
         snackbar: snackbar(state.snackbar, action)
       };
+    case UPDATE_ABOUT_TEXT:
+      return {
+        ...state,
+        about: {
+          lines: action.payload.lines
+        }
+      }
     default:
       return state;
   }

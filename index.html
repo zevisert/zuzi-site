@@ -48,14 +48,14 @@
 
     <!-- Default twitter cards -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Zuzana Riha's artwork and portfolio">
+    <meta name="twitter:title" content="Zuzana Riha's gallery and online store">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Zuzi Art">
     <meta property="og:image" content="images/manifest/icon-144x144.png" />
 
     <!-- Performance tip: hint to the browser to start the handshake for the fonts site -->
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Kristi" rel="stylesheet">
     <script>
       // Load and register pre-caching Service Worker
       if ('serviceWorker' in navigator) {
@@ -71,15 +71,15 @@
       window.process = {
         env: {
           NODE_ENV: 'production',
-          API_URL: '/api/v1',
-          STRIPE_PK: 'pk_test_yxuk5TGt3veufuAvM4mo4vJF',
-          ETRANSFER_EMAIL: 'etransfer@zuzi.art',
-          ETRANSFER_PW: 'lookinggood',
-          SENTRY_DSN: 'https://d8e96cd4d8ed4dfebfb74350dd304e3a@sentry.io/1360131',
-          SENTRY_ENABLE: false
+          API_URL: '/api/v1'
         },
         stripe: null
       };
+
+      (async () => { 
+        const { env } = await (await fetch(`${process.env.API_URL}/env`)).json();
+        window.process.env = { ...window.process.env, ...env };
+      })();
     </script>
 
     <!-- Add any global styles for body, document, etc. -->
@@ -105,6 +105,7 @@
     <!-- Any external scripts -->
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://browser.sentry-cdn.com/4.4.2/bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/tiff.js@1.0.0/tiff.min.js" crossorigin="anonymous"></script>
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>

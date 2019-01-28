@@ -160,17 +160,16 @@ class Snackbar extends connect(store)(LitElement) {
   }
 
   _showMessage() {
-    if (this.__queue.length > 0) {
-      setTimeout(() => {
-        if (this.__timer.remaining <= 0) {
-          const savedState = this.__queue[0];
-          this.currentMessage = savedState.message;
-          this.currentActiveState = savedState.active;
-          this.__timer.reset();
-          this.__timer.start();
-        }
-      }, 500);
-    }
+    setTimeout(() => {
+      if (this.__timer.remaining <= 0 && this.__queue.length > 0) {
+        const savedState = this.__queue[0];
+        this.currentMessage = savedState.message;
+        this.currentActiveState = savedState.active;
+        this.__timer.reset();
+        this.__timer.start();
+      }
+    }, 500);
+
 
     if (this.__timer.remaining === 0) {
       this.currentMessage = '';

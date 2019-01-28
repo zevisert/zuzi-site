@@ -14,7 +14,25 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 
-class About extends PageViewElement {
+import { connect } from 'pwa-helpers/connect-mixin';
+import { store } from '../../store.js';
+import { getAboutText } from '../../actions/app.js';
+
+class About extends connect(store)(PageViewElement) {
+
+  static get is() { return 'about-page'; }
+
+  static get properties() {
+    return {
+      __lines: { type: Array }
+    }
+  }
+
+  constructor() {
+    super();
+    this.__lines = [];
+  }
+
   render() {
     return html`
       ${SharedStyles}
@@ -24,40 +42,46 @@ class About extends PageViewElement {
           z-index: 0;
         }
 
-        .about-bg {
-          background-image: url("images/about-bg.jpg");
-          background-position: center;
-          background-size: cover;
-          position: fixed;
-          left: 0;
-          top: 85px;
-          z-index: -1;
-          min-height: 100vh;
-          min-width: 100vw;
+        .title {
+          font-family: "Kristi";
+          font-size: 100px;
+          font-weight: 100;
         }
 
-        span {
-          background-color: white;
-          padding: 0 5px;
+        .about-img {
+          max-width: 1200px;
+          width: 100%;
         }
 
         section {
           font-size: xx-large;
         }
 
+        article {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
       </style>
       <section>
-        <h2><span>Welcome</span></h2>
-        <p><span>I'm Zuzana Riha, a multi-media artist from Revelstoke, BC.</span></p>
-        <p>
-          <span>My wish for 2019 is that people can understand their connection to nature.</span><br>
-          <span>I believe that all beings are equal on this planet and we need to see eye to eye.</span><br>
-          <span>It’s a beautiful place we share with beautiful beings.</span><br>
-          <span>May you all find joy in your connections to the natural world this year!</span>
-        </p>
+        <article>
+          <h2 class="title">Welcome to Zuzana Riha Art</h2>
+          <img class="about-img" src="images/about-bg.jpg">
+          <p>
+            ${this.__lines.map(line => html`${line}<br>`)}
+          </p>
+        </article>
       </section>
-      <div class="about-bg"></div>
     `;
+  }
+
+  firstUpdated() {
+    store.dispatch(getAboutText());
+  }
+
+  stateChanged(newState) {
+    this.__lines = newState.app.about.lines;
   }
 }
 
