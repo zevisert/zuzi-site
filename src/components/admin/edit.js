@@ -117,6 +117,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
           background-color: rgba(0,0,0, 0.7);
           align-items: center;
           justify-content: center;
+          flex-direction: column;
         }
 
         .overlay[active] {
@@ -126,7 +127,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
         .overlay span {
           color: white;
           font-size: larger;
-          display: block;
         }
 
         .form {
