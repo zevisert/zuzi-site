@@ -4,7 +4,13 @@ import path from 'path';
 import del from 'del';
 
 import { Post, Pricing, Size, Order, AboutPage } from './models';
-import { v8n } from './validation';
+
+const toSlug = title => title
+  .toLowerCase()
+  .replace(/[^a-z-AZ0-9-]+/g, ' ')
+  .replace(/-/g, ' ')
+  .trim()
+  .replace(/\s+/g, '-');
 
 /* 
 ========================================= API ROUTES ==============================================
@@ -42,50 +48,55 @@ export async function create(ctx) {
     ctx.redirect("/login");
     return;
   }
-
-  const body = ctx.request.body;
-  const post = new Post();
-
-  const image = ctx.request.files.image;
-  if (image) {
-    const uploadName = `${shortid.generate()}.jpg`;
-    await sharp(image.path)
-      .resize({width: 1000})
-      .jpeg({
-        progressive: true,
-        quality: 100
-      })
-      .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
-    post.preview = uploadName;
-  } else {
-    ctx.throw(400, { error: 'No file uploaded' });
-  }
-  
-  const pricings = JSON.parse(body.pricings);
-  post.pricings = [];
-
-  for (const obj of pricings) {
-    const pricing = new Pricing();
-    pricing.price = obj.price;
-    pricing.medium = obj.medium;
-    pricing.available = obj.available;
-    pricing.size = new Size(obj.size);
+  try { 
     
-    pricing.save();
-    post.pricings.push(pricing);
+    const body = ctx.request.body;
+    const post = new Post();
+
+    const image = ctx.request.files.image;
+    if (image) {
+      const uploadName = `${shortid.generate()}.jpg`;
+      await sharp(image.path)
+        .resize({width: 1000})
+        .jpeg({
+          progressive: true,
+          quality: 100
+        })
+        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      post.preview = uploadName;
+    } else {
+      ctx.throw(400, { error: 'No file uploaded' });
+    }
+    
+    const pricings = JSON.parse(body.pricings);
+    post.pricings = [];
+
+    for (const obj of pricings) {
+      const pricing = new Pricing();
+      pricing.price = obj.price;
+      pricing.medium = obj.medium;
+      pricing.available = obj.available;
+      pricing.size = new Size(obj.size);
+      
+      pricing.save();
+      post.pricings.push(pricing);
+    }
+
+    const tags = JSON.parse(body.tags);
+    post.tags = tags;
+
+    post.slug = toSlug(body.title)
+    post.title = body.title;
+    post.description = body.description;
+    post.active = body.active;
+    
+    await post.save();
+
+    ctx.body = { post };
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = { error };
   }
-
-  const tags = JSON.parse(body.tags);
-  post.tags = tags;
-
-  post.slug = body.title.toLowerCase().replace(/ /g, '-');
-  post.title = body.title;
-  post.description = body.description;
-  post.active = body.active;
-  
-  await post.save();
-
-  ctx.body = { post };
 }
 
 export async function show(ctx) {
@@ -109,55 +120,61 @@ export async function update(ctx) {
     return;
   }
 
-  const slug = ctx.params.slug;
-  const post = await Post.findOne({slug}).exec();
+  try {
 
-  const body = ctx.request.body;
+    const slug = ctx.params.slug;
+    const post = await Post.findOne({slug}).exec();
 
-  const image = ctx.request.files.image;
-  if (image) {
-    const uploadName = `${shortid.generate()}.jpg`;
-    await sharp(image.path)
-      .resize({width: 1000})
-      .jpeg({
-        progressive: true,
-        quality: 100
-      })
-      .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
-    post.preview = uploadName;
-  }
+    const body = ctx.request.body;
 
-  post.title = body.title || post.title;
-  post.description = body.description || post.description;
-  
-  if (body.pricings) {
-    const pricings = JSON.parse(body.pricings);
-    post.pricings = [];
-  
-    for (const obj of pricings) {
-      const pricing = new Pricing();
-      pricing.price = obj.price;
-      pricing.medium = obj.medium;
-      pricing.available = obj.available;
-      pricing.size = new Size(obj.size);
-      
-      await pricing.save();
-      post.pricings.push(pricing);
+    const image = ctx.request.files.image;
+    if (image) {
+      const uploadName = `${shortid.generate()}.jpg`;
+      await sharp(image.path)
+        .resize({width: 1000})
+        .jpeg({
+          progressive: true,
+          quality: 100
+        })
+        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      post.preview = uploadName;
     }
+
+    post.title = body.title || post.title;
+    post.description = body.description || post.description;
+    
+    if (body.pricings) {
+      const pricings = JSON.parse(body.pricings);
+      post.pricings = [];
+    
+      for (const obj of pricings) {
+        const pricing = new Pricing();
+        pricing.price = obj.price;
+        pricing.medium = obj.medium;
+        pricing.available = obj.available;
+        pricing.size = new Size(obj.size);
+        
+        await pricing.save();
+        post.pricings.push(pricing);
+      }
+    }
+
+    if (body.tags) {
+      const tags = JSON.parse(body.tags);
+      post.tags = tags;
+    }
+
+    post.active = body.active || post.active;
+
+    post.slug = toSlug(post.title);
+
+    await post.save();
+
+    ctx.body = { post };
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = { error };
   }
-
-  if (body.tags) {
-    const tags = JSON.parse(body.tags);
-    post.tags = tags;
-  }
-
-  post.active = body.active || post.active;
-
-  post.slug = post.title.toLowerCase().replace(/ /g, '-');
-
-  await post.save();
-
-  ctx.body = { post };
 }
 
 export async function destroy(ctx) {
