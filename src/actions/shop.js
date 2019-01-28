@@ -29,39 +29,48 @@ export const getAllProducts = () => async (dispatch) => {
 
 export const checkoutStripe = (card, { amount, metadata }) => async dispatch => {
 
-  const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: new Headers({'content-type': 'application/json'}),
-    body: JSON.stringify({amount, metadata})
-  });
-
-  const { client_secret } = await response.json();
-
   const stripe = process.stripe;
   if (!stripe) {
-    dispatch(showSnackbar(`Sorry. Stripe hasn't loaded. Try again?`));
+    dispatch(showSnackbar(`Sorry. Card checkout hasn't loaded. Try again?`));
     return;
   }
 
-  try {
+  const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: new Headers({ 'content-type': 'application/json' }),
+    body: JSON.stringify({ amount, metadata })
+  });
+
+  const reply = await response.json();
+
+  if (reply.client_secret) {
+
     const { error } = await stripe.handleCardPayment(
-      client_secret, card, {
+      reply.client_secret, card, {
         source_data: {
-          owner: { name: metadata.customer.name }
+          owner: {
+            name: metadata.customer.name
+          }
         }
       }
     );
 
     if (error) {
-      throw error;
+      dispatch(showSnackbar(error.message));
+    } else {
+      dispatch({ type: CHECKOUT_SUCCESS });
+      dispatch(showSnackbar('Your order has been submitted.'));
     }
-
-    dispatch({ type: CHECKOUT_SUCCESS });
-    dispatch(showSnackbar('Your order has been submitted.'));
-
-  } catch (error) {
-    dispatch(showSnackbar(error.message));
+  } else if (reply.errors) {
+    for (const value of Object.values(reply.errors)) {
+      if (value.kind) {
+        dispatch(checkoutFailed(value.message));
+        break;
+      }
+    }
+  } else {
+    dispatch(checkoutFailed('Something went wrong while processing your order.'));
   }
 };
 
@@ -75,8 +84,19 @@ export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
 
   const reply = await response.json();
 
-  dispatch({ type: CHECKOUT_SUCCESS });
-  dispatch(showSnackbar('Your order has been submitted.'));
+  if (reply.success) {
+    dispatch({ type: CHECKOUT_SUCCESS });
+    dispatch(showSnackbar('Your order has been submitted.'));
+  } else if (reply.errors) {
+    for (const value of Object.values(reply.errors)) {
+      if (value.kind) {
+        dispatch(checkoutFailed(value.message));
+        break;
+      }
+    }
+  } else {
+    dispatch(checkoutFailed('Something went wrong while processing your order.'));
+  }
 };
 
 export const checkoutFailed = message => async dispatch => {

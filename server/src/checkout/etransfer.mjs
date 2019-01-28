@@ -27,7 +27,11 @@ export async function checkout(ctx) {
     info: metadata.info
   });
 
-  await order.save();
+  try {
+    await order.save();
+  } catch (errors) {
+    ctx.throw(422, JSON.stringify({ errors: errors.errors }));
+  }
 
   const inflatedOrder = await Order.findById(order._id)
     .populate({path: 'items.item', select: "title description"})
