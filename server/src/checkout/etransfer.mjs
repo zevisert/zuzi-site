@@ -82,7 +82,7 @@ export async function webhook(ctx) {
 
       ctx.body = { orders: [ order ] };
     } else {
-      ctx.throw(400, 'Rejected order must have a reason');
+      ctx.throw(400, JSON.stringify({ error: 'Rejected order must have a reason'}));
     }
   }
 } 

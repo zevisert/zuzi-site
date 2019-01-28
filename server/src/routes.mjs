@@ -27,7 +27,7 @@ const toSlug = title => title
 export async function notFound(ctx, next) {
   await next();
   if (ctx.body || !ctx.idempotent) return;
-  ctx.throw(404, "404: Not Found", { error: '404: unknown route' });
+  ctx.throw(404, JSON.stringify({ error: '404: unknown route' }));
 }
 
 export async function index(ctx) {
@@ -65,7 +65,7 @@ export async function create(ctx) {
         .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
       post.preview = uploadName;
     } else {
-      ctx.throw(400, { error: 'No file uploaded' });
+      ctx.throw(400, JSON.stringify({ error: 'No file uploaded' }));
     }
     
     const pricings = JSON.parse(body.pricings);
@@ -94,8 +94,7 @@ export async function create(ctx) {
 
     ctx.body = { post };
   } catch (error) {
-    ctx.status = 400;
-    ctx.body = { error };
+    ctx.throw(400, JSON.stringify({ error }));
   }
 }
 
@@ -108,7 +107,7 @@ export async function show(ctx) {
 
   const slug = ctx.params.slug;
   const post = await Post.findOne({slug, ...opts}).exec();
-  if (!post) ctx.throw(404, { error: 'invalid post slug' });
+  if (!post) ctx.throw(404, JSON.stringify({ error: 'invalid post slug' }));
 
   ctx.body = { post };
 }
@@ -172,8 +171,7 @@ export async function update(ctx) {
 
     ctx.body = { post };
   } catch (error) {
-    ctx.status = 400;
-    ctx.body = { error };
+    ctx.throw(400, JSON.stringify({ error }));
   }
 }
 
@@ -237,7 +235,7 @@ export async function info(ctx) {
     }
 
   } catch (err) {
-    ctx.throw(404, 'no order found');
+    ctx.throw(404, JSON.stringify({ error: 'no order found' }));
   }
 }
 
