@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const isEmail = string => (new RegExp([
     /^(([^<(\[\\.,;:\s@"\])>]+(\.[^<(\[\\.,;:\s@"\])>]+)*)|(".+"))/,
     /@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-].map(part => part.source).join())).test(string);
+].map(part => part.source).join(''))).test(string);
 
 export const shippingInfoSchema = new mongoose.Schema({
     address_lines: {
