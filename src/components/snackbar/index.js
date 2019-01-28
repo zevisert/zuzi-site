@@ -94,6 +94,10 @@ class Snackbar extends connect(store)(LitElement) {
           transition: transform 0.5s ease, opacity 0.5s ease;
         }
 
+        .snackbar span::first-letter {
+          text-transform: capitalize;
+        }
+
         .snackbar::after {
           content: '';
           background-color: red;
