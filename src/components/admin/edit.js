@@ -22,7 +22,7 @@ import { getAllProducts } from '../../actions/shop.js';
 import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
-import { navigate, showSnackbar } from '../../actions/app.js';
+import { navigate } from '../../actions/app.js';
 
 import 'simple-chip';
 import '../underline-input.js';
@@ -51,7 +51,8 @@ class AdminEdit extends connect(store)(PageViewElement) {
   static get is() { return 'admin-edit'; }
   static get properties() { return {
     item: { type: JsonType },
-    __imageLoading: { type: Boolean }
+    __imageLoading: { type: Boolean },
+    __uploadProgress: { type: String }
   }}
 
   constructor() {
@@ -60,6 +61,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els = {};
     this.__tiff = null;
     this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
 
     this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ], tags: [ ... EMPTY_ITEM.tags ] };
 
@@ -73,6 +75,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
       ${SharedDynamicTable}
 
       <style>
+
+        :host {
+          --image-height: 200px;
+        }
+
         #preview {
           background-color: #efefef;
         }
@@ -90,17 +97,36 @@ class AdminEdit extends connect(store)(PageViewElement) {
           width: 100%;
         }
 
+        .canvas-container {
+          position: relative;
+          width: 1000px;
+          height: var(--image-height);
+        }
+
+        .canvas-container canvas,
+        .canvas-container .overlay {
+          position: absolute;
+
+          width: 1000px;
+          height: var(--image-height);
+        }
+
         .overlay {
           display: none;
+
+          background-color: rgba(0,0,0, 0.7);
+          align-items: center;
+          justify-content: center;
         }
 
         .overlay[active] {
-          position: absolute;
-          background-color: rgba(0,0,0, 0.7);
-          width: 1000px;
           display: flex;
-          align-items: center;
-          justify-content: center;
+        }
+
+        .overlay span {
+          color: white;
+          font-size: larger;
+          display: block;
         }
 
         .form {
@@ -149,10 +175,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
         <input id="file" type="file" hidden>
         <div class="container">
-          <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
-            <donut-spinner></donut-spinner>
+          <div id="container" class="canvas-container">
+            <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+            <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
+              <donut-spinner></donut-spinner>
+              <span>${this.__uploadProgress}</span>
+            </div>
           </div>
-          <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
 
           <div class="form">
             <div class="form-info">
@@ -178,14 +207,24 @@ class AdminEdit extends connect(store)(PageViewElement) {
                 </div>
               </div>
 
-              <button @click="${this.submit}">${this.item._id === null ? "Create Posting" : "Save Changes"}</button>
+              <button
+                ?disabled="${this.__imageLoading}"
+                @click="${this.submit}"
+              >
+                ${this.item._id === null ? "Create Posting" : "Save Changes"}
+              </button>
             </div>
 
             <div class="form-pricing">
               <div>
                 <admin-pricing-form id="pricing"></admin-pricing-form>
               </div>
-              <button @click="${e => this.__els.pricing.broadcastPricing(e) }">Add pricing</button>
+              <button
+                ?disabled="${this.__imageLoading}"
+                @click="${e => this.__els.pricing.broadcastPricing(e) }"
+              >
+                Add pricing
+              </button>
             </div>
           </div>
         </div>
@@ -218,7 +257,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
                           }
                         </td>
                         <td class="column4">
-                          <button @click="${(e) => { e.stopPropagation(); this.pricingRemoved(pricing); }}">Remove</button>
+                          <button
+                            ?disabled="${this.__imageLoading}"
+                            @click="${(e) => { e.stopPropagation(); this.pricingRemoved(pricing); }}"
+                          >
+                            Remove
+                          </button>
                         </td>
                       </tr>`
                     )}
@@ -252,7 +296,9 @@ class AdminEdit extends connect(store)(PageViewElement) {
         store.dispatch(navigate(`/admin/${newState.shop.products[id].slug}`));
       }
     } else if (item) {
+
       this.item = item;
+      this.__imageLoading = false;
 
       if (this.item.preview) {
         this.loadImage(`/uploads/${this.item.preview}`);
@@ -292,9 +338,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__freeImage();
     const ctx = this.__els.preview.getContext('2d');
     ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
-    this.__els.preview.width = 1000;
-    this.__els.preview.height = 200;
-    this.__els.cssText = ``;
+
+    this.renderRoot.host.style.setProperty('--image-height', `200px`);
+
+    this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
+
 
     this.__els.file.value = '';
     if(!/safari/i.test(navigator.userAgent)) {
@@ -318,10 +367,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
       image: this.__els.file.files[0]
     };
 
+    this.__imageLoading = true;
+    const progressCallback = this.uploadProgress.bind(this);
+    const doneCallback = this.uploadDone.bind(this);
+
     if (this.item._id === null) {
-      store.dispatch(createItem(data));
+      store.dispatch(createItem(data, progressCallback, doneCallback));
     } else {
-      store.dispatch(editItem(this.item.slug, data));
+      store.dispatch(editItem(this.item.slug, data, progressCallback, doneCallback));
     }
   }
 
@@ -346,20 +399,37 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
   }
 
+  uploadProgress(e) {
+    if (e.lengthComputable) {
+      this.__uploadProgress = `Uploading: (${Number(e.loaded / e.total * 100).toFixed(0)} %)`;
+    } else {
+      this.__uploadProgress = 'Working...'
+    }
+  }
+
+  uploadDone() {
+    this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
+  }
+
   async readLocalImage() {
     const input = this.__els.file;
 
+    // Is a file selected?
     if (input.files && input.files[0]) {
 
-      this.__imageLoading = true;
-      this.__els.overlay.style.height = `${this.__els.preview.style.height || this.__els.preview.height}px`;
-
+      // Try and free an existing blob
       this.__freeImage();
 
-      let blob;
+      // Setup loading indicators
+      this.__imageLoading = true;
+      this.__uploadProgress = 'Working...';
 
-      const extension = /(?:\.([^.]+))?$/.exec(input.files[0].name)[0];
+      // Get file extension
+      const [ extension='' ] = /(?:\.([^.]+))?$/.exec(input.files[0].name);
+      let blob = null;
 
+      // Test for .tiff
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
@@ -378,6 +448,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
         });
 
       } else {
+        // Not .tiff, use response to blob
         blob = await new Response(input.files[0]).blob();
       }
 
@@ -388,14 +459,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
   loadImage(source) {
     const img = new Image();
     img.onload = () => {
+
       const canvas = this.__els.preview;
 
       canvas.width = img.width;
       canvas.height = img.height;
-      canvas.style.cssText = `
-        max-width: 1000px;
-        height: ${(1000 / img.width) * img.height}px;
-      `;
+
+      this.renderRoot.host.style.setProperty('--image-height', `${(1000 / img.width) * img.height}px`);
 
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
