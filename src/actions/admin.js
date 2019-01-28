@@ -6,57 +6,91 @@ export const ADMIN_DELETE_ITEM = 'ADMIN_DELETE_ITEM';
 
 export const ADMIN_GET_ORDERS = 'ADMIN_GET_ORDERS';
 
-export const createItem = data => async dispatch => {
+export const createItem = (data, onProgress, done) => async dispatch => {
 
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
     formData.append(key, value);
   }
 
-  const response = await fetch(`${process.env.API_URL}/artwork`, {
-    method: "POST",
-    body: formData,
-    credentials: "same-origin"
-  });
+  const ajax = new XMLHttpRequest();
+  ajax.open('POST', `${process.env.API_URL}/artwork`);
+  ajax.responseType = 'json';
 
-  const reply = await response.json();
-  const item = reply.post;
-  console.log(item);
+  ajax.upload.onprogress = onProgress;
 
-  dispatch({
-    type: ADMIN_CREATE_ITEM,
-    payload: {
-      item
+  ajax.onabort = () => { done(); dispatch(showSnackbar(`Upload aborted for ${data.title}`)); };
+  ajax.onerror = () => { done(); dispatch(showSnackbar('Request failed')); };
+
+  ajax.onload = () => {
+    done();
+    if (ajax.status != 200) {
+      const { error } = ajax.response;
+      const fields = Object.keys(error.errors).filter(field => field !== 'slug');
+      const message = `${fields.join(', ')} ${fields.length === 1 ? 'is' : 'are'} not valid`;
+
+      dispatch(showSnackbar(message));
+
+    } else {
+
+      const reply = ajax.response;
+      const item = reply.post;
+
+      dispatch({
+        type: ADMIN_CREATE_ITEM,
+        payload: {
+          item
+        }
+      });
+
+      dispatch(showSnackbar('Item saved'));
     }
-  });
+  }
 
-  dispatch(showSnackbar('Item saved'));
+  ajax.send(formData);
 }
 
-export const editItem = (slug, data) => async dispatch => {
+export const editItem = (slug, data, onProgress, done) => async dispatch => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
     formData.append(key, value);
   }
 
-  const response = await fetch(`${process.env.API_URL}/artwork/${slug}`, {
-    method: "PUT",
-    body: formData,
-    credentials: "same-origin"
-  });
+  const ajax = new XMLHttpRequest();
+  ajax.open('PUT', `${process.env.API_URL}/artwork/${slug}`);
+  ajax.responseType = 'json';
 
-  const reply = await response.json();
-  const updated = reply.post;
-  console.log(updated);
+  ajax.upload.onprogress = onProgress;
 
-  dispatch({
-    type: ADMIN_UPDATE_ITEM,
-    payload: {
-      updated
+  ajax.onabort = () => { done(); dispatch(showSnackbar(`Upload aborted for ${data.title}`)); };
+  ajax.onerror = () => { done(); dispatch(showSnackbar('Request failed')); };
+
+  ajax.onload = () => {
+    done();
+    if (ajax.status != 200) {
+      const { error } = ajax.response;
+      const fields = Object.keys(error.errors).filter(field => field !== 'slug');
+      const message = `${fields.join(', ')} ${fields.length === 1 ? 'is' : 'are'} not valid`;
+
+      dispatch(showSnackbar(message));
+
+    } else {
+      const reply = ajax.response;
+      const updated = reply.post;
+      console.log(updated);
+
+      dispatch({
+        type: ADMIN_UPDATE_ITEM,
+        payload: {
+          updated
+        }
+      });
+
+      dispatch(showSnackbar('Item saved'));
     }
-  });
+  }
 
-  dispatch(showSnackbar('Item saved'));
+  ajax.send(formData);
 }
 
 
