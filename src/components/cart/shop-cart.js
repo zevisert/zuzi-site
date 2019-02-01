@@ -19,7 +19,7 @@ import { removeFromCartIcon } from '../my-icons.js';
 import '../gallery/gallery-list-item.js';
 
 // These are the actions needed by this element.
-import { removeFromCart } from '../../actions/shop.js';
+import { removeFromCart, advanceCheckout } from '../../actions/shop.js';
 import { showSnackbar } from '../../actions/app.js';
 
 // These are the reducers needed by this element.
@@ -29,32 +29,52 @@ import { cartItemsSelector, cartTotalSelector, cartQuantitySelector } from '../.
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 
-import './shop-item';
+import './shop-cart-item.js';
+import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
 class ShopCart extends connect(store)(LitElement) {
   render() {
     return html`
       ${ButtonSharedStyles}
       ${SharedStyles}
+      ${SharedDynamicTable}
+
       <style>
-        :host { display: block; }
+        :host {
+          display: block;
+          width: 100%;
+        }
+
+        shop-cart-item:not(:last-child)::after {
+          content: "";
+          height: 3px;
+          display: block;
+        }
+
       </style>
-      <h3>Your Cart</h3>
-      <p>Number of items in the cart: <b>${this._quantity}</b></p>
+
       <p ?hidden="${this._items.length !== 0}">Please add some products to cart.</p>
-      ${this._items.map((item) =>
-        html`
-          <div>
-            <shop-item .label="${item.label}" .amount="${item.amount}" .price="${item.price}"></shop-item>
-            <button
-                @click="${() => this._removeButtonClicked(item.key)}"
-                title="Remove from cart">
-              ${removeFromCartIcon}
-            </button>
-          </div>
-        `
-      )}
-      <p ?hidden="${!this._items.length}"><b>Total:</b> ${this._total}</p>
+
+      <article>
+        ${this._items.map((item) =>
+          html`
+            <shop-cart-item
+              .preview="${item.preview}"
+              .label="${item.label}"
+              .amount="${item.amount}"
+              .price="${item.price}"
+              .key="${item.key}"
+            ></shop-cart-item>
+          `
+        )}
+      </article>
+
+      <p>Number of items in the cart: <b>${this._quantity}</b></p>
+      <p ?hidden="${!this._items.length}"><b>Total:</b> $ ${this._total.toFixed(2)}</p>
+
+      <button ?hidden="${this._quantity == 0}" @click="${this._paymentButtonClicked}">
+        Proceed to Payment Selection
+      </button>
     `;
   }
 
@@ -63,9 +83,8 @@ class ShopCart extends connect(store)(LitElement) {
     _total: { type: Number }
   }}
 
-  _removeButtonClicked(key) {
-    store.dispatch(showSnackbar("Removed from cart"));
-    store.dispatch(removeFromCart(key));
+  _paymentButtonClicked() {
+    store.dispatch(advanceCheckout());
   }
 
   // This is called every time something is updated in the store.

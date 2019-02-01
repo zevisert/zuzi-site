@@ -117,6 +117,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
           background-color: rgba(0,0,0, 0.7);
           align-items: center;
           justify-content: center;
+          flex-direction: column;
         }
 
         .overlay[active] {
@@ -126,7 +127,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
         .overlay span {
           color: white;
           font-size: larger;
-          display: block;
         }
 
         .form {
@@ -156,18 +156,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
           padding-top: 3em;
         }
 
-        .table100-head {
-          color: black;
-          border: 2px solid black;
-          font-weight: bold;
-        }
-
         @media screen and (max-width: 725px) {
           #pricing-group table tbody tr td:nth-child(1):before { content: "Medium"; }
           #pricing-group table tbody tr td:nth-child(2):before { content: "Size"; }
           #pricing-group table tbody tr td:nth-child(3):before { content: "Price"; }
           #pricing-group table tbody tr td:nth-child(4):before { content: "Remove"; }
-
         }
       </style>
       <section>

@@ -16,7 +16,7 @@ import { SharedStyles } from '../shared-styles.js';
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
 import { getAllProducts } from '../../actions/shop.js';
-import { deleteItem, createItem, getOrders } from '../../actions/admin.js';
+import { deleteItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 import { navigate, updateAboutText, getAboutText } from '../../actions/app.js';
@@ -39,12 +39,6 @@ class AdminView extends connect(store)(PageViewElement) {
 
         td img {
           max-width: 40px;
-        }
-
-        .table100-head {
-          color: black;
-          border: 2px solid black;
-          font-weight: bold;
         }
 
         @media screen and (max-width: 725px) {
@@ -94,7 +88,7 @@ class AdminView extends connect(store)(PageViewElement) {
                     ${Object.values(this._postings).map(post => html`
                       <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
                         <td class="column1"><img src="/uploads/${post.preview}"></td>
-                        <td class="column2">https://zuzi.art/gallery/${post.slug}</td>
+                        <td class="column2">${document.location.origin}/gallery/${post.slug}</td>
                         <td class="column3">${post.title}</td>
                         <td class="column4">${post.tags.join(', ')}</td>
                         <td class="column5">${post.active}</td>
@@ -172,19 +166,6 @@ class AdminView extends connect(store)(PageViewElement) {
     store.dispatch(getAboutText());
     store.dispatch(getAllProducts());
     store.dispatch(getOrders());
-  }
-
-  async sendItem() {
-    const data = {
-      title: this.shadowRoot.getElementById('title').value,
-      description: this.shadowRoot.getElementById('desc').value,
-      price: this.shadowRoot.getElementById('price').value,
-      sizes: this.shadowRoot.getElementById('sizes').value,
-      active: false,
-      image: this.shadowRoot.getElementById('file').files[0]
-    };
-
-    store.dispatch(createItem(data));
   }
 
   async deleteItem(slug) {

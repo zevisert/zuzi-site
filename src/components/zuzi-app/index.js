@@ -143,27 +143,27 @@ class ZuziApp extends connect(store)(LitElement) {
       <div class="fixed">
         <nav class="toolbar-list">
           <a
-            ?selected="${this._page === str.pages.about}"
-            href="/${str.pages.about}">
+          ?selected="${this._page === str.pages.about}"
+          href="/${str.pages.about}">
             About
           </a>
 
           <a
           ?selected="${this._page === str.pages.gallery}"
           href="/${str.pages.gallery}">
-          Gallery
+            Gallery
           </a>
 
           <a
           ?selected="${this._page === str.pages.cart}"
-            href="/${str.pages.cart}">
-            Checkout (${this._cartQuantity})
+          href="/${str.pages.cart}">
+            Cart (${this._cartQuantity})
           </a>
 
           ${! this._loggedIn ? '' : html`
-          <a
-              ?selected="${this._page === str.pages.admin}"
-              href="/${str.pages.admin}">
+            <a
+            ?selected="${this._page === str.pages.admin}"
+            href="/${str.pages.admin}">
               Admin
             </a>`
           }

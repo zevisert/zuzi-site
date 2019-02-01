@@ -6,6 +6,29 @@ export const ADD_TO_CART = 'ADD_TO_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 export const CHECKOUT_SUCCESS = 'CHECKOUT_SUCCESS';
 export const CHECKOUT_FAILURE = 'CHECKOUT_FAILURE';
+export const CHECKOUT_STAGE = 'CHECKOUT_STAGE';
+export const CHECKOUT_METHOD = 'CHECKOUT_METHOD';
+
+
+export const CHECKOUT_STAGES_ENUM = {
+  CART: 1,
+  PAYMENT_MODE: 2,
+  CHECKOUT: 3,
+  properties: {
+    1: { name: "CART", value: 1, next: 2, prev: 1 },
+    2: { name: "PAYMENT_MODE", value: 2, next: 3, prev: 1 },
+    3: { name: "CHECKOUT", value: 3, next: 1, prev: 2 }
+  }
+};
+
+export const CHECKOUT_METHODS_ENUM = {
+  STRIPE: 1,
+  ETRANSFER: 2,
+  properties: {
+    1: { name: "Credit Card", value: 1 },
+    2: { name: "E-Transfer", value: 2 }
+  }
+}
 
 export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
@@ -128,3 +151,29 @@ export const addToCartUnsafe = (productId, pricing) => {
     payload: { productId, pricingId, pricing }
   };
 };
+
+export const advanceCheckout = () => (dispatch, getState) => {
+  const stage = getState().shop.stage;
+  const next = stage => CHECKOUT_STAGES_ENUM.properties[stage].next;
+  dispatch(setCheckoutStage(next(stage)));
+}
+
+export const retreatCheckout = () => (dispatch, getState) => {
+  const stage = getState().shop.stage;
+  const prev = stage => CHECKOUT_STAGES_ENUM.properties[stage].prev;
+  dispatch(setCheckoutStage(prev(stage)));
+}
+
+export const setCheckoutStage = (stage) => {
+  return {
+    type: CHECKOUT_STAGE,
+    payload: { stage }
+  }
+}
+
+export const setCheckoutMethod = (method) => {
+  return {
+    type: CHECKOUT_METHOD,
+    payload: { method }
+  }
+}
