@@ -14,6 +14,10 @@ import {
   REMOVE_FROM_CART,
   CHECKOUT_SUCCESS,
   CHECKOUT_FAILURE,
+  CHECKOUT_STAGE,
+  CHECKOUT_METHOD,
+  CHECKOUT_STAGES_ENUM,
+  CHECKOUT_METHODS_ENUM,
 } from '../actions/shop.js';
 
 import {
@@ -27,6 +31,8 @@ import { createSelector } from 'reselect';
 const INITIAL_STATE = {
   products: {},
   cart: {},
+  stage: CHECKOUT_STAGES_ENUM.CART,
+  method: CHECKOUT_METHODS_ENUM.STRIPE,
   error: '',
   message: ''
 };
@@ -44,8 +50,19 @@ const shop = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         cart: cart(state.cart, action),
+        stage: CHECKOUT_STAGES_ENUM.CART,
         error: '',
         message: action.payload ? action.payload.message : ''
+      };
+    case CHECKOUT_STAGE:
+      return {
+        ...state,
+        stage: action.payload.stage
+      };
+    case CHECKOUT_METHOD:
+      return {
+        ...state,
+        method: action.payload.method
       };
     case CHECKOUT_FAILURE:
       return {
@@ -158,6 +175,7 @@ export const cartItemsSelector = createSelector(
         const item = products[cartContents.productId];
         const size = cartContents.pricing.size;
         return {
+          preview: item.preview,
           label: `${item.title} (${cartContents.pricing.medium} [${size.width}x${size.height} ${size.unit}])`,
           amount: cartContents.quantity,
           price: cartContents.pricing.price,

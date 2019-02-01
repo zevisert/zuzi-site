@@ -13,7 +13,7 @@ import path from 'path';
 import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
-import { index, create, show, update, destroy, notFound, info} from './routes'; 
+import { index, create, show, update, destroy, notFound, info, env, about } from './routes'; 
 import { checkout, webhook } from './checkout';
 
 const app = new koa();
@@ -29,7 +29,7 @@ passport.use(User.createStrategy());
 const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
-  ["body parser", body({ multipart: true, rawBody: true })],
+  ["body parser", body({ multipart: true, rawBody: true, formidable: { maxFileSize: Infinity } })],
   ["static /uploads", mount('/uploads', serve(path.join(process.cwd(), 'server', 'uploads')))],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
@@ -41,13 +41,16 @@ for (const [key, value] of middleware) {
   app.use(value);
 }
 
-const upload = multer({dest: 'server/uploads/'});
+const upload = multer({ dest: 'server/uploads/' });
 const dataRoutes = (new router())
+  .get('/about/text', about)
+  .post('/about/text', about)
   .get(['/artwork', '/'], index)
   .post('/artwork', upload.single('image'), create)
   .get('/artwork/:slug', show)
   .put('/artwork/:slug', upload.single('image'), update)
   .delete('/artwork/:slug', destroy)
+  .get('/env', env)
   .get('/orders/', info)
   .get('/orders/:id', info)
   .post('/stripe/checkout/intent', checkout.stripe)
@@ -76,6 +79,7 @@ app.use(
   apiRoutes.allowedMethods()
 );
 
+// Pipe unmatched requests to polymer
 app.use(pipe);
 
-app.listen(process.env.PORT, () => console.log(`Server up on port ${process.env.PORT}`));
+app.listen(process.env.PORT, console.log(`Server up on port ${process.env.PORT}`));

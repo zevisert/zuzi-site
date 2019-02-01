@@ -31,7 +31,7 @@ class GalleryItem extends connect(store)(PageViewElement) {
         }
 
         .item {
-          max-width: 600px;
+          max-width: 1000px;
         }
 
         .item h2,

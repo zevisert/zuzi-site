@@ -34,6 +34,7 @@ export class UnderlineInput extends LitElement {
         .underline {
           display: inline-block;
           position: relative;
+          width: inherit;
         }
 
         .underline::before {
@@ -121,4 +122,3 @@ export class UnderlineInput extends LitElement {
   }
 }
 customElements.define(UnderlineInput.is, UnderlineInput);
-

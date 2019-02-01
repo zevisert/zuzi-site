@@ -33,7 +33,12 @@ export async function checkout(ctx) {
   });
 
   order.intent_id = paymentIntent.id;
-  await order.save();
+
+  try {
+    await order.save();
+  } catch (errors) {
+    ctx.throw(422, JSON.stringify({ errors: errors.errors }));
+  }
 
   ctx.body = { client_secret: paymentIntent.client_secret };
 }

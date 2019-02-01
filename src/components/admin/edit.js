@@ -14,6 +14,7 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
+import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
 import { connect } from 'pwa-helpers/connect-mixin';
 import { store } from '../../store.js';
@@ -21,11 +22,12 @@ import { getAllProducts } from '../../actions/shop.js';
 import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';
 
-import { navigate, showSnackbar } from '../../actions/app.js';
+import { navigate } from '../../actions/app.js';
 
 import 'simple-chip';
 import '../underline-input.js';
 import '../toggle-input.js';
+import '../donut.js';
 import './pricing-form.js';
 import './pricing-card.js';
 
@@ -46,19 +48,39 @@ const JsonType = {
 
 class AdminEdit extends connect(store)(PageViewElement) {
 
+  static get is() { return 'admin-edit'; }
   static get properties() { return {
-    item: { type: JsonType }
+    item: { type: JsonType },
+    __imageLoading: { type: Boolean },
+    __uploadProgress: { type: String }
   }}
+
+  constructor() {
+    super();
+    this.productKeys = new Set([]);
+    this.__els = {};
+    this.__tiff = null;
+    this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
+
+    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ], tags: [ ... EMPTY_ITEM.tags ] };
+
+    store.dispatch(getAllProducts());
+  }
 
   render() {
     return html`
       ${SharedStyles}
       ${ButtonSharedStyles}
+      ${SharedDynamicTable}
 
       <style>
+
+        :host {
+          --image-height: 200px;
+        }
+
         #preview {
-          width: 100%;
-          min-height: 20em;
           background-color: #efefef;
         }
 
@@ -69,21 +91,57 @@ class AdminEdit extends connect(store)(PageViewElement) {
         }
 
         .container {
-          display: grid;
-          grid-template-columns: 400px 1fr;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 100%;
+        }
+
+        .canvas-container {
+          position: relative;
+          width: 1000px;
+          height: var(--image-height);
+        }
+
+        .canvas-container canvas,
+        .canvas-container .overlay {
+          position: absolute;
+
+          width: 1000px;
+          height: var(--image-height);
+        }
+
+        .overlay {
+          display: none;
+
+          background-color: rgba(0,0,0, 0.7);
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+        }
+
+        .overlay[active] {
+          display: flex;
+        }
+
+        .overlay span {
+          color: white;
+          font-size: larger;
         }
 
         .form {
           display: flex;
-          flex-direction: column;
-          justify-content: start;
-          margin: 0 3em;
+          justify-content: space-evenly;
+          padding-top: 3em;
         }
 
-        .pricing-group {
-          display: grid;
-          grid-gap: 1em;
-          grid-template-columns: repeat(4, 1fr);
+        .form-info,
+        .form-pricing {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          margin: 0 3em;
+          max-width: 500px;
         }
 
         label {
@@ -92,68 +150,123 @@ class AdminEdit extends connect(store)(PageViewElement) {
           text-align: right;
         }
 
-        @media screen and (max-width: 725px) {
-          .container {
-            grid-template-columns: 1fr;
-          }
-
-          .pricing-group {
-            grid-gap: 0.5em;
-            grid-template-columns: repeat(2, 1fr);
-          }
+        .pricing-group {
+          max-width: 1000px;
+          margin: 0 auto;
+          padding-top: 3em;
         }
 
+        @media screen and (max-width: 725px) {
+          #pricing-group table tbody tr td:nth-child(1):before { content: "Medium"; }
+          #pricing-group table tbody tr td:nth-child(2):before { content: "Size"; }
+          #pricing-group table tbody tr td:nth-child(3):before { content: "Price"; }
+          #pricing-group table tbody tr td:nth-child(4):before { content: "Remove"; }
+        }
       </style>
       <section>
         <h2><a href="/admin">Admin View</a> > ${this.item._id === null ? "New" : this.item.title}</h2>
 
+        <input id="file" type="file" hidden>
         <div class="container">
-          <img id="preview"
-              @click="${() => this.__els.file.click()}"
-              .src="${this.item.preview ? `/uploads/${this.item.preview}` : ''}"
-          >
-          <input id="file" type="file" hidden>
+          <div id="container" class="canvas-container">
+            <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+            <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
+              <donut-spinner></donut-spinner>
+              <span>${this.__uploadProgress}</span>
+            </div>
+          </div>
+
           <div class="form">
-            <div class="block">
-              <label for="title">Title</label>
-              <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}">
+            <div class="form-info">
+              <div>
+                <div class="block">
+                  <label for="title">Title</label>
+                  <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}">
+                </div>
+
+                <div class="block">
+                  <label for="desc">Description</label>
+                  <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
+                </div>
+
+                <div class="block">
+                  <label for="tags">Tags</label>
+                  <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space">
+                </div>
+
+                <div class="block">
+                  <label for="active">Active</label>
+                  <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
+                </div>
+              </div>
+
+              <button
+                ?disabled="${this.__imageLoading}"
+                @click="${this.submit}"
+              >
+                ${this.item._id === null ? "Create Posting" : "Save Changes"}
+              </button>
             </div>
 
-            <div class="block">
-              <label for="desc">Description</label>
-              <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
-            </div>
-
-            <div class="block">
-              <label for="tags">Tags</label>
-              <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space">
-            </div>
-
-            <div class="block">
-              <label for="active">Active</label>
-              <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
-            </div>
-
-            <admin-pricing-form id="pricing"></admin-pricing-form>
-
-            <div class="block">
-              <button @click="${e => this.__els.pricing.broadcastPricing(e) }">Add pricing</button>
-              <button @click="${this.submit}">${this.item._id === null ? "Create Posting" : "Save Changes"}</button>
+            <div class="form-pricing">
+              <div>
+                <admin-pricing-form id="pricing"></admin-pricing-form>
+              </div>
+              <button
+                ?disabled="${this.__imageLoading}"
+                @click="${e => this.__els.pricing.broadcastPricing(e) }"
+              >
+                Add pricing
+              </button>
             </div>
           </div>
         </div>
 
       </section>
+
       <section class="pricing-group">
-        ${this.item.pricings.map(pricing => {
-          return html`
-            <admin-pricing-card
-              pricing="${JSON.stringify(pricing)}"
-              @admin-pricing-removed="${e => this.pricingRemoved(e)}"
-            ></admin-pricing-card>
-          `;
-        })}
+        <div class="limiter">
+          <div class="container-table100">
+            <div class="wrap-table100">
+              <div class="table100">
+                <table>
+                  <thead>
+                    <tr class="table100-head">
+                      <th class="column1">Medium</th>
+                      <th class="column2">Size</th>
+                      <th class="column3">Price</th>
+                      <th class="column4">Remove</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${this.item.pricings.map(pricing => html`
+                      <tr>
+                        <td class="column1">${pricing.medium}</td>
+                        <td class="column2">${pricing.size.width}x${pricing.size.height} ${pricing.size.unit}</td>
+                        <td class="column3">
+                          ${ pricing.available
+                          ? html`<div class="pricing">$ ${pricing.price}</div>`
+                          : html`<div class="pricing sold"> Sold </div>`
+                          }
+                        </td>
+                        <td class="column4">
+                          <button
+                            ?disabled="${this.__imageLoading}"
+                            @click="${(e) => { e.stopPropagation(); this.pricingRemoved(pricing); }}"
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>`
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
+
 
     `;
   }
@@ -176,7 +289,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
         store.dispatch(navigate(`/admin/${newState.shop.products[id].slug}`));
       }
     } else if (item) {
+
       this.item = item;
+      this.__imageLoading = false;
+
+      if (this.item.preview) {
+        this.loadImage(`/uploads/${this.item.preview}`);
+      }
 
       await this.__els.tags.updateComplete;
       this.__els.tags.clear();
@@ -184,18 +303,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
   }
 
-  constructor() {
-    super();
-    this.productKeys = new Set([]);
-
-    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ], tags: [ ... EMPTY_ITEM.tags ] };
-
-    store.dispatch(getAllProducts());
-  }
 
   firstUpdated() {
     this.__els = {
       preview: this.renderRoot.getElementById('preview'),
+      overlay: this.renderRoot.getElementById('overlay'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       tags: this.renderRoot.getElementById('tags'),
@@ -204,7 +316,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       file: this.renderRoot.getElementById('file')
     };
 
-    this.__els.file.addEventListener('change', this.readImage.bind(this));
+    this.__els.file.addEventListener('change', this.readLocalImage.bind(this));
 
     this.__els.pricing.addEventListener('admin-pricing-added', this.pricingAdded.bind(this));
 
@@ -216,11 +328,15 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els.description.value = this.item.description
     this.__els.active.checked = this.item.active;
 
-    if (this.__els.preview.src.startsWith('blob')) {
-      console.log('Released previous image');
-      URL.revokeObjectURL(this.__els.preview.src);
-    }
-    this.__els.preview.src = this.item.preview;
+    this.__freeImage();
+    const ctx = this.__els.preview.getContext('2d');
+    ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
+
+    this.renderRoot.host.style.setProperty('--image-height', `200px`);
+
+    this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
+
 
     this.__els.file.value = '';
     if(!/safari/i.test(navigator.userAgent)) {
@@ -228,13 +344,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
       this.__els.file.type = 'file';
     }
 
+    await this.__els.tags.updateComplete;
     this.__els.tags.clear();
 
     return this.requestUpdate();
   }
 
   async submit() {
-
     const data = {
       title: this.__els.title.value,
       description: this.__els.description.value,
@@ -244,13 +360,15 @@ class AdminEdit extends connect(store)(PageViewElement) {
       image: this.__els.file.files[0]
     };
 
-    if (this.item._id === null) {
-      store.dispatch(createItem(data));
-    } else {
-      store.dispatch(editItem(this.item.slug, data));
-    }
+    this.__imageLoading = true;
+    const progressCallback = this.uploadProgress.bind(this);
+    const doneCallback = this.uploadDone.bind(this);
 
-    store.dispatch(showSnackbar('Item saved'));
+    if (this.item._id === null) {
+      store.dispatch(createItem(data, progressCallback, doneCallback));
+    } else {
+      store.dispatch(editItem(this.item.slug, data, progressCallback, doneCallback));
+    }
   }
 
   pricingAdded(e) {
@@ -262,26 +380,94 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
   }
 
-  pricingRemoved(e) {
-    const drop = p => JSON.stringify(e.detail.pricing) !== JSON.stringify(p);
+  pricingRemoved(pricing) {
+    const drop = p => JSON.stringify(pricing) !== JSON.stringify(p);
     this.item.pricings = this.item.pricings.filter(drop);
     this.requestUpdate('item');
   }
 
-  async readImage(fileChangeEvent) {
+  __freeImage() {
+    if (this.__els.preview.dataset.src && this.__els.preview.dataset.src.startsWith('blob')) {
+      URL.revokeObjectURL(this.__els.preview.dataset.src);
+    }
+  }
 
+  uploadProgress(e) {
+    if (e.lengthComputable) {
+      this.__uploadProgress = `Uploading: (${Number(e.loaded / e.total * 100).toFixed(0)} %)`;
+    } else {
+      this.__uploadProgress = 'Working...'
+    }
+  }
+
+  uploadDone() {
+    this.__imageLoading = false;
+    this.__uploadProgress = 'Working...';
+  }
+
+  async readLocalImage() {
     const input = this.__els.file;
 
+    // Is a file selected?
     if (input.files && input.files[0]) {
-      if (this.__els.preview.src.startsWith('blob')) {
-        console.log('Released previous image');
-        URL.revokeObjectURL(this.__els.preview.src);
+
+      // Try and free an existing blob
+      this.__freeImage();
+
+      // Setup loading indicators
+      this.__imageLoading = true;
+      this.__uploadProgress = 'Working...';
+
+      // Get file extension
+      const [ extension='' ] = /(?:\.([^.]+))?$/.exec(input.files[0].name);
+      let blob = null;
+
+      // Test for .tiff
+      if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
+        const buffer = await new Response(input.files[0]).arrayBuffer();
+
+        Tiff.initialize({ TOTAL_MEMORY: 1e9 });
+        const tiff = new Tiff({ buffer });
+        const canvas = tiff.toCanvas();
+        blob = await new Promise((resolve, reject) => {
+          if (! canvas) {
+            reject();
+          }
+
+          canvas.toBlob(blob => {
+            tiff.close();
+            resolve(blob);
+          });
+        });
+
+      } else {
+        // Not .tiff, use response to blob
+        blob = await new Response(input.files[0]).blob();
       }
 
-      const blob = await new Response(input.files[0]).blob();
-      this.__els.preview.src = URL.createObjectURL(blob);
+      this.loadImage(URL.createObjectURL(blob));
     }
+  }
+
+  loadImage(source) {
+    const img = new Image();
+    img.onload = () => {
+
+      const canvas = this.__els.preview;
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      this.renderRoot.host.style.setProperty('--image-height', `${(1000 / img.width) * img.height}px`);
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      this.__imageLoading = false;
+    }
+
+    this.__els.preview.dataset.src = source;
+    img.src = this.__els.preview.dataset.src;
   }
 }
 
-window.customElements.define('admin-edit', AdminEdit);
+window.customElements.define(AdminEdit.is, AdminEdit);

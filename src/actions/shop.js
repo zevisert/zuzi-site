@@ -6,6 +6,29 @@ export const ADD_TO_CART = 'ADD_TO_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 export const CHECKOUT_SUCCESS = 'CHECKOUT_SUCCESS';
 export const CHECKOUT_FAILURE = 'CHECKOUT_FAILURE';
+export const CHECKOUT_STAGE = 'CHECKOUT_STAGE';
+export const CHECKOUT_METHOD = 'CHECKOUT_METHOD';
+
+
+export const CHECKOUT_STAGES_ENUM = {
+  CART: 1,
+  PAYMENT_MODE: 2,
+  CHECKOUT: 3,
+  properties: {
+    1: { name: "CART", value: 1, next: 2, prev: 1 },
+    2: { name: "PAYMENT_MODE", value: 2, next: 3, prev: 1 },
+    3: { name: "CHECKOUT", value: 3, next: 1, prev: 2 }
+  }
+};
+
+export const CHECKOUT_METHODS_ENUM = {
+  STRIPE: 1,
+  ETRANSFER: 2,
+  properties: {
+    1: { name: "Credit Card", value: 1 },
+    2: { name: "E-Transfer", value: 2 }
+  }
+}
 
 export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
@@ -29,39 +52,48 @@ export const getAllProducts = () => async (dispatch) => {
 
 export const checkoutStripe = (card, { amount, metadata }) => async dispatch => {
 
-  const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: new Headers({'content-type': 'application/json'}),
-    body: JSON.stringify({amount, metadata})
-  });
-
-  const { client_secret } = await response.json();
-
   const stripe = process.stripe;
   if (!stripe) {
-    dispatch(showSnackbar(`Sorry. Stripe hasn't loaded. Try again?`));
+    dispatch(showSnackbar(`Sorry. Card checkout hasn't loaded. Try again?`));
     return;
   }
 
-  try {
+  const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: new Headers({ 'content-type': 'application/json' }),
+    body: JSON.stringify({ amount, metadata })
+  });
+
+  const reply = await response.json();
+
+  if (reply.client_secret) {
+
     const { error } = await stripe.handleCardPayment(
-      client_secret, card, {
+      reply.client_secret, card, {
         source_data: {
-          owner: { name: metadata.customer.name }
+          owner: {
+            name: metadata.customer.name
+          }
         }
       }
     );
 
     if (error) {
-      throw error;
+      dispatch(showSnackbar(error.message));
+    } else {
+      dispatch({ type: CHECKOUT_SUCCESS });
+      dispatch(showSnackbar('Your order has been submitted.'));
     }
-
-    dispatch({ type: CHECKOUT_SUCCESS });
-    dispatch(showSnackbar('Your order has been submitted.'));
-
-  } catch (error) {
-    dispatch(showSnackbar(error.message));
+  } else if (reply.errors) {
+    for (const value of Object.values(reply.errors)) {
+      if (value.kind) {
+        dispatch(checkoutFailed(value.message));
+        break;
+      }
+    }
+  } else {
+    dispatch(checkoutFailed('Something went wrong while processing your order.'));
   }
 };
 
@@ -75,8 +107,19 @@ export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
 
   const reply = await response.json();
 
-  dispatch({ type: CHECKOUT_SUCCESS });
-  dispatch(showSnackbar('Your order has been submitted.'));
+  if (reply.success) {
+    dispatch({ type: CHECKOUT_SUCCESS });
+    dispatch(showSnackbar('Your order has been submitted.'));
+  } else if (reply.errors) {
+    for (const value of Object.values(reply.errors)) {
+      if (value.kind) {
+        dispatch(checkoutFailed(value.message));
+        break;
+      }
+    }
+  } else {
+    dispatch(checkoutFailed('Something went wrong while processing your order.'));
+  }
 };
 
 export const checkoutFailed = message => async dispatch => {
@@ -108,3 +151,29 @@ export const addToCartUnsafe = (productId, pricing) => {
     payload: { productId, pricingId, pricing }
   };
 };
+
+export const advanceCheckout = () => (dispatch, getState) => {
+  const stage = getState().shop.stage;
+  const next = stage => CHECKOUT_STAGES_ENUM.properties[stage].next;
+  dispatch(setCheckoutStage(next(stage)));
+}
+
+export const retreatCheckout = () => (dispatch, getState) => {
+  const stage = getState().shop.stage;
+  const prev = stage => CHECKOUT_STAGES_ENUM.properties[stage].prev;
+  dispatch(setCheckoutStage(prev(stage)));
+}
+
+export const setCheckoutStage = (stage) => {
+  return {
+    type: CHECKOUT_STAGE,
+    payload: { stage }
+  }
+}
+
+export const setCheckoutMethod = (method) => {
+  return {
+    type: CHECKOUT_METHOD,
+    payload: { method }
+  }
+}

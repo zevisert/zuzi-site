@@ -2,67 +2,155 @@
   "entrypoint": "index.html",
   "shell": "src/components/zuzi-app/index.js",
   "sources": [
-		"images/**/*",
-		"src/**/*"
+    "images/**/*",
+    "src/**/*"
   ],
   "extraDependencies": [
     "manifest.json",
     "node_modules/@webcomponents/webcomponentsjs/**",
     "push-manifest.json"
   ],
+  "autoBasePath": true,
   "builds": [
     {
-      "name": "esm-bundled",
-      "browserCapabilities": [
-        "es2015",
-        "modules"
-      ],
-      "js": {
-        "minify": true
+      "name": "2018-psm",
+      "browserCapabilities": ["es2018", "push", "serviceworker", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2018",
+        "transformModulesToAmd": false,
+        "exclude": []
       },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
-      },
-      "bundle": true,
-      "addServiceWorker": true
+      "bundle": false,
+      "addServiceWorker": true,
+      "addPushManifest": true
     },
     {
-      "name": "es6-bundled",
-      "browserCapabilities": [
-        "es2015"
-      ],
-      "js": {
+      "name": "2018-pm",
+      "browserCapabilities": ["es2018", "push", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2018",
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": false,
+      "addServiceWorker": false,
+      "addPushManifest": true
+    },
+    {
+      "name": "2018-sm",
+      "browserCapabilities": ["es2018", "serviceworker", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2018",
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": true,
+      "addPushManifest": false
+    },
+    {
+      "name": "2017-sm",
+      "browserCapabilities": ["es2017", "serviceworker", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2017",
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": true,
+      "addPushManifest": false
+    },
+    {
+      "name": "2017-m",
+      "browserCapabilities": ["es2017", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2017",
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": false,
+      "addPushManifest": false
+    },
+    {
+      "name": "2017-0",
+      "browserCapabilities": ["es2017"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2017",
+        "transformModulesToAmd": true,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": false,
+      "addPushManifest": false
+    },
+    {
+      "name": "2016-m",
+      "browserCapabilities": ["es2016", "modules"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2016",
+        "transformModulesToAmd": false,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": false,
+      "addPushManifest": false
+    },
+    {
+      "name": "2016-0",
+      "browserCapabilities": ["es2016"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
+        "compile": "es2016",
+        "transformModulesToAmd": true,
+        "exclude": []
+      },
+      "bundle": true,
+      "addServiceWorker": false,
+      "addPushManifest": false
+    },
+    {
+      "name": "2015-0",
+      "browserCapabilities": ["es2015"],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
         "compile": "es2015",
-        "minify": true,
-        "transformModulesToAmd": true
-      },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
-      "addServiceWorker": true
+      "addServiceWorker": false,
+      "addPushManifest": false
     },
     {
-      "name": "es5-bundled",
-      "js": {
+      "name": "es5-0",
+      "browserCapabilities": [],
+      "html": { "minify": true },
+      "css":  { "minify": true },
+      "js":   { "minify": true,
         "compile": "es5",
-        "minify": true,
-        "transformModulesToAmd": true
-      },
-      "css": {
-        "minify": true
-      },
-      "html": {
-        "minify": true
+        "transformModulesToAmd": true,
+        "exclude": []
       },
       "bundle": true,
-      "addServiceWorker": true
+      "addServiceWorker": false,
+      "addPushManifest": false
     }
   ],
   "moduleResolution": "node",

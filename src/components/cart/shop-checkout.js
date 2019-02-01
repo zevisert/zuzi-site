@@ -4,7 +4,7 @@ import { store } from '../../store.js';
 
 
 // These are the actions needed by this element.
-import { checkoutEtransfer, checkoutStripe, checkoutFailed } from '../../actions/shop.js';
+import { checkoutEtransfer, checkoutStripe, checkoutFailed, CHECKOUT_METHODS_ENUM, setCheckoutStage, retreatCheckout, CHECKOUT_STAGES_ENUM } from '../../actions/shop.js';
 import { cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
 
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -25,53 +25,116 @@ export class ShopCheckout extends connect(store)(LitElement) {
           padding: 10px;
           box-shadow: 0 0 3px 0px rgba(0,0,0,0.1);
         }
+
+        label {
+          width: 195px;
+          display: inline-block;
+          text-align: left;
+          vertical-align: top;
+          line-height: 35px;
+        }
+
+        #cust-ship-addr {
+          width: 395px;
+        }
+
+        #payment-method,
+        #address-group {
+          display: inline-block;
+        }
+
+        section article:last-of-type {
+          padding-top: 2em;
+        }
+
+        .checkout-group {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          margin-top: 3em;
+        }
+
+        .checkout-group button {
+          margin: 0 auto;
+          min-width: 200px;
+        }
+
+        .retreat-checkout {
+          border: none;
+          margin-bottom: 1em;
+        }
+
+        .retreat-checkout div {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
       </style>
       <section>
-        <underline-input type="text"  id="cust-name"         placeholder="Name${this._paymentMethod === "stripe" ? ' on card' : ''}"></underline-input>
-        <underline-input type="email" id="cust-email"        placeholder="Contact Email"></underline-input>
-        <underline-input type="text"  id="cust-ship-addr"    placeholder="Shipping Address"></underline-input>
-        <underline-input type="text"  id="cust-ship-city"    placeholder="City"></underline-input>
-        <underline-input type="text"  id="cust-ship-prov"    placeholder="Province"></underline-input>
-        <underline-input type="text"  id="cust-ship-country" placeholder="Country"></underline-input>
-        <underline-input type="text"  id="cust-ship-postal"  placeholder="Postal Code"></underline-input>
+        <article>
+          <label for="cust-name">Name</label>
+          <underline-input
+            type="text"
+            id="cust-name"
+            placeholder="Name${this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE ? ' on card' : ''}">
+          </underline-input>
+        </article>
+
+        <article>
+          <label for="cust-email">Email Address</label>
+          <underline-input
+            type="email"
+            id="cust-email"
+            placeholder="Contact Email">
+          </underline-input>
+        </article>
+
+        <article>
+          <label for="address-group">Shipping Information</label>
+          <div id="address-group">
+            <div>
+              <underline-input type="text"  id="cust-ship-addr"    placeholder="Shipping Address"></underline-input>
+            </div>
+            <div>
+              <underline-input type="text"  id="cust-ship-city"    placeholder="City"></underline-input>
+              <underline-input type="text"  id="cust-ship-postal"  placeholder="Postal Code"></underline-input>
+            </div>
+            <div>
+              <underline-input type="text"  id="cust-ship-prov"    placeholder="Province"></underline-input>
+              <underline-input type="text"  id="cust-ship-country" placeholder="Country"></underline-input>
+            </div>
+          </div>
+        </article>
 
         <section>
-          <h3>Payment Method</h3>
-          <div>
-            <input type="radio"
-              name="payment-method"
-              value="stripe"
-              checked
-              @change="${e => this._radioChange(e)}"
-              >
-            <label for="stripe">By with card</label>
-          </div>
+          <article>
+            <label for="payment-method">Payment</label>
+            ${this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE ?
+              html`
+                <div id="payment-method" class="card-mount">
+                  <slot name="stripe-card"> </slot>
+                </div>`
+            : html`
+                <p id="payment-method">
+                  Continue with Interac E-Transfer. Instructions will be emailed to you.<br>
+                  Your order will be confirmed when the E-Transfer is completed.
+                </p>
+            `}
+          </article>
+        </section>
 
-          <div>
-            <input type="radio"
-              name="payment-method"
-              value="etransfer"
-              @change="${e => this._radioChange(e)}"
-            >
-            <label for="etransfer">Interac E-Transfer</label>
-          </div>
+        <section class="checkout-group">
 
-          ${this._paymentMethod === "stripe" ?
-            html`
-              <div class="card-mount">
-                <slot name="stripe-card"> </slot>
-              </div>`
-          : html`
-              <section>
-                Continue with Interac E-Transfer. Instructions will be emailed to you.
-                Your order will be confirmed when the E-Transfer is completed.
-              </section>
-          `}
+          <button class="retreat-checkout" @click="${this._checkoutBackButtonClicked}">
+            <div><mwc-icon>keyboard_backspace</mwc-icon> Payment Type</div>
+          </button>
+
+          <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
+            Checkout
+          </button>
 
         </section>
-        <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
-          Checkout
-        </button>
       </section>
     `;
   }
@@ -80,12 +143,12 @@ export class ShopCheckout extends connect(store)(LitElement) {
     _items: { type: Array },
     _totalCents: { type: Number },
     _quantity: { type: Number },
-    _paymentMethod: { type: String }
+    _paymentMethod: { type: Number }
   }}
 
   constructor() {
     super();
-    this._paymentMethod = 'stripe';
+    this._paymentMethod = null;
   }
 
   firstUpdated() {
@@ -107,22 +170,25 @@ export class ShopCheckout extends connect(store)(LitElement) {
       }
     };
 
-    if (! process.stripe) {
-      process.stripe = Stripe(process.env.STRIPE_PK, {
-        betas: ['payment_intent_beta_3']
-      });
+    if (this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE) {
+
+      if (! process.stripe) {
+        process.stripe = Stripe(process.env.STRIPE_PK, {
+          betas: ['payment_intent_beta_3']
+        });
+      }
+
+      const stripe = process.stripe;
+      const elements = stripe.elements();
+
+      // Create an instance of the card Element.
+      this.cardElement = elements.create('card');
+      this.cardElement.mount(this.__els.cardMount);
     }
-
-    const stripe = process.stripe;
-    const elements = stripe.elements();
-
-    // Create an instance of the card Element.
-    this.cardElement = elements.create('card');
-    this.cardElement.mount(this.__els.cardMount);
   }
 
-  _radioChange(e) {
-    this._paymentMethod = e.target.value;
+  _checkoutBackButtonClicked() {
+    store.dispatch(retreatCheckout());
   }
 
   _checkoutButtonClicked() {
@@ -130,12 +196,12 @@ export class ShopCheckout extends connect(store)(LitElement) {
     const { ok, metadata } = this._validateInput();
 
     if (ok) {
-      if (this._paymentMethod === 'stripe') {
+      if (this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE) {
         store.dispatch(checkoutStripe(this.cardElement, {
           amount: this._totalCents,
           metadata
         }));
-      } else if (this._paymentMethod === 'etransfer') {
+      } else if (this._paymentMethod === CHECKOUT_METHODS_ENUM.ETRANSFER) {
         store.dispatch(checkoutEtransfer({
           amount: this._totalCents,
           metadata
@@ -151,7 +217,10 @@ export class ShopCheckout extends connect(store)(LitElement) {
   _validateInput() {
 
     const isText = value => !!value && /^(?![\s.]+$)[a-zA-Z0-9\s.]+$/.test(value);
-    const isEmail = value => !!value && /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(value);
+    const isEmail = value => !!value && (new RegExp([
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))/,
+      /@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    ].map(part => part.source).join(''))).test(value);
 
     const methods = {
       'customer.name': isText,
@@ -211,6 +280,8 @@ export class ShopCheckout extends connect(store)(LitElement) {
     this._items = state.shop.cart;
     this._totalCents = parseInt(100 * cartTotalSelector(state));
     this._quantity = cartQuantitySelector(state);
+    this._paymentMethod = state.shop.method;
+    this.__stage = state.shop.stage;
   }
 }
 
