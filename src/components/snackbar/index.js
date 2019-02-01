@@ -1,3 +1,9 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { LitElement, html } from "@polymer/lit-element";
 import { store, connect } from "../../store";
 import { hideSnackbar } from "../../actions/app";

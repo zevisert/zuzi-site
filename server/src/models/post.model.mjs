@@ -1,6 +1,10 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import mongoose from 'mongoose';
 import { pricingSchema } from './pricing.model';
-
 
 export const postSchema = new mongoose.Schema({
     slug: {

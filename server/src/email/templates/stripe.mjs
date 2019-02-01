@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 export const orderSuccessTemplate = order => {
 
     const text = 

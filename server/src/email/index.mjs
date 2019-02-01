@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import client from 'emailjs/smtp/client';
 import message from 'emailjs/smtp/message';
 

@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import Stripe from 'stripe';
 import { Order, OrderItem, Customer } from '../models';
 import { email } from '../email';

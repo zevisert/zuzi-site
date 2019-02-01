@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import mongoose from 'mongoose';
 import { orderItemSchema } from './order-item.model';
 import { customerSchema } from './customer.model';
