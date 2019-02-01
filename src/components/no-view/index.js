@@ -11,6 +11,8 @@ import { PageViewElement } from '../page-view-element.js';
 import { SharedStyles } from '../shared-styles.js';
 
 class NoView extends PageViewElement {
+  static get is() { return 'no-view'; }
+
   render() {
     return html`
       ${SharedStyles}
@@ -24,4 +26,4 @@ class NoView extends PageViewElement {
   }
 }
 
-window.customElements.define('no-view', NoView);
+window.customElements.define(NoView.is, NoView);

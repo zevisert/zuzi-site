@@ -17,7 +17,8 @@ import {
 } from '../../actions/shop.js';
 
 export class ShopPayment extends connect(store)(LitElement) {
-  static get is() { return 'shop-payment-select' }
+
+  static get is() { return 'shop-payment-select'; }
 
   render() {
     return html`

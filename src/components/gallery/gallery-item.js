@@ -17,6 +17,13 @@ import { ButtonSharedStyles } from '../button-shared-styles';
 
 // This element is *not* connected to the Redux store.
 class GalleryItem extends connect(store)(PageViewElement) {
+
+  static get is() { return 'gallery-item'; }
+
+  static get properties() { return {
+      item: { type: Object }
+  }}
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -97,18 +104,8 @@ class GalleryItem extends connect(store)(PageViewElement) {
     `;
   }
 
-  constructor() {
-    super();
-  }
-
   shouldUpdate() {
     return !!this.item;
-  }
-
-  static get properties() {
-    return {
-      item: Object
-    }
   }
 
   connectedCallback() {
@@ -127,4 +124,4 @@ class GalleryItem extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('gallery-item', GalleryItem);
+window.customElements.define(GalleryItem.is, GalleryItem);

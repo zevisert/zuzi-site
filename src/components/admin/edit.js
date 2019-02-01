@@ -44,6 +44,7 @@ const JsonType = {
 class AdminEdit extends connect(store)(PageViewElement) {
 
   static get is() { return 'admin-edit'; }
+
   static get properties() { return {
     item: { type: JsonType },
     __imageLoading: { type: Boolean },

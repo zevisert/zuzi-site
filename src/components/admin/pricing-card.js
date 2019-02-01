@@ -15,11 +15,10 @@ const JsonType = {
 export class AdminPricingCard extends LitElement {
 
   static get is() { return 'admin-pricing-card'; }
-  static get properties() {
-    return {
-      pricing: { type: JsonType }
-    };
-  }
+
+  static get properties() { return {
+    pricing: { type: JsonType }
+  }}
 
   constructor() {
     super();

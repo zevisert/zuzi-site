@@ -58,7 +58,26 @@ class Timer {
 
 
 class Snackbar extends connect(store)(LitElement) {
+
   static get is() { return 'app-snackbar'; }
+
+  static get properties() { return {
+    currentActiveState: {
+      type: Boolean,
+      reflect: true,
+      attribute: 'active'
+    },
+    currentMessage: {
+      type: String,
+      attribute: 'message'
+    }
+  }}
+
+  constructor() {
+    super();
+    this.__queue = [];
+    this.__timer = new Timer(5000, this._hideMessage.bind(this));
+  }
 
   render() {
     return html`
@@ -133,26 +152,6 @@ class Snackbar extends connect(store)(LitElement) {
         <mwc-icon @click="${() => this._closeMessage()}">close</mwc-icon>
       </div>
     `;
-  }
-
-  static get properties() {
-    return {
-      currentActiveState: {
-        type: Boolean,
-        reflect: true,
-        attribute: 'active'
-      },
-      currentMessage: {
-        type: String,
-        attribute: 'message'
-      }
-    };
-  }
-
-  constructor() {
-    super();
-    this.__queue = [];
-    this.__timer = new Timer(5000, this._hideMessage.bind(this));
   }
 
   stateChanged(state) {

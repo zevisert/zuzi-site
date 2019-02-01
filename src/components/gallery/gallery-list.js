@@ -20,14 +20,26 @@ import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { navigate } from '../../actions/app.js';
 
 class GalleryList extends connect(store)(LitElement) {
+
+  static get is() { return 'gallery-list'; }
+
+  static get properties() { return {
+    filter: { type: String },
+    _filterIds: { type: Array },
+    __allProducts: { type: Object }
+  }}
+
+  constructor() {
+    super();
+    this.filter = undefined;
+    this._filterIds = [];
+    this.__allProducts = {};
+  }
+
   render() {
     return html`
       ${ButtonSharedStyles}
       <style>
-        :host {
-
-        }
-
         .tiles {
           display: grid;
           grid-template-columns: 1fr;
@@ -91,19 +103,6 @@ class GalleryList extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() { return {
-    filter: { type: String },
-    _filterIds: { type: Array },
-    __allProducts: { type: Object }
-  }}
-
-  constructor() {
-    super();
-    this.filter = undefined;
-    this._filterIds = [];
-    this.__allProducts = {};
-  }
-
   firstUpdated() {
     store.dispatch(getAllProducts());
   }
@@ -125,4 +124,4 @@ class GalleryList extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('gallery-list', GalleryList);
+window.customElements.define(GalleryList.is, GalleryList);

@@ -22,6 +22,20 @@ import { admin } from '../../reducers/admin.js';
 store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {
+
+  static get is() { return 'admin-view'; }
+
+  static get properties() { return {
+    _postings: { type: Object, attribute: false },
+    _orders: { type: Array, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this._postings = {};
+    this._orders = [];
+  }
+
   render() {
     return html`
       ${SharedStyles}
@@ -145,19 +159,6 @@ class AdminView extends connect(store)(PageViewElement) {
     this._orders = newState.admin.orders;
   }
 
-  static get properties() {
-    return {
-      _postings: { type: Object, attribute: false },
-      _orders: { type: Array, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this._postings = {};
-    this._orders = [];
-  }
-
   async firstUpdated() {
     store.dispatch(getAboutText());
     store.dispatch(getAllProducts());
@@ -174,4 +175,4 @@ class AdminView extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('admin-view', AdminView);
+window.customElements.define(AdminView.is, AdminView);

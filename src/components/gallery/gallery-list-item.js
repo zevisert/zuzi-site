@@ -10,6 +10,14 @@ import { givenItemSelector } from '../../reducers/shop';
 
 // This element is *not* connected to the Redux store.
 class GalleryListItem extends connect(store)(LitElement) {
+
+  static get is() { return 'gallery-list-item'; }
+
+  static get properties() { return {
+    key: { type: String },
+    item: { type: Object }
+  }}
+
   render() {
     return html`
       <style>
@@ -67,13 +75,6 @@ class GalleryListItem extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() {
-    return {
-      key: { type: String },
-      item: { type: Object }
-    }
-  }
-
   updated(changedProperties) {
     if (changedProperties.has('key')) {
       this.item = store.getState().shop.products[this.key];
@@ -85,4 +86,4 @@ class GalleryListItem extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('gallery-list-item', GalleryListItem);
+window.customElements.define(GalleryListItem, GalleryListItem);

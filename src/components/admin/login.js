@@ -16,6 +16,9 @@ import { store } from '../../store.js';
 import '../underline-input.js';
 
 class LoginView extends PageViewElement {
+
+  static get is() { return 'login-view'; }
+
   render() {
     return html`
       ${SharedStyles}
@@ -50,4 +53,4 @@ class LoginView extends PageViewElement {
   }
 }
 
-window.customElements.define('login-view', LoginView);
+window.customElements.define(LoginView.is, LoginView);

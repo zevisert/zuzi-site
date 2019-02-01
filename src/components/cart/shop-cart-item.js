@@ -15,6 +15,23 @@ import '@material/mwc-icon';
 
 // This element is *not* connected to the Redux store.
 class ShopItem extends LitElement {
+
+  static get is() { return 'shop-cart-item'; }
+
+  static get properties() { return {
+    key: { type: String },
+    item: { type: Object, attribute: false },
+    pricing: { type: Object, attribute: false },
+    quantity: { type: Number, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this.key = null
+    this.item = null;
+    this.pricing = null;
+  }
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -81,21 +98,6 @@ class ShopItem extends LitElement {
     store.dispatch(removeFromCart(this.key));
   }
 
-  static get properties() {
-    return {
-      key: { type: String },
-      item: { type: Object, attribute: false },
-      pricing: { type: Object, attribute: false },
-      quantity: { type: Number, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this.key = null
-    this.item = null;
-    this.pricing = null;
-  }
 
   shouldUpdate() {
     const [itemID, pricingID] = this.key.split('-');
@@ -113,4 +115,4 @@ class ShopItem extends LitElement {
   }
 }
 
-window.customElements.define('shop-cart-item', ShopItem);
+window.customElements.define(ShopItem.is, ShopItem);

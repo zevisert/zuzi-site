@@ -27,6 +27,17 @@ import { cartQuantitySelector } from '../../reducers/shop.js';
 import '../snackbar';
 
 class ZuziApp extends connect(store)(LitElement) {
+
+  static get is() { return 'zuzi-app'; }
+
+  static get properties() { return {
+    appTitle: { type: String },
+    _page: { type: String },
+    _subPage: { type: String },
+    _cartQuantity: { type: Number },
+    _loggedIn: { type: Boolean }
+  }}
+
   render() {
     // Anything that's related to rendering should be done in here.
     return html`
@@ -231,18 +242,6 @@ class ZuziApp extends connect(store)(LitElement) {
     </section>
     </footer>
     `;
-  }
-
-  static get is() { return 'zuzi-app'; }
-
-  static get properties() {
-    return {
-      appTitle: { type: String },
-      _page: { type: String },
-      _subPage: { type: String },
-      _cartQuantity: { type: Number },
-      _loggedIn: { type: Boolean }
-    }
   }
 
   firstUpdated() {

@@ -26,6 +26,14 @@ import './shop-cart-item.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
 class ShopCart extends connect(store)(LitElement) {
+
+  static get is() { return 'shop-cart'; }
+
+  static get properties() { return {
+    _items: { type: Array },
+    _total: { type: Number }
+  }}
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -71,11 +79,6 @@ class ShopCart extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() { return {
-    _items: { type: Array },
-    _total: { type: Number }
-  }}
-
   _paymentButtonClicked() {
     store.dispatch(advanceCheckout());
   }
@@ -88,4 +91,4 @@ class ShopCart extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('shop-cart', ShopCart);
+window.customElements.define(ShopCart.is, ShopCart);

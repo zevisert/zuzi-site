@@ -17,6 +17,7 @@ import { SharedStyles } from '../shared-styles.js';
 
 
 class Cart extends connect(store)(PageViewElement) {
+
   static get is() { return 'cart-view'; }
 
   static get properties() { return {

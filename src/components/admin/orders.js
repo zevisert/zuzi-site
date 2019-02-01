@@ -21,6 +21,20 @@ import { admin, orderSelector } from '../../reducers/admin.js';
 store.addReducers({ admin });
 
 class AdminConfirm extends connect(store)(PageViewElement) {
+
+  static get is() { return 'admin-orders'; }
+
+  static get properties() { return {
+    _order: { type: Object, attribute: false },
+    _rejecting: { type: Boolean, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this._order = { items: [] };
+    this._rejecting = false;
+  }
+
   render() {
 
     const { items=[], customer={ shipping: { address_lines: [] }}, ...order } = this._order;
@@ -132,19 +146,6 @@ class AdminConfirm extends connect(store)(PageViewElement) {
     }
   }
 
-  static get properties() {
-    return {
-      _order: { type: Object, attribute: false },
-      _rejecting: { type: Boolean, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this._order = { items: [] };
-    this._rejecting = false;
-  }
-
   async _processOrder(accepted) {
     let reason = undefined;
 
@@ -173,4 +174,4 @@ class AdminConfirm extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('admin-orders', AdminConfirm);
+window.customElements.define(AdminConfirm.is, AdminConfirm);

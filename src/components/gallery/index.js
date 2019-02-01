@@ -18,6 +18,20 @@ import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 
 class Gallery extends connect(store)(PageViewElement) {
+
+  static get is() { return 'gallery-view'; }
+
+  static get properties() { return {
+    _tags: { type: Array },
+    filter: { type: String }
+  }}
+
+  constructor() {
+    super();
+    this.filter = '';
+    this._tags = [];
+  }
+
   render() {
     return html`
       ${SharedStyles}
@@ -74,17 +88,6 @@ class Gallery extends connect(store)(PageViewElement) {
     `;
   }
 
-  static get properties() { return {
-    _tags: { type: Array },
-    filter: { type: String }
-  }}
-
-  constructor() {
-    super();
-    this.filter = '';
-    this._tags = [];
-  }
-
   tagClicked(tag) {
     this.filter = tag;
   }
@@ -96,4 +99,4 @@ class Gallery extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('gallery-view', Gallery);
+window.customElements.define(Gallery.is, Gallery);

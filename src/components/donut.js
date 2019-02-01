@@ -7,6 +7,8 @@
 import { html, LitElement } from '@polymer/lit-element';
 
 class DonutSpinner extends LitElement {
+
+  static get is() { return 'donut-spinner'; }
   render() {
     return html`
       <style>
@@ -35,4 +37,4 @@ class DonutSpinner extends LitElement {
   }
 }
 
-customElements.define('donut-spinner', DonutSpinner);
+customElements.define(DonutSpinner.is, DonutSpinner);
