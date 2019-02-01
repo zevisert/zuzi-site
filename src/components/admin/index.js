@@ -41,12 +41,6 @@ class AdminView extends connect(store)(PageViewElement) {
           max-width: 40px;
         }
 
-        .table100-head {
-          color: black;
-          border: 2px solid black;
-          font-weight: bold;
-        }
-
         @media screen and (max-width: 725px) {
           #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
           #section-artwork table tbody tr td:nth-child(2):before { content: "Public URL"; }

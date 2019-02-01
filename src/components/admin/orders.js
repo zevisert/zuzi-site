@@ -28,12 +28,6 @@ class AdminConfirm extends connect(store)(PageViewElement) {
           max-width: 80px;
         }
 
-        .table100-head {
-          background-color: gray;
-          color: white;
-          font-weight: bold;
-        }
-
         tbody tr:hover {
           cursor: initial;
         }

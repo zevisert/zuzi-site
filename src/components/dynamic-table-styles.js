@@ -19,6 +19,12 @@ export const SharedDynamicTable = html`
     margin-bottom: 10px;
   }
 
+  .table100-head {
+    color: black;
+    border: 2px solid black;
+    font-weight: bold;
+  }
+
   .container-table100 {
     width: 100%;
 
