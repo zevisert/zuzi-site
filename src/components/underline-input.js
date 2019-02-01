@@ -1,11 +1,33 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html, LitElement } from '@polymer/lit-element';
 
 export class UnderlineInput extends LitElement {
+
   static get is() { return 'underline-input'; }
+
+  static get properties() { return {
+    type: { type: String },
+    placeholder: { type: String },
+    value: { type: String },
+    error: { type: Boolean, reflect: true }
+  }}
+
+  constructor() {
+    super();
+    this.type = 'text';
+    this.placeholder = null;
+    this.value = null;
+    this.error = false;
+  }
+
   render() {
     return html`
       <style>
-
         input[type="text"],
         input[type="email"],
         input[type="password"],
@@ -70,21 +92,6 @@ export class UnderlineInput extends LitElement {
     `;
   }
 
-  constructor() {
-    super();
-    this.type = 'text';
-    this.placeholder = null;
-    this.value = null;
-    this.error = false;
-  }
-
-  static get properties() { return {
-    type: String,
-    placeholder: String,
-    value: String,
-    error: { type: Boolean, reflect: true }
-  }}
-
   firstUpdated() {
     this.__els = {
       input: this.renderRoot.getElementById('input')
@@ -121,4 +128,5 @@ export class UnderlineInput extends LitElement {
     }
   }
 }
+
 customElements.define(UnderlineInput.is, UnderlineInput);

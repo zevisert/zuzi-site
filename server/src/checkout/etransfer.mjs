@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import { email } from '../email';
 import { Order, OrderItem, Customer, User } from '../models';
 import {

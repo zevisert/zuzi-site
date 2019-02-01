@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import {
     checkout as stripeCheckout,
     webhook as stripeWebhook

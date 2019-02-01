@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import koa from 'koa';
 import body from 'koa-body';
 import serve from 'koa-static';

@@ -1,11 +1,7 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { LitElement, html } from '@polymer/lit-element';
@@ -19,6 +15,23 @@ import '@material/mwc-icon';
 
 // This element is *not* connected to the Redux store.
 class ShopItem extends LitElement {
+
+  static get is() { return 'shop-cart-item'; }
+
+  static get properties() { return {
+    key: { type: String },
+    item: { type: Object, attribute: false },
+    pricing: { type: Object, attribute: false },
+    quantity: { type: Number, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this.key = null
+    this.item = null;
+    this.pricing = null;
+  }
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -85,21 +98,6 @@ class ShopItem extends LitElement {
     store.dispatch(removeFromCart(this.key));
   }
 
-  static get properties() {
-    return {
-      key: { type: String },
-      item: { type: Object, attribute: false },
-      pricing: { type: Object, attribute: false },
-      quantity: { type: Number, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this.key = null
-    this.item = null;
-    this.pricing = null;
-  }
 
   shouldUpdate() {
     const [itemID, pricingID] = this.key.split('-');
@@ -117,4 +115,4 @@ class ShopItem extends LitElement {
   }
 }
 
-window.customElements.define('shop-cart-item', ShopItem);
+window.customElements.define(ShopItem.is, ShopItem);

@@ -1,3 +1,9 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html, LitElement } from '@polymer/lit-element';
 import { ButtonSharedStyles } from '../button-shared-styles';
 
@@ -12,11 +18,10 @@ const JsonType = {
 export class AdminPricingForm extends LitElement {
 
   static get is() { return 'admin-pricing-form'; }
-  static get properties() {
-    return {
-      pricing: { type: JsonType }
-    };
-  }
+
+  static get properties() { return {
+    pricing: { type: JsonType }
+  }}
 
   constructor() {
     super();

@@ -1,6 +1,11 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html, LitElement } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 
 // These are the actions needed by this element.
@@ -13,7 +18,20 @@ import { SharedStyles } from '../shared-styles.js';
 import '../underline-input.js';
 
 export class ShopCheckout extends connect(store)(LitElement) {
-  static get is() { return 'shop-checkout' }
+
+  static get is() { return 'shop-checkout'; }
+
+  static get properties() { return {
+    _items: { type: Array },
+    _totalCents: { type: Number },
+    _quantity: { type: Number },
+    _paymentMethod: { type: Number }
+  }}
+
+  constructor() {
+    super();
+    this._paymentMethod = null;
+  }
 
   render() {
     return html`
@@ -139,18 +157,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() { return {
-    _items: { type: Array },
-    _totalCents: { type: Number },
-    _quantity: { type: Number },
-    _paymentMethod: { type: Number }
-  }}
-
-  constructor() {
-    super();
-    this._paymentMethod = null;
-  }
-
   firstUpdated() {
 
     this.__els = {
@@ -192,7 +198,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
   }
 
   _checkoutButtonClicked() {
-
     const { ok, metadata } = this._validateInput();
 
     if (ok) {
@@ -215,7 +220,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
   }
 
   _validateInput() {
-
     const isText = value => !!value && /^(?![\s.]+$)[a-zA-Z0-9\s.]+$/.test(value);
     const isEmail = value => !!value && (new RegExp([
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))/,

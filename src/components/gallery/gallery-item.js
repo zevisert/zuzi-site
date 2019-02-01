@@ -1,17 +1,12 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin';
 import { PageViewElement } from '../page-view-element';
-import { store } from "../../store.js";
+import { store, connect } from "../../store.js";
 
 import { getAllProducts, addToCart } from '../../actions/shop';
 import { showSnackbar } from '../../actions/app';
@@ -22,6 +17,13 @@ import { ButtonSharedStyles } from '../button-shared-styles';
 
 // This element is *not* connected to the Redux store.
 class GalleryItem extends connect(store)(PageViewElement) {
+
+  static get is() { return 'gallery-item'; }
+
+  static get properties() { return {
+      item: { type: Object }
+  }}
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -102,18 +104,8 @@ class GalleryItem extends connect(store)(PageViewElement) {
     `;
   }
 
-  constructor() {
-    super();
-  }
-
   shouldUpdate() {
     return !!this.item;
-  }
-
-  static get properties() {
-    return {
-      item: Object
-    }
   }
 
   connectedCallback() {
@@ -132,4 +124,4 @@ class GalleryItem extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('gallery-item', GalleryItem);
+window.customElements.define(GalleryItem.is, GalleryItem);

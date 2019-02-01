@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 const gulp    = require('gulp');
 const spawn   = require('child_process').spawn;
 const grey    = require('ansi-grey');

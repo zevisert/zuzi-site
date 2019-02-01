@@ -1,18 +1,13 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
 
 // This element is connected to the Redux store.
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 // These are the elements needed by this element.
 import './gallery-list-item.js';
@@ -25,14 +20,26 @@ import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { navigate } from '../../actions/app.js';
 
 class GalleryList extends connect(store)(LitElement) {
+
+  static get is() { return 'gallery-list'; }
+
+  static get properties() { return {
+    filter: { type: String },
+    _filterIds: { type: Array },
+    __allProducts: { type: Object }
+  }}
+
+  constructor() {
+    super();
+    this.filter = undefined;
+    this._filterIds = [];
+    this.__allProducts = {};
+  }
+
   render() {
     return html`
       ${ButtonSharedStyles}
       <style>
-        :host {
-
-        }
-
         .tiles {
           display: grid;
           grid-template-columns: 1fr;
@@ -96,19 +103,6 @@ class GalleryList extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() { return {
-    filter: { type: String },
-    _filterIds: { type: Array },
-    __allProducts: { type: Object }
-  }}
-
-  constructor() {
-    super();
-    this.filter = undefined;
-    this._filterIds = [];
-    this.__allProducts = {};
-  }
-
   firstUpdated() {
     store.dispatch(getAllProducts());
   }
@@ -130,4 +124,4 @@ class GalleryList extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('gallery-list', GalleryList);
+window.customElements.define(GalleryList.is, GalleryList);

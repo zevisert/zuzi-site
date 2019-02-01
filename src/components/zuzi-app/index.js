@@ -1,22 +1,17 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // This element is connected to the Redux store.
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 // These are the actions needed by this element.
 import {
@@ -32,6 +27,17 @@ import { cartQuantitySelector } from '../../reducers/shop.js';
 import '../snackbar';
 
 class ZuziApp extends connect(store)(LitElement) {
+
+  static get is() { return 'zuzi-app'; }
+
+  static get properties() { return {
+    appTitle: { type: String },
+    _page: { type: String },
+    _subPage: { type: String },
+    _cartQuantity: { type: Number },
+    _loggedIn: { type: Boolean }
+  }}
+
   render() {
     // Anything that's related to rendering should be done in here.
     return html`
@@ -236,18 +242,6 @@ class ZuziApp extends connect(store)(LitElement) {
     </section>
     </footer>
     `;
-  }
-
-  static get is() { return 'zuzi-app'; }
-
-  static get properties() {
-    return {
-      appTitle: { type: String },
-      _page: { type: String },
-      _subPage: { type: String },
-      _cartQuantity: { type: Number },
-      _loggedIn: { type: Boolean }
-    }
   }
 
   firstUpdated() {
