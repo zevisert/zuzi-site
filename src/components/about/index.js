@@ -14,8 +14,7 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { getAboutText } from '../../actions/app.js';
 
 class About extends connect(store)(PageViewElement) {

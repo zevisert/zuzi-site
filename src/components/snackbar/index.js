@@ -1,6 +1,5 @@
 import { LitElement, html } from "@polymer/lit-element";
-import { connect } from "pwa-helpers/connect-mixin";
-import { store } from "../../store";
+import { store, connect } from "../../store";
 import { hideSnackbar } from "../../actions/app";
 
 import '@material/mwc-icon';

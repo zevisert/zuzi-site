@@ -1,6 +1,5 @@
 import { html, LitElement } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 
 // These are the actions needed by this element.

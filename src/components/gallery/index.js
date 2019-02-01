@@ -10,10 +10,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 import { html } from '@polymer/lit-element';
 import { PageViewElement } from '../page-view-element.js';
-import { connect } from 'pwa-helpers/connect-mixin.js';
 
 // This element is connected to the Redux store.
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 // These are the elements needed by this element.
 import './gallery-list.js';

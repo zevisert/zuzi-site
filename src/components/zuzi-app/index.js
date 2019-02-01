@@ -9,14 +9,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
 import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
 
 // This element is connected to the Redux store.
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 // These are the actions needed by this element.
 import {

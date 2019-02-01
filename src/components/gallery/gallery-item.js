@@ -9,9 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin';
 import { PageViewElement } from '../page-view-element';
-import { store } from "../../store.js";
+import { store, connect } from "../../store.js";
 
 import { getAllProducts, addToCart } from '../../actions/shop';
 import { showSnackbar } from '../../actions/app';

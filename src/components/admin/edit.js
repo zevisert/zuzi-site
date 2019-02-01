@@ -16,8 +16,7 @@ import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { getAllProducts } from '../../actions/shop.js';
 import { editItem, createItem } from '../../actions/admin.js';
 import { selectedItemSelector } from '../../reducers/shop.js';

@@ -13,8 +13,7 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { getAllProducts } from '../../actions/shop.js';
 import { deleteItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -23,6 +22,7 @@ import { navigate, updateAboutText, getAboutText } from '../../actions/app.js';
 
 import { admin } from '../../reducers/admin.js';
 
+// We are lazy-loading the admin reducer
 store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {

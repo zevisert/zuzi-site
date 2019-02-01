@@ -9,8 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { store } from '../../store';
-import { connect } from 'pwa-helpers/connect-mixin';
+import { store, connect } from '../../store';
 import { givenItemSelector } from '../../reducers/shop';
 
 // This element is *not* connected to the Redux store.

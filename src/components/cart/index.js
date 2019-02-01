@@ -9,17 +9,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 */
 
 import { html } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin';
 import { PageViewElement } from '../page-view-element.js';
 
 // This element is connected to the Redux store.
-import { store } from '../../store.js';
-
-// We are lazy loading its reducer.
-import shop from '../../reducers/shop.js';
-store.addReducers({
-  shop
-});
+import { store, connect } from '../../store.js';
 
 import { CHECKOUT_STAGES_ENUM } from '../../actions/shop.js';
 

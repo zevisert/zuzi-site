@@ -3,8 +3,7 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
@@ -12,6 +11,7 @@ import '../underline-input.js';
 import { processEtransfer, getOrders } from '../../actions/admin.js';
 import { admin, orderSelector } from '../../reducers/admin.js';
 
+// We are lazy-loading the admin reducer
 store.addReducers({ admin });
 
 class AdminConfirm extends connect(store)(PageViewElement) {
