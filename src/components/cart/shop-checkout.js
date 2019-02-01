@@ -280,7 +280,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
     this._items = state.shop.cart;
     this._totalCents = parseInt(100 * cartTotalSelector(state));
     this._quantity = cartQuantitySelector(state);
-    console.log(CHECKOUT_METHODS_ENUM.properties[this._paymentMethod = state.shop.method].name);
+    this._paymentMethod = state.shop.method;
     this.__stage = state.shop.stage;
   }
 }
