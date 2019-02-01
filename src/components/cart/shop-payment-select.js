@@ -1,6 +1,11 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html, LitElement } from '@polymer/lit-element';
-import { connect } from 'pwa-helpers/connect-mixin.js';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedStyles } from '../shared-styles.js';
@@ -12,7 +17,8 @@ import {
 } from '../../actions/shop.js';
 
 export class ShopPayment extends connect(store)(LitElement) {
-  static get is() { return 'shop-payment-select' }
+
+  static get is() { return 'shop-payment-select'; }
 
   render() {
     return html`

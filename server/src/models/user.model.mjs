@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import mongoose from 'mongoose';
 import passportLocalMongoose from 'passport-local-mongoose';
 

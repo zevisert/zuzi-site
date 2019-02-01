@@ -1,10 +1,15 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html } from '@polymer/lit-element';
 import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
 
@@ -12,9 +17,24 @@ import '../underline-input.js';
 import { processEtransfer, getOrders } from '../../actions/admin.js';
 import { admin, orderSelector } from '../../reducers/admin.js';
 
+// We are lazy-loading the admin reducer
 store.addReducers({ admin });
 
 class AdminConfirm extends connect(store)(PageViewElement) {
+
+  static get is() { return 'admin-orders'; }
+
+  static get properties() { return {
+    _order: { type: Object, attribute: false },
+    _rejecting: { type: Boolean, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this._order = { items: [] };
+    this._rejecting = false;
+  }
+
   render() {
 
     const { items=[], customer={ shipping: { address_lines: [] }}, ...order } = this._order;
@@ -126,19 +146,6 @@ class AdminConfirm extends connect(store)(PageViewElement) {
     }
   }
 
-  static get properties() {
-    return {
-      _order: { type: Object, attribute: false },
-      _rejecting: { type: Boolean, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this._order = { items: [] };
-    this._rejecting = false;
-  }
-
   async _processOrder(accepted) {
     let reason = undefined;
 
@@ -167,4 +174,4 @@ class AdminConfirm extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('admin-orders', AdminConfirm);
+window.customElements.define(AdminConfirm.is, AdminConfirm);

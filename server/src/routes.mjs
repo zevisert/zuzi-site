@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import shortid from 'shortid';
 import sharp from 'sharp';
 import path from 'path';

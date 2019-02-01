@@ -1,11 +1,33 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { html, LitElement } from '@polymer/lit-element';
 
 class ToggleInput extends LitElement {
+
   static get is() { return 'toggle-input'; }
+
+  static get properties() { return {
+    type: { type: String },
+    checked: { type: Boolean, reflect: true } ,
+    value: { type: String },
+    error: { type: Boolean, reflect: true }
+  }}
+
+  constructor() {
+    super();
+    this.type = 'checkbox';
+    this.checked = false;
+    this.value = null;
+    this.error = false;
+  }
+
   render() {
     return html`
       <style>
-
         .switch {
           position: relative;
           display: inline-block;
@@ -41,29 +63,12 @@ class ToggleInput extends LitElement {
           position: absolute;
           left: -9999px;
         }
-
       </style>
 
       <input id="toggle" class="offscreen" .type="${this.type}" .checked="${this.checked}" .value="${this.value}"/>
       <label for="toggle" class="switch"></label>
-
     `;
   }
-
-  constructor() {
-    super();
-    this.type = 'checkbox';
-    this.checked = false;
-    this.value = null;
-    this.error = false;
-  }
-
-  static get properties() { return {
-    type: String,
-    checked: { type: Boolean, reflect: true } ,
-    value: String,
-    error: { type: Boolean, reflect: true }
-  }}
 
   firstUpdated() {
     this.__els = {
@@ -96,7 +101,6 @@ class ToggleInput extends LitElement {
       })
     );
   }
-
-
 }
+
 customElements.define(ToggleInput.is, ToggleInput);

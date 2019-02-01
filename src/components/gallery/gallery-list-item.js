@@ -1,20 +1,23 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { LitElement, html } from '@polymer/lit-element';
-import { store } from '../../store';
-import { connect } from 'pwa-helpers/connect-mixin';
+import { store, connect } from '../../store';
 import { givenItemSelector } from '../../reducers/shop';
 
 // This element is *not* connected to the Redux store.
 class GalleryListItem extends connect(store)(LitElement) {
+
+  static get is() { return 'gallery-list-item'; }
+
+  static get properties() { return {
+    key: { type: String },
+    item: { type: Object }
+  }}
+
   render() {
     return html`
       <style>
@@ -72,13 +75,6 @@ class GalleryListItem extends connect(store)(LitElement) {
     `;
   }
 
-  static get properties() {
-    return {
-      key: { type: String },
-      item: { type: Object }
-    }
-  }
-
   updated(changedProperties) {
     if (changedProperties.has('key')) {
       this.item = store.getState().shop.products[this.key];
@@ -90,4 +86,4 @@ class GalleryListItem extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define('gallery-list-item', GalleryListItem);
+window.customElements.define(GalleryListItem, GalleryListItem);

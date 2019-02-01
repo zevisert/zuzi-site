@@ -1,11 +1,7 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import {
@@ -19,6 +15,8 @@ import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer.js';
 
 import app from './reducers/app.js';
 import shop from './reducers/shop.js';
+
+export { connect } from 'pwa-helpers/connect-mixin.js';
 
 // Sets up a Chrome extension for time travel debugging.
 // See https://github.com/zalmoxisus/redux-devtools-extension for more information.

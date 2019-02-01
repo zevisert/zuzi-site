@@ -1,3 +1,9 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+*/
+
 import { showSnackbar } from './app.js';
 
 export const ADMIN_CREATE_ITEM = 'ADMIN_CREATE_ITEM';

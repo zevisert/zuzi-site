@@ -1,11 +1,7 @@
 /**
-@license
-Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
 import { html } from '@polymer/lit-element';
@@ -13,8 +9,7 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { connect } from 'pwa-helpers/connect-mixin';
-import { store } from '../../store.js';
+import { store, connect } from '../../store.js';
 import { getAllProducts } from '../../actions/shop.js';
 import { deleteItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -23,9 +18,24 @@ import { navigate, updateAboutText, getAboutText } from '../../actions/app.js';
 
 import { admin } from '../../reducers/admin.js';
 
+// We are lazy-loading the admin reducer
 store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {
+
+  static get is() { return 'admin-view'; }
+
+  static get properties() { return {
+    _postings: { type: Object, attribute: false },
+    _orders: { type: Array, attribute: false }
+  }}
+
+  constructor() {
+    super();
+    this._postings = {};
+    this._orders = [];
+  }
+
   render() {
     return html`
       ${SharedStyles}
@@ -149,19 +159,6 @@ class AdminView extends connect(store)(PageViewElement) {
     this._orders = newState.admin.orders;
   }
 
-  static get properties() {
-    return {
-      _postings: { type: Object, attribute: false },
-      _orders: { type: Array, attribute: false }
-    }
-  }
-
-  constructor() {
-    super();
-    this._postings = {};
-    this._orders = [];
-  }
-
   async firstUpdated() {
     store.dispatch(getAboutText());
     store.dispatch(getAllProducts());
@@ -178,4 +175,4 @@ class AdminView extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('admin-view', AdminView);
+window.customElements.define(AdminView.is, AdminView);
