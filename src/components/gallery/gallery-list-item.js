@@ -86,4 +86,4 @@ class GalleryListItem extends connect(store)(LitElement) {
   }
 }
 
-window.customElements.define(GalleryListItem, GalleryListItem);
+window.customElements.define(GalleryListItem.is, GalleryListItem);
