@@ -70,9 +70,9 @@ const loginRoutes = (new router({prefix: '/auth'}))
   .get('/whoami', async ctx => ctx.body = JSON.stringify(ctx.state.user))
   .get('/failed', async ctx => ctx.body = { error: 'Authentication Failed' })
   .get('/users',  async ctx => ctx.body = { users: await User.find({}).exec() } );
-    
+
 const apiRoutes = (new router())
-  .use('/api/v1', 
+  .use('/api/v1',
     dataRoutes.routes(),
     dataRoutes.allowedMethods(),
     loginRoutes.routes(),

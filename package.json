@@ -2,16 +2,16 @@
   "name": "zuzi-site",
   "version": "1.0.0",
   "contributors": [
-		"zevisert",
+    "@zevisert",
     "The Polymer Authors"
   ],
   "license": "BSD-3-Clause",
   "repository": "zevisert/zuzi-site",
   "scripts": {
-		"start": "npx gulp",
-		"build": "polymer build",
-		"serve:prpl": "npx prpl-server --root build/ --config polymer.json",
-		"serve:api": "node --experimental-modules server/src/index.mjs",
+    "start": "npx gulp",
+    "build": "polymer build",
+    "serve:prpl": "npx prpl-server --root build/ --config polymer.json",
+    "serve:api": "node --experimental-modules server/src/index.mjs",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "mocha test/integration --timeout=10000",
     "test:unit": "polymer test --module-resolution=node --npm",
