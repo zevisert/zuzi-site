@@ -23,6 +23,7 @@
     "@material/mwc-icon": "^0.3.4",
     "@polymer/lit-element": "^0.6.4",
     "@webcomponents/webcomponentsjs": "^2.2.1",
+    "aws-sdk": "^2.395.0",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "emailjs": "^2.2.0",
