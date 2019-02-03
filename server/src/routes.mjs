@@ -6,7 +6,9 @@
 import shortid from 'shortid';
 import sharp from 'sharp';
 import path from 'path';
+import fs from 'fs';
 import del from 'del';
+import Spaces from 'aws-sdk';
 
 import { Post, Pricing, Size, Order, AboutPage } from './models';
 
@@ -17,10 +19,42 @@ const toSlug = title => title
   .trim()
   .replace(/\s+/g, '-');
 
-/* 
+async function processImage(image) {
+  const uploadName = `${shortid.generate()}.jpg`;
+  const localName = path.join(process.cwd(), 'server', 'uploads', uploadName);
+  const cdnName = path.join(process.env.CDN_DIR, uploadName);
+
+  // Resize Img
+  await sharp(image.path)
+    .resize({width: 1000})
+    .jpeg({
+      progressive: true,
+      quality: 100
+    })
+    .toFile(localName);
+
+  // Upload to DO spaces
+  const endpoint = new Spaces.Endpoint(`${process.env.CDN_REGION}.${process.env.CDN_HOST}`);
+  const space = new Spaces.S3({
+    endpoint,
+    accessKeyId: process.env.CDN_ACCESSKEY,
+    secretAccessKey: process.env.CDN_SECRET_ACCESSKEY
+  });
+
+  await space.upload({
+    Bucket: process.env.CDN_SPACENAME,
+    Key: cdnName,
+    Body: fs.createReadStream(localName),
+    ACL: 'public-read'
+  }).promise();
+
+  return uploadName;
+}
+
+/*
 ========================================= API ROUTES ==============================================
 |   NAME       |     PATH            |   HTTP VERB     |            PURPOSE                       |
-|--------------|---------------------|-----------------|------------------------------------------| 
+|--------------|---------------------|-----------------|------------------------------------------|
 | Index        | /artwork            | GET             | Lists all artwork                        |
 | Create       | /artwork            | POST            | Creates a new artwork posting            |
 | Show         | /artwork/:slug      | GET             | Shows one specified artwork post         |
@@ -43,7 +77,7 @@ export async function index(ctx) {
   }
 
   const posts = await Post.find(opts).exec();
-  
+
   ctx.body = { posts };
 }
 
@@ -53,26 +87,19 @@ export async function create(ctx) {
     ctx.redirect("/login");
     return;
   }
-  try { 
-    
+  try {
+
     const body = ctx.request.body;
     const post = new Post();
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = `${shortid.generate()}.jpg`;
-      await sharp(image.path)
-        .resize({width: 1000})
-        .jpeg({
-          progressive: true,
-          quality: 100
-        })
-        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      const uploadName = await processImage(image);
       post.preview = uploadName;
     } else {
       ctx.throw(400, JSON.stringify({ error: 'No file uploaded' }));
     }
-    
+
     const pricings = JSON.parse(body.pricings);
     post.pricings = [];
 
@@ -82,7 +109,7 @@ export async function create(ctx) {
       pricing.medium = obj.medium;
       pricing.available = obj.available;
       pricing.size = new Size(obj.size);
-      
+
       pricing.save();
       post.pricings.push(pricing);
     }
@@ -94,7 +121,7 @@ export async function create(ctx) {
     post.title = body.title;
     post.description = body.description;
     post.active = body.active;
-    
+
     await post.save();
 
     ctx.body = { post };
@@ -133,31 +160,24 @@ export async function update(ctx) {
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = `${shortid.generate()}.jpg`;
-      await sharp(image.path)
-        .resize({width: 1000})
-        .jpeg({
-          progressive: true,
-          quality: 100
-        })
-        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      const uploadName = await processImage(image);
       post.preview = uploadName;
     }
 
     post.title = body.title || post.title;
     post.description = body.description || post.description;
-    
+
     if (body.pricings) {
       const pricings = JSON.parse(body.pricings);
       post.pricings = [];
-    
+
       for (const obj of pricings) {
         const pricing = new Pricing();
         pricing.price = obj.price;
         pricing.medium = obj.medium;
         pricing.available = obj.available;
         pricing.size = new Size(obj.size);
-        
+
         await pricing.save();
         post.pricings.push(pricing);
       }
@@ -191,9 +211,9 @@ export async function destroy(ctx) {
   const post = await Post.findOne({slug}).select('+deletedOn').exec();
 
   const uploadDir = path.join(process.cwd(), 'server', 'uploads');
-  
+
   const [pathToDel, ...rest] = del.sync(path.join(uploadDir, post.preview), {dryRun: true});
-  
+
   if (pathToDel && rest.length === 0) {
     const relative = path.relative(uploadDir, pathToDel);
     if (!!relative && !relative.startsWith('..') && !path.isAbsolute(relative)) {
@@ -208,7 +228,7 @@ export async function destroy(ctx) {
   post.markModified('deletedOn');
   await post.save();
 
-  ctx.body = { success: true }; 
+  ctx.body = { success: true };
 }
 
 
@@ -218,7 +238,7 @@ export async function info(ctx) {
     return;
   }
 
-  try { 
+  try {
     if (ctx.params.id === undefined) {
       const orders = await Order.find()
         .sort({date: -1})
@@ -250,7 +270,7 @@ export async function env(ctx) {
     env: {
       STRIPE_PK: process.env.STRIPE_PK,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENABLE: process.env.SENTRY_ENABLE
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE'
     }
   }
 }
@@ -271,4 +291,14 @@ export async function about(ctx) {
   }
 
   ctx.body = { lines: aboutPage.lines };
+}
+
+export async function uploads(ctx) {
+
+  const file = ctx.params.file;
+  const cdn_url = `${process.env.CDN_SPACENAME}.${process.env.CDN_REGION}.cdn.${process.env.CDN_HOST}`;
+  const requested_file = `${process.env.CDN_DIR}/${file}`;
+
+  ctx.redirect(`https://${cdn_url}/${requested_file}`);
+
 }
