@@ -6,7 +6,9 @@
 import shortid from 'shortid';
 import sharp from 'sharp';
 import path from 'path';
+import fs from 'fs';
 import del from 'del';
+import Spaces from 'aws-sdk';
 
 import { Post, Pricing, Size, Order, AboutPage } from './models';
 
@@ -17,7 +19,39 @@ const toSlug = title => title
   .trim()
   .replace(/\s+/g, '-');
 
-/* 
+async function processImage(image) {
+  const uploadName = `${shortid.generate()}.jpg`;
+  const localName = path.join(process.cwd(), 'server', 'uploads', uploadName);
+  const cdnName = path.join(process.env.CDN_DIR, uploadName);
+
+  // Resize Img
+  await sharp(image.path)
+    .resize({width: 1000})
+    .jpeg({
+      progressive: true,
+      quality: 100
+    })
+    .toFile(localName);
+
+  // Upload to DO spaces
+  const endpoint = new Spaces.Endpoint(`${process.env.CDN_REGION}.${process.env.CDN_HOST}`);
+  const space = new Spaces.S3({
+    endpoint,
+    accessKeyId: process.env.CDN_ACCESSKEY,
+    secretAccessKey: process.env.CDN_SECRET_ACCESSKEY
+  });
+
+  await space.upload({
+    Bucket: process.env.CDN_SPACENAME,
+    Key: cdnName,
+    Body: fs.createReadStream(localName),
+    ACL: 'public-read'
+  }).promise();
+
+  return uploadName;
+}
+
+/*
 ========================================= API ROUTES ==============================================
 |   NAME       |     PATH            |   HTTP VERB     |            PURPOSE                       |
 |--------------|---------------------|-----------------|------------------------------------------|
@@ -60,14 +94,7 @@ export async function create(ctx) {
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = `${shortid.generate()}.jpg`;
-      await sharp(image.path)
-        .resize({width: 1000})
-        .jpeg({
-          progressive: true,
-          quality: 100
-        })
-        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      const uploadName = await processImage(image);
       post.preview = uploadName;
     } else {
       ctx.throw(400, JSON.stringify({ error: 'No file uploaded' }));
@@ -133,14 +160,7 @@ export async function update(ctx) {
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = `${shortid.generate()}.jpg`;
-      await sharp(image.path)
-        .resize({width: 1000})
-        .jpeg({
-          progressive: true,
-          quality: 100
-        })
-        .toFile(path.join(process.cwd(), 'server', 'uploads', uploadName));
+      const uploadName = await processImage(image);
       post.preview = uploadName;
     }
 
@@ -250,7 +270,7 @@ export async function env(ctx) {
     env: {
       STRIPE_PK: process.env.STRIPE_PK,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENABLE: process.env.SENTRY_ENABLE
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE'
     }
   }
 }
@@ -271,4 +291,14 @@ export async function about(ctx) {
   }
 
   ctx.body = { lines: aboutPage.lines };
+}
+
+export async function uploads(ctx) {
+
+  const file = ctx.params.file;
+  const cdn_url = `${process.env.CDN_SPACENAME}.${process.env.CDN_REGION}.cdn.${process.env.CDN_HOST}`;
+  const requested_file = `${process.env.CDN_DIR}/${file}`;
+
+  ctx.redirect(`https://${cdn_url}/${requested_file}`);
+
 }

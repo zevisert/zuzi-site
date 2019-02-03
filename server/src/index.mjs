@@ -5,20 +5,29 @@
 
 import koa from 'koa';
 import body from 'koa-body';
-import serve from 'koa-static';
-import mount from 'koa-mount';
 import session from 'koa-session';
 import router from 'koa-router';
 import multer from 'koa-multer';
 import passport from 'koa-passport';
 
-import path from 'path';
-
 // Must be first, side effects import process.env
 import { db_connect, pipe, isProtected } from './config';
 
 import { User } from './models';
-import { index, create, show, update, destroy, notFound, info, env, about } from './routes'; 
+
+import {
+  index,
+  create,
+  show,
+  update,
+  destroy,
+  notFound,
+  info,
+  env,
+  about,
+  uploads
+} from './routes';
+
 import { checkout, webhook } from './checkout';
 
 const app = new koa();
@@ -35,7 +44,6 @@ const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
   ["body parser", body({ multipart: true, rawBody: true, formidable: { maxFileSize: Infinity } })],
-  ["static /uploads", mount('/uploads', serve(path.join(process.cwd(), 'server', 'uploads')))],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
   ["protected routes", isProtected]
@@ -77,6 +85,14 @@ const apiRoutes = (new router())
     dataRoutes.allowedMethods(),
     loginRoutes.routes(),
     loginRoutes.allowedMethods()
+);
+
+const uploadRedirect = (new router())
+  .get('/uploads/:file', uploads);
+
+app.use(
+  uploadRedirect.routes(),
+  uploadRedirect.allowedMethods()
 );
 
 app.use(
