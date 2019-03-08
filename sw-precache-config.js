@@ -17,6 +17,10 @@ module.exports = {
     {
       urlPattern: /^https:\/\/fonts.gstatic.com\//,
       handler: 'fastest'
+    },
+    {
+      urlPattern: /^https:\/\/*.cdn.digitaloceanspaces.com\//,
+      handler: 'cacheFirst'
     }
   ]
 };
