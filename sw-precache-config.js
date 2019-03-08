@@ -19,11 +19,14 @@ module.exports = {
       handler: 'fastest'
     },
     {
-      urlPattern: /^https:\/\/[^\s]+\.cdn\.digitaloceanspaces\.com\//,
-      handler: 'cacheFirst'
+      urlPattern: '/uploads/(.*)',
+      handler: 'cacheFirst',
+      options: {
+        cache: { name: 'artwork' }
+      }
     },
     {
-      urlPattern: /\/api\/v[0-9]+\/auth\/logout$/,
+      urlPattern: '/api/:version/(.*)',
       handler: 'networkOnly'
     }
   ]
