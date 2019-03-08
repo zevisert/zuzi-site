@@ -53,7 +53,9 @@ const loadPage = (page, subPage) => dispatch => {
       break;
     case appStr.pages.admin:
       if (subPage) {
-        if (subPage.split('/').includes('orders')) {
+        if (subPage === 'change-password') {
+          import('../components/admin/change-password.js');
+        } else if (subPage.split('/').includes('orders')) {
           import('../components/admin/orders.js');
         } else {
           import('../components/admin/edit.js');

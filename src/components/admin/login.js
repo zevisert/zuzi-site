@@ -10,9 +10,9 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { login, credentials } from '../../actions/app.js';
-import { store } from '../../store.js';
+import { login, credentials, showSnackbar } from '../../actions/app.js';
 
+import { store } from '../../store.js';
 import '../underline-input.js';
 
 class LoginView extends PageViewElement {
@@ -34,7 +34,7 @@ class LoginView extends PageViewElement {
       <section>
         <h2>Admin Login</h2>
         <underline-input id="email" type="email" placeholder="Email"></underline-input>
-        <underline-input id="password" type="password" placeholder="Password"></underline-input>
+        <underline-input id="password" type="password" placeholder="Password" @keypress="${this._isEnterPress}"></underline-input>
         <button @click="${this._submitForm}">Login</button>
       </section>
     `;
@@ -43,6 +43,23 @@ class LoginView extends PageViewElement {
   firstUpdated() {
     store.dispatch(credentials(undefined));
     sessionStorage.removeItem('credentials');
+
+    const params = (new URL(document.location)).searchParams;
+    if (params.has('message')) {
+      store.dispatch(showSnackbar(params.get('message')));
+
+      params.delete('message');
+      history.replaceState({}, document.title, `/login?${params}`);
+    }
+  }
+
+  _isEnterPress(event) {
+    const charCode = event.keyCode || event.which;
+
+    if ( charCode == '13' ) {
+      // Enter pressed
+      this._submitForm();
+    }
   }
 
   async _submitForm() {

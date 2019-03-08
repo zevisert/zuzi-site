@@ -17,6 +17,14 @@ module.exports = {
     {
       urlPattern: /^https:\/\/fonts.gstatic.com\//,
       handler: 'fastest'
+    },
+    {
+      urlPattern: /^https:\/\/*.cdn.digitaloceanspaces.com\//,
+      handler: 'cacheFirst'
+    },
+    {
+      urlPattern: /\/api\/v[0-9]+\/auth\/logout$/,
+      handler: 'networkOnly'
     }
   ]
 };

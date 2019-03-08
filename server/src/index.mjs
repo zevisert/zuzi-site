@@ -25,7 +25,8 @@ import {
   info,
   env,
   about,
-  uploads
+  uploads,
+  changePassword
 } from './routes';
 
 import { checkout, webhook } from './checkout';
@@ -74,6 +75,7 @@ const dataRoutes = (new router())
 
 const loginRoutes = (new router({prefix: '/auth'}))
   .post('/login', passport.authenticate('local', { successRedirect: 'whoami', failureRedirect: 'failed' }))
+  .post('/change-password', changePassword)
   .get('/logout', async ctx => { ctx.logout(); ctx.redirect("/login"); })
   .get('/whoami', async ctx => ctx.body = JSON.stringify(ctx.state.user))
   .get('/failed', async ctx => ctx.body = { error: 'Authentication Failed' })
