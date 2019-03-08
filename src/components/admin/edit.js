@@ -152,6 +152,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
           padding-top: 3em;
         }
 
+        .breadcrumb {
+          width: 1000px;
+        }
+
+        .breadcrumb a {
+          color: black;
+        }
+
         @media screen and (max-width: 725px) {
           #pricing-group table tbody tr td:nth-child(1):before { content: "Medium"; }
           #pricing-group table tbody tr td:nth-child(2):before { content: "Size"; }
@@ -160,10 +168,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
         }
       </style>
       <section>
-        <h2><a href="/admin">Admin View</a> > ${this.item._id === null ? "New" : this.item.title}</h2>
-
-        <input id="file" type="file" hidden>
         <div class="container">
+
+          <h2 class="breadcrumb">
+            <a href="/admin">Admin View</a> // ${this.item._id === null ? "New" : this.item.title}
+          </h2>
+
+          <input id="file" type="file" hidden>
           <div id="container" class="canvas-container">
             <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
             <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
