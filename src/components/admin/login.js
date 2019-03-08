@@ -34,7 +34,7 @@ class LoginView extends PageViewElement {
       <section>
         <h2>Admin Login</h2>
         <underline-input id="email" type="email" placeholder="Email"></underline-input>
-        <underline-input id="password" type="password" placeholder="Password"></underline-input>
+        <underline-input id="password" type="password" placeholder="Password" @keypress="${this._isEnterPress}"></underline-input>
         <button @click="${this._submitForm}">Login</button>
       </section>
     `;
@@ -43,6 +43,15 @@ class LoginView extends PageViewElement {
   firstUpdated() {
     store.dispatch(credentials(undefined));
     sessionStorage.removeItem('credentials');
+  }
+
+  _isEnterPress(event) {
+    const charCode = event.keyCode || event.which;
+
+    if ( charCode == '13' ) {
+      // Enter pressed
+      this._submitForm();
+    }
   }
 
   async _submitForm() {
