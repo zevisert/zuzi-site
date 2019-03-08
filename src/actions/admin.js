@@ -99,7 +99,6 @@ export const editItem = (slug, data, onProgress, done) => async dispatch => {
   ajax.send(formData);
 }
 
-
 export const deleteItem = slug => async dispatch => {
   const response = await fetch(`${process.env.API_URL}/artwork/${slug}`, {
     method: "DELETE",
@@ -180,4 +179,29 @@ export const processEtransfer = ({ accepted=false, orderId='', reason=undefined}
       orders
     }
   });
+}
+
+export const changePassword = (email, oldPassword, newPassword) => async dispatch => {
+
+  try {
+    const response = await fetch(`${process.env.API_URL}/auth/change-password`, {
+      credentials: "same-origin",
+      method: "POST",
+      headers: new Headers({'content-type': 'application/json'}),
+      body: JSON.stringify({
+        email,
+        oldPassword,
+        newPassword
+      })
+    });
+
+    if (response.redirected) {
+      location.assign(response.url)
+    } else {
+      throw new Error('Expected password change to redirect')
+    }
+  } catch (err) {
+    console.log(err)
+    dispatch(showSnackbar('Failed to change password'))
+  }
 }
