@@ -15,11 +15,11 @@ module.exports = {
       handler: 'fastest'
     },
     {
-      urlPattern: /^https:\/\/fonts.gstatic.com\//,
+      urlPattern: /^https:\/\/fonts\.gstatic\.com\//,
       handler: 'fastest'
     },
     {
-      urlPattern: /^https:\/\/*.cdn.digitaloceanspaces.com\//,
+      urlPattern: /^https:\/\/[^\s]+\.cdn\.digitaloceanspaces\.com\//,
       handler: 'cacheFirst'
     },
     {
