@@ -130,9 +130,11 @@ class AdminConfirm extends connect(store)(PageViewElement) {
 
   async stateChanged(state) {
 
-    if (state.app.page === 'admin' && state.app.subPage) {
+    if (state.app.page === 'admin' && state.app.subPage && state.app.subPage.startsWith('orders/')) {
+
       const [route, orderId] = state.app.subPage.split('/');
-      if (orderId !== undefined && route !== 'orders') {
+
+      if (route !== 'orders' || orderId === undefined) {
         throw new Error('Something wrong in /admin/orders navigation');
       }
 
