@@ -126,6 +126,7 @@ class ZuziApp extends connect(store)(LitElement) {
       .login a {
         color: lightgray;
         text-decoration: none;
+        padding-left: 1em;
       }
 
       .login a:hover {
@@ -209,6 +210,14 @@ class ZuziApp extends connect(store)(LitElement) {
         }">
       </admin-edit>
 
+      <admin-password class="page"
+        ?active="${
+          this._page === str.pages.admin
+          && this._subPage !== null
+          && this._subPage === 'change-password'
+        }">
+      </admin-password>
+
       <admin-orders class="page"
         ?active="${
           this._page === str.pages.admin
@@ -234,7 +243,9 @@ class ZuziApp extends connect(store)(LitElement) {
         <div class="login">
           <span>
             ${this._loggedIn
-            ? html`<a href="${process.env.API_URL}/auth/logout" target="_self">Logout</a>`
+            ? html`
+                <a href="/admin/change-password">Change Password</a>
+                <a href="${process.env.API_URL}/auth/logout" target="_self">Logout</a>`
             : html`<a href="/${str.pages.login}">Login</a>`
             }
           </span>

@@ -21,6 +21,10 @@ module.exports = {
     {
       urlPattern: /^https:\/\/*.cdn.digitaloceanspaces.com\//,
       handler: 'cacheFirst'
+    },
+    {
+      urlPattern: /\/api\/v[0-9]+\/auth\/logout$/,
+      handler: 'networkOnly'
     }
   ]
 };

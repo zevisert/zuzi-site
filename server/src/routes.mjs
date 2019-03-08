@@ -10,7 +10,7 @@ import fs from 'fs';
 import del from 'del';
 import Spaces from 'aws-sdk';
 
-import { Post, Pricing, Size, Order, AboutPage } from './models';
+import { Post, Pricing, Size, Order, AboutPage, User } from './models';
 
 const toSlug = title => title
   .toLowerCase()
@@ -300,5 +300,22 @@ export async function uploads(ctx) {
   const requested_file = `${process.env.CDN_DIR}/${file}`;
 
   ctx.redirect(`https://${cdn_url}/${requested_file}`);
+
+}
+
+export async function changePassword(ctx) {
+
+  if (ctx.isUnauthenticated()) {
+    ctx.redirect("/login");
+    return;
+  }
+
+  const body = ctx.request.body;
+  const user = await User.findByUsername(body.email)
+
+  user.changePassword(body.oldPassword, body.newPassword);
+
+  ctx.logout();
+  ctx.redirect("/login?message=Successfully changed password");
 
 }
