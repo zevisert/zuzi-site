@@ -319,3 +319,18 @@ export async function changePassword(ctx) {
   ctx.redirect("/login?message=Successfully changed password");
 
 }
+
+export async function createSubscriberUser(ctx) {
+
+  const body = ctx.request.body;
+  try {
+    const user = await User.create({ admin: false, subscriber: true, email: body.email })
+
+    await user.save();
+
+    ctx.body = { success: true }
+  } catch (error) {
+    ctx.throw(400, JSON.stringify({ error }));
+  }
+
+}

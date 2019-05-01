@@ -12,10 +12,13 @@ import { store, connect } from '../../store.js';
 
 // These are the elements needed by this element.
 import './gallery-list.js';
+import '../underline-input.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
+
+import { createSubscriber } from '../../actions/app';
 
 class Gallery extends connect(store)(PageViewElement) {
 
@@ -70,6 +73,10 @@ class Gallery extends connect(store)(PageViewElement) {
       }
 
       </style>
+      <section>
+        <underline-input id="email" type="email" placeholder="Email"></underline-input>
+        <button @click=${this.signup}>Subscribe to new posts</button>
+      </section>
       <section class="filter">
         <span class="filter-hint">Filter by</span>
         <div class="tags">
@@ -96,6 +103,10 @@ class Gallery extends connect(store)(PageViewElement) {
   stateChanged(state) {
     const allTags = Object.values(state.shop.products).reduce((tags, item) => [... tags, ... item.tags], []);
     this._tags = [... (new Set(allTags)).keys()];
+  }
+
+  signup() {
+    store.dispatch(createSubscriber(this.renderRoot.getElementById('email').value))
   }
 }
 

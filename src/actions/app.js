@@ -196,3 +196,23 @@ export const updateAboutText = lines => async dispatch => {
 
   dispatch(showSnackbar("About page text updated"));
 }
+
+export const createSubscriber = email => async dispatch => {
+
+  const createUserReq = await fetch(`${window.process.env.API_URL}/subscriber/create`, {
+    method: "POST",
+    credentials: 'same-origin',
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify({
+      email
+    })
+  });
+
+  const { success } = await createUserReq.json();
+
+  if (success) {
+    dispatch(showSnackbar("You are now subscribed to new posts via email"));
+  } else {
+    dispatch(showSnackbar("Something went wrong, you are not subscribed"));
+  }
+}
