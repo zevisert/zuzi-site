@@ -18,7 +18,16 @@ import '../underline-input.js';
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 
-import { createSubscriber } from '../../actions/app';
+import {
+  createPushSubscriber,
+  removePushSubscriber,
+  updatePushRegistration,
+  createEmailSubscriber,
+} from '../../actions/subscriptions';
+import { subscriptions } from "../../reducers/subscriptions"
+
+// We are lazy-loading the subscription reducer
+store.addReducers({ subscriptions });
 
 class Gallery extends connect(store)(PageViewElement) {
 
@@ -72,11 +81,15 @@ class Gallery extends connect(store)(PageViewElement) {
         opacity: 0.5;
       }
 
+      .subscribers {
+        max-width: 1600px;
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        padding-top: 4em;
+      }
+
       </style>
-      <section>
-        <underline-input id="email" type="email" placeholder="Email"></underline-input>
-        <button @click=${this.signup}>Subscribe to new posts</button>
-      </section>
       <section class="filter">
         <span class="filter-hint">Filter by</span>
         <div class="tags">
@@ -92,6 +105,10 @@ class Gallery extends connect(store)(PageViewElement) {
       <section>
         <gallery-list filter=${this.filter}></gallery-list>
       </section>
+      <section class="subscribers">
+        <underline-input id="email" type="email" placeholder="Email"></underline-input>
+        <button id="subscription-button" @click=${this.signup}>Subscribe to new posts</button>
+      </section>
     `;
   }
 
@@ -103,11 +120,66 @@ class Gallery extends connect(store)(PageViewElement) {
   stateChanged(state) {
     const allTags = Object.values(state.shop.products).reduce((tags, item) => [... tags, ... item.tags], []);
     this._tags = [... (new Set(allTags)).keys()];
+
+    this.push_subscribed = state.subscriptions.push.subscribed
+
+    const registration = state.subscriptions.push.registration;
+    if (this.push_registration !== registration && registration !== null) {
+      this.push_registration = registration;
+      this.updateSWState()
+    }
+  }
+
+  async firstUpdated() {
+    this.pushButton = this.renderRoot.getElementById("subscription-button")
+    store.dispatch(updatePushRegistration(process.swRegistration))
+    document.addEventListener('zuzi-app-sw-registered', event => {
+      console.log(event.detail)
+      store.dispatch(updatePushRegistration(event.detail))
+    })
   }
 
   signup() {
-    store.dispatch(createSubscriber(this.renderRoot.getElementById('email').value))
+    this.pushButton.disabled = true;
+    //store.dispatch(createEmailSubscriber(this.renderRoot.getElementById('email').value))
+
+    if (this.push_subscribed) {
+      // TODO: Unsubscribe user
+      console.log("TODO: unsub user")
+    } else {
+      store.dispatch(createPushSubscriber())
+    }
+  }
+
+  async updateSWState() {
+    // Set the initial subscription value
+    const subscription = await this.push_registration.pushManager.getSubscription()
+
+    if (subscription !== null) {
+      store.dispatch(createPushSubscriber(subscription))
+    } else {
+      store.dispatch(removePushSubscriber())
+    }
+  }
+
+  updateBtn() {
+    if (Notification.permission === 'denied') {
+      this.pushButton.textContent = 'Push Messaging Blocked.';
+      this.pushButton.disabled = true;
+      store.dispatch(removePushSubscriber())
+      return;
+    }
+
+    if (this.push_subscribed) {
+      this.pushButton.textContent = 'Disable Push Messaging';
+    } else {
+      this.pushButton.textContent = 'Enable Push Messaging';
+    }
+
+    this.pushButton.disabled = false;
   }
 }
+
+
 
 window.customElements.define(Gallery.is, Gallery);

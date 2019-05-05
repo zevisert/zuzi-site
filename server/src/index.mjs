@@ -107,4 +107,8 @@ app.use(
 // Pipe unmatched requests to polymer
 app.use(pipe);
 
-app.listen(process.env.PORT, console.log(`Server up on port ${process.env.PORT}`));
+app.listen(process.env.PORT, () => {
+  const link = new URL(process.env.SITE_URL)
+  link.port = process.env.PORT;
+  console.log(`App server up. Visit ${link}`)
+});
