@@ -5,12 +5,11 @@
 */
 
 self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.');
-  console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
-
-  const title = 'Push Codelab';
+  const data = event.data.json()
+  const title = data.title;
   const options = {
-    body: 'Yay it works.',
+    body: data.body,
+    data: data.url,
     icon: 'images/favicon.ico',
     badge: 'images/favicon.ico'
   };
@@ -19,11 +18,9 @@ self.addEventListener('push', function(event) {
 });
 
 self.addEventListener('notificationclick', function(event) {
-  console.log('[Service Worker] Notification click Received.');
-
   event.notification.close();
 
   event.waitUntil(
-    clients.openWindow('http://localhost:8080/gallery')
+    clients.openWindow(event.notification.data)
   );
 });

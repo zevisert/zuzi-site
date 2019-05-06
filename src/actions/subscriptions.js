@@ -4,6 +4,8 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
+import { showSnackbar } from './app';
+
 export const SERVICE_WORKER_SUBSCRIBE = 'SERVICE_WORKER_SUBSCRIBE';
 export const SERVICE_WORKER_UNSUBSCRIBE = 'SERVICE_WORKER_UNSUBSCRIBE';
 export const SERVICE_WORKER_REGISTER = 'SERVICE_WORKER_REGISTER';
@@ -49,10 +51,11 @@ function urlB64ToUint8Array(base64String) {
 export const createPushSubscriber = () => async (dispatch, getState) => {
   const applicationServerKey = urlB64ToUint8Array(process.env.PUSH_PUBKEY);
   const state = getState();
-  if (state.subscriptions.push.registration) {
+  if (state.subscriptions.push.registered) {
     try {
 
-      const subscription = await state.subscriptions.push.registration.pushManager.subscribe({
+      const registration = await navigator.serviceWorker.getRegistration()
+      const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: applicationServerKey
       });
@@ -76,10 +79,34 @@ export const createPushSubscriber = () => async (dispatch, getState) => {
 };
 
 export const syncPushSubToServer = subscription => async dispatch => {
-  console.log(`TODO: Subscription for server ${subscription}`)
+
+  const createUserReq = await fetch(`${window.process.env.API_URL}/subscriber/create`, {
+    method: "POST",
+    credentials: 'same-origin',
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify({
+      subscription
+    })
+  });
+
+  const { success, isNew } = await createUserReq.json();
+
+  if (subscription) {
+    if (success && isNew) {
+      dispatch(showSnackbar("You will now receive notifications for when new artwork is added!"));
+    } else if (!success) {
+      dispatch(showSnackbar("Something went wrong, you are not subscribed"));
+    }
+  }
 }
 
 export const removePushSubscriber = () => async dispatch => {
+  const registration = await navigator.serviceWorker.getRegistration()
+  const subscription = await registration.pushManager.getSubscription()
+  if (subscription) {
+    subscription.unsubscribe();
+  }
+
   dispatch(syncPushSubToServer(null))
   dispatch({
     type: SERVICE_WORKER_UNSUBSCRIBE
@@ -87,7 +114,7 @@ export const removePushSubscriber = () => async dispatch => {
 }
 
 export const updatePushRegistration = (registration=null) => {
-  if (registration !== null) {
+  if (registration) {
     return {
       type: SERVICE_WORKER_REGISTER,
       payload: { registration }

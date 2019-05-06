@@ -10,7 +10,15 @@ import fs from 'fs';
 import del from 'del';
 import Spaces from 'aws-sdk';
 
-import { Post, Pricing, Size, Order, AboutPage, User } from './models';
+import {
+  AboutPage,
+  Post,
+  Pricing,
+  Order,
+  Size,
+  Subscription,
+  User,
+} from './models';
 
 const toSlug = title => title
   .toLowerCase()
@@ -325,13 +333,21 @@ export async function createSubscriberUser(ctx) {
 
   const body = ctx.request.body;
   try {
-    const user = await User.create({ admin: false, subscriber: true, email: body.email })
+    if (body.email) {
+      const user = await User.create({ admin: false, subscriber: true, email: body.email });
+      await user.save();
+    } else if (body.subscription) {
+      const subscription = await Subscription.create(body.subscription);
+      await subscription.save();
+    }
 
-    await user.save();
-
-    ctx.body = { success: true }
+    ctx.body = { success: true, isNew: true }
   } catch (error) {
-    ctx.throw(400, JSON.stringify({ error }));
+    if (error.name === "MongoError" && error.code === 11000 /* DuplicateKey */) {
+      ctx.body = { success: true, isNew: false, meta: "Already subscribed" }
+    } else {
+      ctx.throw(400, JSON.stringify({ error }));
+    }
   }
 
 }
