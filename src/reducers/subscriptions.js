@@ -16,7 +16,7 @@ import {
 const INITIAL_STATE = {
   push: {
     subscribed: false,
-    registration: null,
+    registered: false,
     subscription: null
   },
   email: {
@@ -67,18 +67,19 @@ const email = (state, action) => {
   }
 };
 
+
 const push = (state, action) => {
   switch (action.type) {
     case SERVICE_WORKER_REGISTER:
       return {
         ...state,
-        registration: action.payload.registration
+        registered: !!action.payload.registration
       };
     case SERVICE_WORKER_UNREGISTER:
       return {
         ...state,
-        registration: null,
         subscription: null,
+        registered: false,
         subscribed: false
       };
     case SERVICE_WORKER_SUBSCRIBE:
