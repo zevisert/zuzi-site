@@ -6,7 +6,7 @@
 
 import { LitElement, html } from "@polymer/lit-element";
 import { store, connect } from "../../store";
-import { hideSnackbar } from "../../actions/app";
+import { showSnackbar, hideSnackbar } from "../../actions/app";
 
 import '@material/mwc-icon';
 
@@ -152,6 +152,17 @@ class Snackbar extends connect(store)(LitElement) {
         <mwc-icon @click="${() => this._closeMessage()}">close</mwc-icon>
       </div>
     `;
+  }
+
+  firstUpdated() {
+    const params = (new URL(document.location)).searchParams;
+    if (params.has('message')) {
+      store.dispatch(showSnackbar(params.get('message')));
+
+      params.delete('message');
+      const sep = [...params.keys()].length > 0
+      history.replaceState({}, document.title, `${document.location.pathname}${sep ? '?' : ''}${params}`);
+    }
   }
 
   stateChanged(state) {
