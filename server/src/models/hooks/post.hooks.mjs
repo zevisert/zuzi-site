@@ -1,3 +1,8 @@
+/**
+* @license
+* Copyright (c) Zev Isert, All rights reserved
+*/
+
 import webpush from 'web-push';
 
 import { User } from '../user.model';
@@ -42,14 +47,15 @@ export async function pre_save() {
         for (const subscription of subscriptions) {
 
             webpush.sendNotification(subscription, JSON.stringify({
-                title: "New artwork from Zuzana",
-                body: "A new piece was just posted on Zuzana's gallery",
-                url: `${process.env.SITE_URL}/gallery/${this.slug}`
+                title: "New artwork!",
+                body: "A new art piece was just posted to Zuzana Riha's gallery",
+                url: `${process.env.SITE_URL}/gallery/${this.slug}`,
+                image: `${process.env.SITE_URL}/uploads/${this.preview}`
             }))
             .catch(() => {
                 // Remove the subscription
                 console.log(`Subscription ${subscription._id} failed to send, deleting`);
-                entry.delete();
+                subscription.delete();
             });
         }
     }

@@ -27,7 +27,8 @@ import {
   about,
   uploads,
   changePassword,
-  createSubscriberUser
+  createSubscriberUser,
+  removeSubscriberUser,
 } from './routes';
 
 import { checkout, webhook } from './checkout';
@@ -66,6 +67,7 @@ const dataRoutes = (new router())
   .put('/artwork/:slug', upload.single('image'), update)
   .delete('/artwork/:slug', destroy)
   .post('/subscriber/create', createSubscriberUser)
+  .get('/unsubscribe/:id', removeSubscriberUser)
   .get('/env', env)
   .get('/orders/', info)
   .get('/orders/:id', info)
