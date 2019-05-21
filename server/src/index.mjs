@@ -31,7 +31,11 @@ import {
   removeSubscriberUser,
 } from './routes';
 
+// Checkout callbacks
 import { checkout, webhook } from './checkout';
+
+// Import event handlers
+import './events/new_artwork'
 
 const app = new koa();
 
