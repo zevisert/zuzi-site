@@ -4,13 +4,8 @@
 */
 
 import webpush from 'web-push';
-
-import { User } from '../user.model';
 import { Post } from '../post.model';
-import { Subscription } from '../subscription.model';
-import { email } from '../../email';
-
-import { notifySubscribersPosting } from '../../email/templates/subscriptions'
+import { customEvents, ARTWORK_NEW }  from "../../events/registration";
 
 webpush.setVapidDetails(
     `mailto:${process.env.SUPPORT_EMAIL}`,
@@ -31,32 +26,6 @@ export async function pre_save() {
     });
 
     if (conditions.some(cond => cond === true) && requirements.every(req => req === true)) {
-
-        // Send emails
-        const users = await User.find({ subscriber: true });
-        for (const user of users) {
-            email.deliver(notifySubscribersPosting(this, user))
-            .catch(error => {
-                console.log(`Email to ${user.email} failed to deliver`)
-                console.warn(error)
-            });
-        }
-
-        // Send push notifications
-        const subscriptions = await Subscription.find({})
-        for (const subscription of subscriptions) {
-
-            webpush.sendNotification(subscription, JSON.stringify({
-                title: "New artwork!",
-                body: "A new art piece was just posted to Zuzana Riha's gallery",
-                url: `${process.env.SITE_URL}/gallery/${this.slug}`,
-                image: `${process.env.SITE_URL}/uploads/${this.preview}`
-            }))
-            .catch(() => {
-                // Remove the subscription
-                console.log(`Subscription ${subscription._id} failed to send, deleting`);
-                subscription.delete();
-            });
-        }
+        customEvents.emit(ARTWORK_NEW, this);
     }
 }
