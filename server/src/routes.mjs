@@ -10,15 +10,7 @@ import fs from 'fs';
 import del from 'del';
 import Spaces from 'aws-sdk';
 
-import {
-  AboutPage,
-  Post,
-  Pricing,
-  Order,
-  Size,
-  Subscription,
-  User,
-} from './models';
+import { Post, Pricing, Size, Order, AboutPage, User } from './models';
 
 const toSlug = title => title
   .toLowerCase()
@@ -278,8 +270,7 @@ export async function env(ctx) {
     env: {
       STRIPE_PK: process.env.STRIPE_PK,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE',
-      PUSH_PUBKEY: process.env.PUSH_PUBKEY
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE'
     }
   }
 }
@@ -327,42 +318,4 @@ export async function changePassword(ctx) {
   ctx.logout();
   ctx.redirect("/login?message=Successfully changed password");
 
-}
-
-export async function createSubscriberUser(ctx) {
-
-  const body = ctx.request.body;
-  try {
-    if (body.email) {
-      const user = await User.create({ admin: false, subscriber: true, email: body.email });
-      await user.save();
-    } else if (body.subscription) {
-      const subscription = await Subscription.create(body.subscription);
-      await subscription.save();
-    }
-
-    ctx.body = { success: true, isNew: true }
-  } catch (error) {
-    if (error.name === "MongoError" && error.code === 11000 /* DuplicateKey */) {
-      ctx.body = { success: true, isNew: false, meta: "Already subscribed" }
-    } else {
-      ctx.throw(400, JSON.stringify({ error }));
-    }
-  }
-}
-
-export async function removeSubscriberUser(ctx) {
-
-  const id = ctx.params.id;
-  let message;
-  try {
-    const user = await User.findById(id)
-    const email = user.email
-    await user.delete();
-    message = new URLSearchParams({ message: `Successfully unsubscribed ${email}`})
-  } catch (error) {
-    message = new URLSearchParams({ message: `Could not perform un-subscription` })
-  } finally {
-    ctx.redirect(`/gallery?${message}`)
-  }
 }

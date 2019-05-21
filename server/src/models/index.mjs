@@ -13,5 +13,4 @@ export { Order } from './order.model'
 export { Post } from './post.model'
 export { Pricing } from './pricing.model'
 export { Size } from './size.model'
-export { Subscription } from './subscription.model'
 export { User } from './user.model';

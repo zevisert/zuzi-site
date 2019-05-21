@@ -26,9 +26,7 @@ import {
   env,
   about,
   uploads,
-  changePassword,
-  createSubscriberUser,
-  removeSubscriberUser,
+  changePassword
 } from './routes';
 
 import { checkout, webhook } from './checkout';
@@ -66,8 +64,6 @@ const dataRoutes = (new router())
   .get('/artwork/:slug', show)
   .put('/artwork/:slug', upload.single('image'), update)
   .delete('/artwork/:slug', destroy)
-  .post('/subscriber/create', createSubscriberUser)
-  .get('/unsubscribe/:id', removeSubscriberUser)
   .get('/env', env)
   .get('/orders/', info)
   .get('/orders/:id', info)
@@ -109,8 +105,4 @@ app.use(
 // Pipe unmatched requests to polymer
 app.use(pipe);
 
-app.listen(process.env.PORT, () => {
-  const link = new URL(process.env.SITE_URL)
-  link.port = process.env.PORT;
-  console.log(`App server up. Visit ${link}`)
-});
+app.listen(process.env.PORT, console.log(`Server up on port ${process.env.PORT}`));

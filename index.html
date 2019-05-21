@@ -62,11 +62,6 @@
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('service-worker.js', {
             scope: '/',
-          })
-          .then(function(swReg) {
-            window.process.swRegistration = swReg;
-            console.log("Service worker registered")
-            document.dispatchEvent(new CustomEvent('zuzi-app-sw-registered', { detail: swReg }));
           });
         });
       }
@@ -81,7 +76,7 @@
         stripe: null
       };
 
-      (async () => {
+      (async () => { 
         const { env } = await (await fetch(`${process.env.API_URL}/env`)).json();
         window.process.env = { ...window.process.env, ...env };
       })();
@@ -106,7 +101,7 @@
     <noscript>
       Please enable JavaScript to view this website.
     </noscript>
-
+    
     <!-- Any external scripts -->
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://browser.sentry-cdn.com/4.4.2/bundle.min.js" crossorigin="anonymous"></script>
