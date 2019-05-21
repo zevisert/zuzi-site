@@ -46,8 +46,7 @@
     "shortid": "^2.2.14",
     "simple-chip": "^1.2.3",
     "stripe": "^6.19.0",
-    "tiff.js": "^1.0.0",
-    "web-push": "^3.3.3"
+    "tiff.js": "^1.0.0"
   },
   "devDependencies": {
     "@polymer/test-fixture": "^4.0.2",
@@ -68,9 +67,9 @@
     "mocha": "^5.2.0",
     "nodemon": "^1.18.8",
     "pixelmatch": "^4.0.2",
-    "polymer-cli": "^1.9.9",
-    "polyserve": "^0.27.15",
-    "puppeteer": "^1.15.0",
+    "polymer-cli": "^1.9.5",
+    "polyserve": "^0.27.13",
+    "puppeteer": "^1.11.0",
     "sinon": "^7.2.2",
     "wct-mocha": "^1.0.0"
   }

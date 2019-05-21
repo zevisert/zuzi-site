@@ -5,7 +5,6 @@
 */
 
 module.exports = {
-  importScripts: ['./push-listener.js'],
   staticFileGlobs: [
     'manifest.json',
     'src/**/*',
