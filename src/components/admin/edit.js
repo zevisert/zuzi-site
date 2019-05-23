@@ -95,8 +95,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
         .canvas-container {
           position: relative;
-          width: 1000px;
+          width: 1020px;
           height: var(--image-height);
+          max-height: 600px;
+          overflow-y: scroll;
         }
 
         .canvas-container canvas,
@@ -315,6 +317,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els = {
       preview: this.renderRoot.getElementById('preview'),
       overlay: this.renderRoot.getElementById('overlay'),
+      container: this.renderRoot.getElementById('container'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       tags: this.renderRoot.getElementById('tags'),
@@ -364,7 +367,15 @@ class AdminEdit extends connect(store)(PageViewElement) {
       tags: JSON.stringify(this.__els.tags.values),
       pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
-      image: this.__els.file.files[0]
+      image: this.__els.file.files[0],
+      display_position: Number(
+        100
+        * this.__els.container.scrollTop
+        / (
+            + this.__els.container.scrollHeight
+            - this.__els.container.clientHeight
+          )
+      ).toFixed(1)
     };
 
     this.__imageLoading = true;
@@ -470,6 +481,15 @@ class AdminEdit extends connect(store)(PageViewElement) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       this.__imageLoading = false;
+
+      this.__els.container.scrollTop = (
+        (this.item.display_position / 100)
+        * (
+          + this.__els.container.scrollHeight
+          - this.__els.container.clientHeight
+        )
+      )
+
     }
 
     this.__els.preview.dataset.src = source;

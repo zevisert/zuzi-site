@@ -40,10 +40,22 @@ class GalleryList extends connect(store)(LitElement) {
     return html`
       ${ButtonSharedStyles}
       <style>
+
+        :host {
+          --tile-height: 320px;
+        }
+
         .tiles {
           display: grid;
           grid-template-columns: 1fr;
+          grid-template-rows: var(--tile-height);
           max-width: 1600px;
+        }
+
+        .tiles gallery-list-item {
+          max-height: var(--tile-height);
+          height: 100%;
+          min-height: var(--tile-height);
         }
 
         .tiles gallery-list-item:nth-child(7n - 6) {

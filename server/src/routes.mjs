@@ -162,7 +162,7 @@ export async function update(ctx) {
   try {
 
     const slug = ctx.params.slug;
-    const post = await Post.findOne({slug}).exec();
+    const post = await Post.findOne({slug});
 
     const body = ctx.request.body;
 
@@ -174,6 +174,14 @@ export async function update(ctx) {
 
     post.title = body.title || post.title;
     post.description = body.description || post.description;
+    post.active = body.active || post.active;
+    post.display_position = body.display_position || post.display_position;
+    post.slug = toSlug(post.title);
+
+    if (body.tags) {
+      const tags = JSON.parse(body.tags);
+      post.tags = tags;
+    }
 
     if (body.pricings) {
       const pricings = JSON.parse(body.pricings);
@@ -190,15 +198,6 @@ export async function update(ctx) {
         post.pricings.push(pricing);
       }
     }
-
-    if (body.tags) {
-      const tags = JSON.parse(body.tags);
-      post.tags = tags;
-    }
-
-    post.active = body.active || post.active;
-
-    post.slug = toSlug(post.title);
 
     await post.save();
 
