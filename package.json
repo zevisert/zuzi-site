@@ -42,7 +42,7 @@
     "redux-thunk": "^2.3.0",
     "request": "^2.88.0",
     "reselect": "^3.0.1",
-    "sharp": "^0.21.1",
+    "sharp": "^0.22.1",
     "shortid": "^2.2.14",
     "simple-chip": "^1.2.3",
     "stripe": "^6.19.0",

@@ -7,6 +7,7 @@ import shortid from 'shortid';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import del from 'del';
 import Spaces from 'aws-sdk';
 
@@ -27,19 +28,78 @@ const toSlug = title => title
   .trim()
   .replace(/\s+/g, '-');
 
-async function processImage(image) {
-  const uploadName = `${shortid.generate()}.jpg`;
+async function processImage(image, shouldWatermark=false) {
+  const id = shortid.generate()
+  const uploadName = `${id}.jpg`;
+
+  const watermarkBgName = path.join(process.cwd(), 'images', 'zuzi-signature-bg.png')
+  const watermarkName = path.join(process.cwd(), 'images', 'zuzi-signature.png')
+
+  const tmpLocalName = path.join(os.tmpdir(), `${id}.png`);
+  const tmpSigName = path.join(os.tmpdir(), `sig-${id}.png`);
+  const tmpSigBgName = path.join(os.tmpdir(), `sig-${id}-bg.png`);
+
   const localName = path.join(process.cwd(), 'server', 'uploads', uploadName);
   const cdnName = path.join(process.env.CDN_DIR, uploadName);
 
-  // Resize Img
+  // Resize and downscale image
   await sharp(image.path)
     .resize({width: 1000})
     .jpeg({
       progressive: true,
       quality: 100
     })
-    .toFile(localName);
+    .toFile(tmpLocalName)
+
+  if (shouldWatermark) {
+    console.log("watermarking")
+    const raster = sharp(tmpLocalName)
+    const watermark = sharp(watermarkName)
+
+    const metadata = {
+      image: await raster.metadata(),
+      watermark: await watermark.metadata()
+    }
+
+    // Match size of watermark to image
+    await watermark
+      .extend({
+        top: metadata.image.height - metadata.watermark.height,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: { r: 0, g: 0, b: 0, alpha: 0 }
+      })
+      .toFile(tmpSigName)
+
+    await sharp(watermarkBgName)
+      .extend({
+        top: metadata.image.height - metadata.watermark.height,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: { r: 0, g: 0, b: 0, alpha: 0 }
+      })
+      .toFile(tmpSigBgName)
+
+    // Compose the watermark
+    await raster
+      .composite([{
+        input: tmpSigBgName,
+        blend: 'over'
+      }, {
+        input: tmpSigName,
+        blend: 'overlay'
+      }])
+      .toFile(localName);
+
+    // Remove the tmpWatermark
+    fs.unlinkSync(tmpSigName)
+    fs.unlinkSync(tmpLocalName)
+  } else {
+    fs.renameSync(tmpLocalName, localName)
+  }
+
 
   // Upload to DO spaces
   const endpoint = new Spaces.Endpoint(`${process.env.CDN_REGION}.${process.env.CDN_HOST}`);
@@ -102,7 +162,7 @@ export async function create(ctx) {
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = await processImage(image);
+      const uploadName = await processImage(image, body.should_watermark);
       post.preview = uploadName;
     } else {
       ctx.throw(400, JSON.stringify({ error: 'No file uploaded' }));
@@ -129,11 +189,13 @@ export async function create(ctx) {
     post.title = body.title;
     post.description = body.description;
     post.active = body.active;
+    post.display_position = body.display_position;
 
     await post.save();
 
     ctx.body = { post };
   } catch (error) {
+    console.error(error)
     ctx.throw(400, JSON.stringify({ error }));
   }
 }
@@ -165,10 +227,11 @@ export async function update(ctx) {
     const post = await Post.findOne({slug});
 
     const body = ctx.request.body;
+    console.log(body)
 
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = await processImage(image);
+      const uploadName = await processImage(image, body.should_watermark);
       post.preview = uploadName;
     }
 
@@ -203,6 +266,7 @@ export async function update(ctx) {
 
     ctx.body = { post };
   } catch (error) {
+    console.error(error)
     ctx.throw(400, JSON.stringify({ error }));
   }
 }

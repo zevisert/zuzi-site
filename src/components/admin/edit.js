@@ -207,6 +207,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
                   <label for="active">Active</label>
                   <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
                 </div>
+
+                <div class="block">
+                  <label for="watermark">Watermark</label>
+                  <toggle-input id="watermark" type="checkbox" ?checked="${false}">
+                </div>
               </div>
 
               <button
@@ -323,7 +328,8 @@ class AdminEdit extends connect(store)(PageViewElement) {
       tags: this.renderRoot.getElementById('tags'),
       active: this.renderRoot.getElementById('active'),
       pricing: this.renderRoot.getElementById('pricing'),
-      file: this.renderRoot.getElementById('file')
+      file: this.renderRoot.getElementById('file'),
+      watermark: this.renderRoot.getElementById('watermark'),
     };
 
     this.__els.file.addEventListener('change', this.readLocalImage.bind(this));
@@ -368,14 +374,8 @@ class AdminEdit extends connect(store)(PageViewElement) {
       pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
       image: this.__els.file.files[0],
-      display_position: Number(
-        100
-        * this.__els.container.scrollTop
-        / (
-            + this.__els.container.scrollHeight
-            - this.__els.container.clientHeight
-          )
-      ).toFixed(1)
+      display_position: this.get_display_position(),
+      should_watermark: this.__els.watermark.checked
     };
 
     this.__imageLoading = true;
@@ -482,18 +482,37 @@ class AdminEdit extends connect(store)(PageViewElement) {
       ctx.drawImage(img, 0, 0);
       this.__imageLoading = false;
 
-      this.__els.container.scrollTop = (
-        (this.item.display_position / 100)
-        * (
-          + this.__els.container.scrollHeight
-          - this.__els.container.clientHeight
-        )
-      )
+      this.set_display_position(this.item.display_position)
 
     }
 
     this.__els.preview.dataset.src = source;
     img.src = this.__els.preview.dataset.src;
+  }
+
+  get_display_position() {
+    const pos = Number(
+      100
+      * this.__els.container.scrollTop
+      / (
+          + this.__els.container.scrollHeight
+          - this.__els.container.clientHeight
+        )
+    )
+
+    return Number.isNaN(pos) ? 50 : pos.toFixed(1)
+  }
+
+  set_display_position(value) {
+    const pos = (
+      (value / 100)
+      * (
+        + this.__els.container.scrollHeight
+        - this.__els.container.clientHeight
+      )
+    )
+
+    this.__els.container.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1)
   }
 }
 
