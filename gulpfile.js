@@ -42,8 +42,6 @@ gulp.task('server:dev', () => {
                 'server/src/index.mjs'
             ], {
                 env: {
-                    NODE_ENV: 'DEVELOPMENT',
-                    PORT: 8080,
                     PATH: process.env.PATH
                 }
             }
@@ -78,5 +76,5 @@ gulp.task('server:pipe', () => {
 
 gulp.task('default', () => {
     gulp.parallel('server:dev', 'server:pipe')();
-    gulp.watch('server/src/**/*.mjs', gulp.series('server:dev'));
+    gulp.watch(['server/src/**/*.mjs', 'server/process.env'], gulp.series('server:dev'));
 });

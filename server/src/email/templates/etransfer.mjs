@@ -31,7 +31,7 @@ Note: Do not reply directly to this email as the mailbox is automated and isn't 
 
     return {
         text:    text, 
-        from:    process.env.EMAIL_SYS_ADDR,
+        from:    process.env.ORDERS_EMAIL,
         to:      order.customer.email,
         subject: "Next steps for your order from Zuzi Art"
     }
@@ -61,7 +61,7 @@ Note: Do not reply directly to this email as the mailbox is automated and isn't 
 
     return {
         text:    text, 
-        from:    process.env.EMAIL_SYS_ADDR,
+        from:    process.env.ORDERS_EMAIL,
         to:      order.customer.email,
         subject: "Your payment to Zuzi Art has been accepted"
     }
@@ -86,7 +86,7 @@ Note: Do not reply directly to this email as the mailbox is automated and isn't 
 
     return {
         text:    text, 
-        from:    process.env.EMAIL_SYS_ADDR,
+        from:    process.env.ORDERS_EMAIL,
         to:      order.customer.email,
         subject: "Payment for your order on Zuzi Art has been rejected."
     }
@@ -118,7 +118,7 @@ Note: Do not reply directly to this email as the mailbox is automated and isn't 
 
   return {
     text: text,
-    from: process.env.EMAIL_SYS_ADDR,
+    from: process.env.ORDERS_EMAIL,
     to: admins.map(admin => admin.email).join(', '),
     subject: "Order placed using e-transfer"
   }
