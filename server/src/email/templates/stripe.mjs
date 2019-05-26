@@ -27,7 +27,7 @@ Note: Do not reply directly to this email as the mailbox is automated and isn't 
 
     return {
         text:    text,
-        from:    process.env.EMAIL_SYS_ADDR,
+        from:    process.env.ORDERS_EMAIL,
         to:      order.customer.email,
         subject: "Your order from Zuzi Art"
     }
