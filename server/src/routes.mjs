@@ -32,13 +32,8 @@ async function processImage(image, shouldWatermark=false) {
   const id = shortid.generate()
   const uploadName = `${id}.jpg`;
 
-  const watermarkBgName = path.join(process.cwd(), 'images', 'zuzi-signature-bg.png')
-  const watermarkName = path.join(process.cwd(), 'images', 'zuzi-signature.png')
-
+  const watermarkName = path.join(process.cwd(), 'images', 'watermark.png')
   const tmpLocalName = path.join(os.tmpdir(), `${id}.png`);
-  const tmpSigName = path.join(os.tmpdir(), `sig-${id}.png`);
-  const tmpSigBgName = path.join(os.tmpdir(), `sig-${id}-bg.png`);
-
   const localName = path.join(process.cwd(), 'server', 'uploads', uploadName);
   const cdnName = path.join(process.env.CDN_DIR, uploadName);
 
@@ -52,54 +47,29 @@ async function processImage(image, shouldWatermark=false) {
     .toFile(tmpLocalName)
 
   if (shouldWatermark) {
-    console.log("watermarking")
     const raster = sharp(tmpLocalName)
-    const watermark = sharp(watermarkName)
-
-    const metadata = {
-      image: await raster.metadata(),
-      watermark: await watermark.metadata()
-    }
-
-    // Match size of watermark to image
-    await watermark
-      .extend({
-        top: metadata.image.height - metadata.watermark.height,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .toFile(tmpSigName)
-
-    await sharp(watermarkBgName)
-      .extend({
-        top: metadata.image.height - metadata.watermark.height,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .toFile(tmpSigBgName)
+    const image = await raster.metadata()
 
     // Compose the watermark
     await raster
       .composite([{
-        input: tmpSigBgName,
-        blend: 'over'
-      }, {
-        input: tmpSigName,
-        blend: 'overlay'
+        input: watermarkName,
+        left: 0,
+        top: Math.floor(image.height * 0.9),
+        blend: 'atop'
       }])
       .toFile(localName);
 
     // Remove the tmpWatermark
-    fs.unlinkSync(tmpSigName)
     fs.unlinkSync(tmpLocalName)
   } else {
-    fs.renameSync(tmpLocalName, localName)
+    try {
+      fs.renameSync(tmpLocalName, localName);
+    } catch (err) {
+      fs.copyFileSync(tmpLocalName, localName);
+      fs.unlinkSync(tmpLocalName);
+    }
   }
-
 
   // Upload to DO spaces
   const endpoint = new Spaces.Endpoint(`${process.env.CDN_REGION}.${process.env.CDN_HOST}`);
@@ -159,6 +129,11 @@ export async function create(ctx) {
 
     const body = ctx.request.body;
     const post = new Post();
+
+    // Multipart-forms are not JSON parsed
+    body.active = body.active === 'true'
+    body.display_position = +body.display_position
+    body.should_watermark = body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
     if (image) {
@@ -227,7 +202,11 @@ export async function update(ctx) {
     const post = await Post.findOne({slug});
 
     const body = ctx.request.body;
-    console.log(body)
+
+    // Multipart-forms are not JSON parsed
+    body.active = body.active === 'true'
+    body.display_position = +body.display_position
+    body.should_watermark = body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
     if (image) {

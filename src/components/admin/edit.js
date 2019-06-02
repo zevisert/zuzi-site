@@ -73,7 +73,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       <style>
 
         :host {
-          --image-height: 200px;
+          --image-height: 600px;
         }
 
         #preview {
@@ -93,7 +93,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
           width: 100%;
         }
 
-        .canvas-container {
+        .scroller-container {
+          position: relative;
+        }
+
+        .canvas-scroller {
           position: relative;
           width: 1020px;
           height: var(--image-height);
@@ -101,12 +105,17 @@ class AdminEdit extends connect(store)(PageViewElement) {
           overflow-y: scroll;
         }
 
-        .canvas-container canvas,
-        .canvas-container .overlay {
+        .canvas-scroller canvas {
           position: absolute;
-
           width: 1000px;
           height: var(--image-height);
+        }
+
+        .overlay {
+          position: absolute;
+          width: 1020px;
+          height: 600px;
+          top: 0px;
         }
 
         .overlay {
@@ -177,8 +186,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
           </h2>
 
           <input id="file" type="file" hidden>
-          <div id="container" class="canvas-container">
-            <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+          <div class="scroller-container">
+            <div id="scroller" class="canvas-scroller">
+              <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+            </div>
             <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
               <donut-spinner></donut-spinner>
               <span>${this.__uploadProgress}</span>
@@ -208,9 +219,9 @@ class AdminEdit extends connect(store)(PageViewElement) {
                   <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
                 </div>
 
-                <div class="block">
+                <div class="block" ?hidden="${!(this.__els.file && this.__els.file.files[0])}">
                   <label for="watermark">Watermark</label>
-                  <toggle-input id="watermark" type="checkbox" ?checked="${false}">
+                  <toggle-input id="watermark" type="checkbox">
                 </div>
               </div>
 
@@ -322,7 +333,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els = {
       preview: this.renderRoot.getElementById('preview'),
       overlay: this.renderRoot.getElementById('overlay'),
-      container: this.renderRoot.getElementById('container'),
+      scroller: this.renderRoot.getElementById('scroller'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       tags: this.renderRoot.getElementById('tags'),
@@ -348,14 +359,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const ctx = this.__els.preview.getContext('2d');
     ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
 
-    this.renderRoot.host.style.setProperty('--image-height', `200px`);
+    this.renderRoot.host.style.setProperty('--image-height', `600px`);
 
     this.__imageLoading = false;
     this.__uploadProgress = 'Working...';
 
 
     this.__els.file.value = '';
-    if(!/safari/i.test(navigator.userAgent)) {
+    if (!/safari/i.test(navigator.userAgent)) {
       this.__els.file.type = '';
       this.__els.file.type = 'file';
     }
@@ -374,10 +385,9 @@ class AdminEdit extends connect(store)(PageViewElement) {
       pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
       image: this.__els.file.files[0],
-      display_position: this.get_display_position(),
+      display_position: this.display_position,
       should_watermark: this.__els.watermark.checked
     };
-
     this.__imageLoading = true;
     const progressCallback = this.uploadProgress.bind(this);
     const doneCallback = this.uploadDone.bind(this);
@@ -482,7 +492,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       ctx.drawImage(img, 0, 0);
       this.__imageLoading = false;
 
-      this.set_display_position(this.item.display_position)
+      this.display_position = this.item.display_position
 
     }
 
@@ -490,7 +500,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     img.src = this.__els.preview.dataset.src;
   }
 
-  get_display_position() {
+  get display_position() {
     const pos = Number(
       100
       * this.__els.container.scrollTop
@@ -503,7 +513,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     return Number.isNaN(pos) ? 50 : pos.toFixed(1)
   }
 
-  set_display_position(value) {
+  set display_position(value) {
     const pos = (
       (value / 100)
       * (

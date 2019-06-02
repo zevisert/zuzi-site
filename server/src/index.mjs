@@ -50,7 +50,12 @@ passport.use(User.createStrategy());
 const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
-  ["body parser", body({ multipart: true, rawBody: true, formidable: { maxFileSize: Infinity } })],
+  ["body parser", body({
+    multipart: true,
+    includeUnparsed: true,
+    jsonStrict: false,
+    formidable: { maxFileSize: Infinity }
+  })],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
   ["protected routes", isProtected]
