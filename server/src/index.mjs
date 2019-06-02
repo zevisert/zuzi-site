@@ -53,7 +53,6 @@ const middleware = [
   ["body parser", body({
     multipart: true,
     includeUnparsed: true,
-    jsonStrict: false,
     formidable: { maxFileSize: Infinity }
   })],
   ["passport initialize", passport.initialize()],
