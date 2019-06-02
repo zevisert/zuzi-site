@@ -130,10 +130,10 @@ export async function create(ctx) {
     const body = ctx.request.body;
     const post = new Post();
 
-    // Multipart-forms are not JSON parsed
-    body.active = body.active === 'true'
-    body.display_position = +body.display_position
-    body.should_watermark = body.should_watermark === 'true'
+    // Multipart-forms are not yet JSON parsed
+    body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
+    body.display_position = typeof body.display_position === number ? body.display_position : +body.display_position
+    body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
     if (image) {
@@ -203,10 +203,10 @@ export async function update(ctx) {
 
     const body = ctx.request.body;
 
-    // Multipart-forms are not JSON parsed
-    body.active = body.active === 'true'
-    body.display_position = +body.display_position
-    body.should_watermark = body.should_watermark === 'true'
+    // Multipart-forms are not yet JSON parsed
+    body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
+    body.display_position = typeof body.display_position === number ? body.display_position : +body.display_position
+    body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
     if (image) {
