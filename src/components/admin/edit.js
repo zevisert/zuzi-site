@@ -73,7 +73,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       <style>
 
         :host {
-          --image-height: 600px;
+          --scroller-height: 600px;
         }
 
         #preview {
@@ -100,21 +100,21 @@ class AdminEdit extends connect(store)(PageViewElement) {
         .canvas-scroller {
           position: relative;
           width: 1020px;
-          height: var(--image-height);
-          max-height: 600px;
+          height: var(--image-height, var(--scroller-height));
+          max-height: var(--scroller-height);
           overflow-y: scroll;
         }
 
         .canvas-scroller canvas {
           position: absolute;
           width: 1000px;
-          height: var(--image-height);
+          height: var(--image-height, var(--scroller-height));
         }
 
         .overlay {
           position: absolute;
           width: 1020px;
-          height: 600px;
+          height: var(--scroller-height);
           top: 0px;
         }
 
@@ -359,7 +359,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const ctx = this.__els.preview.getContext('2d');
     ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
 
-    this.renderRoot.host.style.setProperty('--image-height', `600px`);
+    this.renderRoot.host.style.removeProperty('--image-height');
 
     this.__imageLoading = false;
     this.__uploadProgress = 'Working...';
@@ -503,10 +503,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
   get display_position() {
     const pos = Number(
       100
-      * this.__els.container.scrollTop
+      * this.__els.scroller.scrollTop
       / (
-          + this.__els.container.scrollHeight
-          - this.__els.container.clientHeight
+          + this.__els.scroller.scrollHeight
+          - this.__els.scroller.clientHeight
         )
     )
 
@@ -517,12 +517,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const pos = (
       (value / 100)
       * (
-        + this.__els.container.scrollHeight
-        - this.__els.container.clientHeight
+        + this.__els.scroller.scrollHeight
+        - this.__els.scroller.clientHeight
       )
     )
 
-    this.__els.container.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1)
+    this.__els.scroller.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1)
   }
 }
 
