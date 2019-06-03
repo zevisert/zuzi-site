@@ -39,6 +39,8 @@ const required_env = new Set([
     'CDN_DIR',
     'CDN_ACCESSKEY',
     'CDN_SECRET_ACCESSKEY',
+    'PUSH_PUBKEY',
+    'PUSH_SECRET',
     'SITE_URL',
     'API_URL',
 ])
