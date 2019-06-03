@@ -106,8 +106,9 @@ class Snackbar extends connect(store)(LitElement) {
           justify-content: space-between;
           padding: 5px 15px;
 
-          width: 40vw;
-          max-width: 600px;
+          width: 90vw;
+          max-width: 90vw;
+
           height: 3em;
           margin: 0 auto;
           background: white;
@@ -139,10 +140,11 @@ class Snackbar extends connect(store)(LitElement) {
           cursor: pointer;
         }
 
-        @media (max-width: 640px) {
+        /* Medium layout */
+        @media only screen and (min-width: 640px) {
           .snackbar {
-            width: 90vw;
-            max-width: 90vw;
+            width: 40vw;
+            max-width: 600px;
           }
         }
 

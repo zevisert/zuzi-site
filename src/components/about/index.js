@@ -32,11 +32,6 @@ class About extends connect(store)(PageViewElement) {
     return html`
       ${SharedStyles}
       <style>
-
-        :host {
-          z-index: 0;
-        }
-
         .title {
           font-family: "Kristi";
           font-size: 100px;
@@ -56,6 +51,8 @@ class About extends connect(store)(PageViewElement) {
           display: flex;
           flex-direction: column;
           align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
         }
 
       </style>

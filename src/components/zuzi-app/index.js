@@ -24,6 +24,7 @@ import {
 import * as str from './strings.js';
 import { cartQuantitySelector } from '../../reducers/shop.js';
 
+import './nav-box';
 import '../snackbar';
 
 class ZuziApp extends connect(store)(LitElement) {
@@ -44,8 +45,9 @@ class ZuziApp extends connect(store)(LitElement) {
     <style>
       :host {
         display: flex;
-        min-height: 100vh;
+        min-height: calc(100vh + 48px);
         flex-direction: column;
+        background: url(/images/page-bg.jpg);
       }
 
       header {
@@ -61,7 +63,7 @@ class ZuziApp extends connect(store)(LitElement) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 24px;
+        padding: 24px 12px;
       }
 
       .site-title {
@@ -71,27 +73,14 @@ class ZuziApp extends connect(store)(LitElement) {
         font-family: 'Julius Sans One';
       }
 
-      .toolbar-list > a {
-        display: inline-block;
-        color: gray;
-        text-decoration: none;
-        font-family: 'Julius Sans One';
-        padding: 0 8px;
-        border: 1px solid transparent;
-      }
-
-      .toolbar-list > a[selected] {
-        font-weight: bold;
-        color: black;
-        border: 1px solid black;
-      }
-
       /* Workaround for IE11 displaying <main> as inline */
       main {
         display: block;
-        margin-top: 85px;
-        padding: 24px;
+        margin: 85px 0px 0px 0px;
+        padding: 20px;
         flex: 1 0 auto;
+        background: white;
+        box-shadow: 0 0 20px 2px black;
       }
 
       .page {
@@ -100,13 +89,13 @@ class ZuziApp extends connect(store)(LitElement) {
 
       .page[active] {
         display: block;
+        animation: pageenter 1s forwards;
       }
 
       footer {
-        border-top: 1px solid #ccc;
+        border-top: 3px solid #ccc;
         flex-shrink: 0;
         padding: 10px 24px;
-        background-color: white;
       }
 
       footer section {
@@ -130,18 +119,41 @@ class ZuziApp extends connect(store)(LitElement) {
       }
 
       .login a:hover {
-        color: black;
+        text-decoration: underline;
+      }
+
+      @keyframes pageenter {
+        from {
+          transform: translateY(-10vh);
+        }
+
+        to {
+          transform: translateY(0);
+        }
       }
 
       /* Medium layout */
-      @media (min-width: 640px) {
+      @media only screen and (min-width: 640px) {
         .fixed {
           flex-direction: row;
           justify-content: space-between;
+          padding: 24px;
+        }
+
+        main {
+          margin: 85px 48px 100px 48px;
         }
 
         .site-title {
           display: block;
+        }
+      }
+
+      /* Wide layout */
+      @media only screen and (min-width: 1756px) {
+        main {
+          margin: 85px auto 100px auto;
+          min-width: 1600px;
         }
       }
     </style>
@@ -149,31 +161,14 @@ class ZuziApp extends connect(store)(LitElement) {
     <header>
       <div class="fixed">
         <nav class="toolbar-list">
-          <a
-          ?selected="${this._page === str.pages.about}"
-          href="/${str.pages.about}">
-            About
-          </a>
-
-          <a
-          ?selected="${this._page === str.pages.gallery}"
-          href="/${str.pages.gallery}">
-            Gallery
-          </a>
-
-          <a
-          ?selected="${this._page === str.pages.cart}"
-          href="/${str.pages.cart}">
-            Cart (${this._cartQuantity})
-          </a>
-
-          ${! this._loggedIn ? '' : html`
-            <a
-            ?selected="${this._page === str.pages.admin}"
-            href="/${str.pages.admin}">
-              Admin
-            </a>`
-          }
+          <nav-box title="About"   page="${this._page}" target="${str.pages.about}"></nav-box>
+          <nav-box title="Gallery" page="${this._page}" target="${str.pages.gallery}"></nav-box>
+          <nav-box title="Cart"    page="${this._page}" target="${str.pages.cart}"></nav-box>
+          ${(() => {
+            if (this._loggedIn) {
+              return html`<nav-box title="Admin"   page="${this._page}" target="${str.pages.admin}"></nav-box>`
+            }
+          })()}
         </nav>
         <span class="site-title">Zuzana Riha</span>
       </div>
@@ -258,7 +253,8 @@ class ZuziApp extends connect(store)(LitElement) {
   firstUpdated() {
     installRouter(location => store.dispatch(navigate(decodeURIComponent(location.pathname))));
     installOfflineWatcher(offline => store.dispatch(updateOffline(offline)));
-    installMediaQueryWatcher(`(min-width: 460px)`, matches => store.dispatch(updateLayout(matches)));
+    installMediaQueryWatcher(`(min-width: 716px)`, medium => store.dispatch(updateLayout(medium, false)));
+    installMediaQueryWatcher(`(min-width: 1756px)`, wide => store.dispatch(updateLayout(true, wide)));
 
     if (sessionStorage.getItem('credentials')) {
       store.dispatch(credentials(JSON.parse(sessionStorage.getItem('credentials'))));
