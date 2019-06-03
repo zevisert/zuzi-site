@@ -132,7 +132,7 @@ export async function create(ctx) {
 
     // Multipart-forms are not yet JSON parsed
     body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
-    body.display_position = typeof body.display_position === number ? body.display_position : +body.display_position
+    body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
     body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
@@ -205,7 +205,7 @@ export async function update(ctx) {
 
     // Multipart-forms are not yet JSON parsed
     body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
-    body.display_position = typeof body.display_position === number ? body.display_position : +body.display_position
+    body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
     body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
 
     const image = ctx.request.files.image;
