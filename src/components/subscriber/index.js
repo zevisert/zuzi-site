@@ -36,9 +36,30 @@ export class SubscriptionSetup extends connect(store)(LitElement) {
           display: flex;
           flex-direction: column;
           max-width: 600px;
-          margin: 0 auto;
-          padding-top: 4em;
+          margin: 4em auto;
         }
+
+        p {
+          text-align: center;
+        }
+
+        h3 {
+          display: flex;
+          justify-content: center;
+          position: relative;
+        }
+
+        h3::before, h3::after {
+          content: '';
+          position: relative;
+          top: 15px;
+          height: 1px;
+          width: 30%;
+          background-color: black;
+        }
+
+        h3::after  { left:  10px; }
+        h3::before { right: 10px; }
 
       </style>
       <section class="subscribers">

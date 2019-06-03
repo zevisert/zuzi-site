@@ -60,8 +60,6 @@ export const createPushSubscriber = () => async (dispatch, getState) => {
         applicationServerKey: applicationServerKey
       });
 
-      console.info('User is subscribed.');
-
       dispatch(syncPushSubToServer(subscription))
 
       dispatch({
@@ -93,7 +91,7 @@ export const syncPushSubToServer = subscription => async dispatch => {
 
   if (subscription) {
     if (success && isNew) {
-      dispatch(showSnackbar("You will now receive notifications for when new artwork is added!"));
+      dispatch(showSnackbar("You will now receive notifications when new artwork is added!"));
     } else if (!success) {
       dispatch(showSnackbar("Something went wrong, you are not subscribed"));
     }

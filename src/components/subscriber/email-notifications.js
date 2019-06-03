@@ -38,30 +38,30 @@ export class EmailSubscriptionSetup extends LitElement {
       ${ButtonSharedStyles}
       <style>
         .email {
-          padding-top: 1em;
-        }
-
-        .email__form {
+          padding-top: 2em;
+          width: 350px;
           display: flex;
+          flex-direction: column;
           justify-content: center;
-          align-items: center;
+          align-items: stretch;
+          margin: 0 auto;
         }
 
-        .email__form button {
+        button {
           width: 100%;
+          display: block;
         }
 
-        .email__form underline-input {
+        underline-input {
           width: 100%;
+          padding-bottom: 0.5em;
         }
 
       </style>
       <div class="email">
-        <div>Receive notifications through email</div>
-        <div class="email__form">
-          <underline-input id="email-subscription-input" type="email" placeholder="Email" @input=${this.emailValidate}></underline-input>
-          <button id="email-subscription-button" disabled @click=${this.emailSub}>Subscribe</button>
-        </div>
+        <label for="email-subscription-input">Sign up for notifications with your email</label>
+        <underline-input id="email-subscription-input" type="email" placeholder="Email" @input=${this.emailValidate}></underline-input>
+        <button id="email-subscription-button" disabled @click=${this.emailSub}>Subscribe</button>
       </div>
     `
   }
