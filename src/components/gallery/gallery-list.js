@@ -49,6 +49,7 @@ class GalleryList extends connect(store)(LitElement) {
           display: grid;
           grid-template-columns: 1fr;
           grid-template-rows: var(--tile-height);
+          /* Limit max-width to slightly less than the global, to account to padding */
           max-width: 1600px;
         }
 
@@ -58,46 +59,25 @@ class GalleryList extends connect(store)(LitElement) {
           min-height: var(--tile-height);
         }
 
-        .tiles gallery-list-item:nth-child(7n - 6) {
-          --tile-bg: #6fc3dfE0;
-        }
+        .tiles gallery-list-item:nth-child(7n - 6) { --tile-bg: #6fc3dfE0; }
+        .tiles gallery-list-item:nth-child(7n - 5) { --tile-bg: #8d82c4E0; }
+        .tiles gallery-list-item:nth-child(7n - 4) { --tile-bg: #4db6acE0; }
+        .tiles gallery-list-item:nth-child(7n - 3) { --tile-bg: #ec8d81E0; }
+        .tiles gallery-list-item:nth-child(7n - 2) { --tile-bg: #e7b788E0; }
+        .tiles gallery-list-item:nth-child(7n - 1) { --tile-bg: #8ea9e8E0; }
+        .tiles gallery-list-item:nth-child(7n - 0) { --tile-bg: #87c5a4E0; }
 
-        .tiles gallery-list-item:nth-child(7n - 5) {
-          --tile-bg: #8d82c4E0;
-        }
-
-        .tiles gallery-list-item:nth-child(7n - 4) {
-          --tile-bg: #4db6acE0;
-        }
-
-        .tiles gallery-list-item:nth-child(7n - 3) {
-          --tile-bg: #ec8d81E0;
-        }
-
-        .tiles gallery-list-item:nth-child(7n - 2) {
-          --tile-bg: #e7b788E0;
-        }
-
-        .tiles gallery-list-item:nth-child(7n - 1) {
-          --tile-bg: #8ea9e8E0;
-        }
-
-        .tiles gallery-list-item:nth-child(7n) {
-          --tile-bg: #87c5a4E0;
-        }
-
-        @media only screen and (min-width: 640px) {
+        @media only screen and (min-width: 620px) {
           /* Medium layout - */
           .tiles {
             grid-template-columns: 1fr 1fr;
           }
         }
 
-        @media only screen and (min-width: 1280px) {
+        @media only screen and (min-width: 1600px) {
           /* Wide layout - */
           .tiles {
             grid-template-columns: 1fr 1fr 1fr;
-            margin: 0 auto;
           }
         }
       </style>

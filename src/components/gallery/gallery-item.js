@@ -28,6 +28,11 @@ class GalleryItem extends connect(store)(PageViewElement) {
     return html`
       ${ButtonSharedStyles}
       <style>
+        section {
+          float: right;
+          margin-bottom: 2px;
+        }
+
         img {
           width: 100%;
         }
@@ -69,15 +74,18 @@ class GalleryItem extends connect(store)(PageViewElement) {
           align-self: center;
         }
 
-        @media (min-width: 640px) {
+        /* Medium layout */
+        @media (min-width: 620px) {
           .item {
             margin: 0 auto;
           }
         }
 
       </style>
-
-      <div class="item">
+      <section>
+        <a href="/gallery"><button>Return to Gallery</button></a>
+      </section>
+      <article class="item">
         <img .src="/uploads/${this.item.preview}">
         <h2>${this.item.title}</h2>
         <p>${this.item.description}</p>
@@ -100,7 +108,7 @@ class GalleryItem extends connect(store)(PageViewElement) {
             </div>
           `)}
         </div>
-      </div>
+      </article>
     `;
   }
 
