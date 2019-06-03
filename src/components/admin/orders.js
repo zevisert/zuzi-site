@@ -44,6 +44,13 @@ class AdminConfirm extends connect(store)(PageViewElement) {
       ${ButtonSharedStyles}
       ${SharedDynamicTable}
       <style>
+
+        .cust-info div {
+          max-width: 400px;
+          display: flex;
+          justify-content: space-between;
+        }
+
         td img {
           max-width: 80px;
         }
@@ -71,9 +78,7 @@ class AdminConfirm extends connect(store)(PageViewElement) {
             <button id="confirm" @click="${e => this._processOrder(true)}">Confirm Payment Received</button>
             <button id="reject" @click="${e => this._processOrder(false)}">Reject Order</button>
           `
-          : html`
-
-          `
+          : html``
         }
         ${this._rejecting === true
           ? html`
@@ -82,7 +87,7 @@ class AdminConfirm extends connect(store)(PageViewElement) {
           : html``
         }
         <h2>Shipping Info</h2>
-        <section>
+        <section class="cust-info">
           <div><b>Name: </b>${customer.name}</div>
           <div><b>Email: </b>${customer.email}</div>
           <div><b>Address: </b>${customer.shipping.address_lines.join(',')}</div>

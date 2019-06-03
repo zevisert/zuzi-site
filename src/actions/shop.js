@@ -135,11 +135,11 @@ export const checkoutFailed = message => async dispatch => {
   });
 };
 
-export const addToCart = (productId, pricing) => (dispatch, getState) =>{
+export const addToCart = (productId, pricing, quantity=1) => (dispatch, getState) =>{
   const state = getState();
   // Just because the UI thinks you can add this to the cart
   // doesn't mean it's in the inventory (user could've fixed it);
-  dispatch(addToCartUnsafe(productId, pricing));
+  dispatch(addToCartUnsafe(productId, pricing, quantity));
 };
 
 export const removeFromCart = (cartKey) => {
@@ -149,11 +149,11 @@ export const removeFromCart = (cartKey) => {
   };
 };
 
-export const addToCartUnsafe = (productId, pricing) => {
+export const addToCartUnsafe = (productId, pricing, quantity) => {
   const pricingId = pricing._id;
   return {
     type: ADD_TO_CART,
-    payload: { productId, pricingId, pricing }
+    payload: { productId, pricingId, pricing, quantity }
   };
 };
 

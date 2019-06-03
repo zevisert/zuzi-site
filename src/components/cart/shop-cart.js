@@ -54,7 +54,7 @@ class ShopCart extends connect(store)(LitElement) {
 
       </style>
 
-      <p ?hidden="${this._items.length !== 0}">Please add some products to cart.</p>
+      <p ?hidden="${this._items.length !== 0}">You can add artwork and prints to your cart using when viewing individual artwork in the gallery.</p>
 
       <article>
         ${this._items.map((item) =>

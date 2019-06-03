@@ -102,7 +102,7 @@ const cart = (state, action) => {
       return {
         ...state,
         [key]: {
-          quantity: (state[key] ? state[key].quantity : 0) + 1,
+          quantity: (state[key] ? state[key].quantity : 0) + action.payload.quantity,
           productId: action.payload.productId,
           pricing: action.payload.pricing
         }
