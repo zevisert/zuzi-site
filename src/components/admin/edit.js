@@ -73,7 +73,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       <style>
 
         :host {
-          --image-height: 200px;
+          --scroller-height: 600px;
         }
 
         #preview {
@@ -93,18 +93,29 @@ class AdminEdit extends connect(store)(PageViewElement) {
           width: 100%;
         }
 
-        .canvas-container {
+        .scroller-container {
           position: relative;
-          width: 1000px;
-          height: var(--image-height);
         }
 
-        .canvas-container canvas,
-        .canvas-container .overlay {
-          position: absolute;
+        .canvas-scroller {
+          position: relative;
+          width: 1020px;
+          height: var(--image-height, var(--scroller-height));
+          max-height: var(--scroller-height);
+          overflow-y: scroll;
+        }
 
+        .canvas-scroller canvas {
+          position: absolute;
           width: 1000px;
-          height: var(--image-height);
+          height: var(--image-height, var(--scroller-height));
+        }
+
+        .overlay {
+          position: absolute;
+          width: 1020px;
+          height: var(--scroller-height);
+          top: 0px;
         }
 
         .overlay {
@@ -175,8 +186,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
           </h2>
 
           <input id="file" type="file" hidden>
-          <div id="container" class="canvas-container">
-            <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+          <div class="scroller-container">
+            <div id="scroller" class="canvas-scroller">
+              <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
+            </div>
             <div id="overlay" class="overlay" ?active=${this.__imageLoading}>
               <donut-spinner></donut-spinner>
               <span>${this.__uploadProgress}</span>
@@ -204,6 +217,11 @@ class AdminEdit extends connect(store)(PageViewElement) {
                 <div class="block">
                   <label for="active">Active</label>
                   <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
+                </div>
+
+                <div class="block" ?hidden="${!(this.__els.file && this.__els.file.files[0])}">
+                  <label for="watermark">Watermark</label>
+                  <toggle-input id="watermark" type="checkbox">
                 </div>
               </div>
 
@@ -315,12 +333,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els = {
       preview: this.renderRoot.getElementById('preview'),
       overlay: this.renderRoot.getElementById('overlay'),
+      scroller: this.renderRoot.getElementById('scroller'),
       title: this.renderRoot.getElementById('title'),
       description: this.renderRoot.getElementById('desc'),
       tags: this.renderRoot.getElementById('tags'),
       active: this.renderRoot.getElementById('active'),
       pricing: this.renderRoot.getElementById('pricing'),
-      file: this.renderRoot.getElementById('file')
+      file: this.renderRoot.getElementById('file'),
+      watermark: this.renderRoot.getElementById('watermark'),
     };
 
     this.__els.file.addEventListener('change', this.readLocalImage.bind(this));
@@ -339,14 +359,14 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const ctx = this.__els.preview.getContext('2d');
     ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
 
-    this.renderRoot.host.style.setProperty('--image-height', `200px`);
+    this.renderRoot.host.style.removeProperty('--image-height');
 
     this.__imageLoading = false;
     this.__uploadProgress = 'Working...';
 
 
     this.__els.file.value = '';
-    if(!/safari/i.test(navigator.userAgent)) {
+    if (!/safari/i.test(navigator.userAgent)) {
       this.__els.file.type = '';
       this.__els.file.type = 'file';
     }
@@ -364,9 +384,10 @@ class AdminEdit extends connect(store)(PageViewElement) {
       tags: JSON.stringify(this.__els.tags.values),
       pricings: JSON.stringify(this.item.pricings),
       active: this.__els.active.checked,
-      image: this.__els.file.files[0]
+      image: this.__els.file.files[0],
+      display_position: this.display_position,
+      should_watermark: this.__els.watermark.checked
     };
-
     this.__imageLoading = true;
     const progressCallback = this.uploadProgress.bind(this);
     const doneCallback = this.uploadDone.bind(this);
@@ -470,10 +491,38 @@ class AdminEdit extends connect(store)(PageViewElement) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       this.__imageLoading = false;
+
+      this.display_position = this.item.display_position
+
     }
 
     this.__els.preview.dataset.src = source;
     img.src = this.__els.preview.dataset.src;
+  }
+
+  get display_position() {
+    const pos = Number(
+      100
+      * this.__els.scroller.scrollTop
+      / (
+          + this.__els.scroller.scrollHeight
+          - this.__els.scroller.clientHeight
+        )
+    )
+
+    return Number.isNaN(pos) ? 50 : pos.toFixed(1)
+  }
+
+  set display_position(value) {
+    const pos = (
+      (value / 100)
+      * (
+        + this.__els.scroller.scrollHeight
+        - this.__els.scroller.clientHeight
+      )
+    )
+
+    this.__els.scroller.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1)
   }
 }
 

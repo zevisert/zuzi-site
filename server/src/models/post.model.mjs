@@ -43,6 +43,11 @@ export const postSchema = new mongoose.Schema({
         type: String,
     },
 
+    display_position: {
+        type: Number,
+        default: 50 // %
+    },
+
     pricings: {
         type: [pricingSchema],
     },

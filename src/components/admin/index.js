@@ -9,16 +9,22 @@ import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
-import { store, connect } from '../../store.js';
-import { getAllProducts } from '../../actions/shop.js';
-import { deleteItem, getOrders } from '../../actions/admin.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
 import { SharedDynamicTable } from '../dynamic-table-styles.js';
-import { navigate, updateAboutText, getAboutText } from '../../actions/app.js';
 
-import { admin } from '../../reducers/admin.js';
+// This element is connection to the Redux store
+import { store, connect } from '../../store.js';
+
+// These are the actions needed by this element
+import { getAllProducts } from '../../actions/shop.js';
+import { navigate, updateAboutText, getAboutText,  showSnackbar } from '../../actions/app.js';
+import { deleteItem, getOrders } from '../../actions/admin.js';
+
+// These are the elements needed by this element
+import "@material/mwc-icon";
 
 // We are lazy-loading the admin reducer
+import { admin } from '../../reducers/admin.js';
 store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {
@@ -49,8 +55,37 @@ class AdminView extends connect(store)(PageViewElement) {
           height: 5em;
         }
 
-        td img {
-          max-width: 40px;
+        #section-artwork td.column1 {
+          display: flex;
+          align-items: center;
+          height: 50px;
+        }
+
+        td.column1 img {
+          max-width: 100px;
+          max-height: 50px;
+          object-fit: cover;
+          object-position: center center;
+          width: 100%;
+          height: 100%;
+        }
+
+        #section-artwork .column1 {
+          width: 120px;
+        }
+
+        #section-artwork .column4,
+        #section-artwork .column5,
+        #section-artwork .column6 {
+          width: 10%;
+        }
+
+        td.column6 mwc-icon {
+          color: gray;
+        }
+
+        td.column6 mwc-icon:hover {
+          color: black
         }
 
         .admin-centered {
@@ -62,11 +97,11 @@ class AdminView extends connect(store)(PageViewElement) {
 
         @media screen and (max-width: 725px) {
           #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
-          #section-artwork table tbody tr td:nth-child(2):before { content: "Public URL"; }
-          #section-artwork table tbody tr td:nth-child(3):before { content: "Title"; }
-          #section-artwork table tbody tr td:nth-child(4):before { content: "Tags"; }
-          #section-artwork table tbody tr td:nth-child(5):before { content: "Active"; }
-          #section-artwork table tbody tr td:nth-child(6):before { content: "Delete"; }
+          #section-artwork table tbody tr td:nth-child(2):before { content: "Title"; }
+          #section-artwork table tbody tr td:nth-child(3):before { content: "Tags"; }
+          #section-artwork table tbody tr td:nth-child(4):before { content: "Active"; }
+          #section-artwork table tbody tr td:nth-child(5):before { content: "Delete"; }
+          #section-artwork table tbody tr td:nth-child(6):before { content: "Direct Link"; }
 
           #section-orders table tbody tr td:nth-child(1):before { content: "Customer"; }
           #section-orders table tbody tr td:nth-child(2):before { content: "Total"; }
@@ -97,26 +132,34 @@ class AdminView extends connect(store)(PageViewElement) {
                     <thead>
                       <tr class="table100-head">
                         <th class="column1">Icon</th>
-                        <th class="column2">Public URL</th>
-                        <th class="column3">Title</th>
-                        <th class="column4">Tags</th>
-                        <th class="column5">Active</th>
-                        <th class="column6">Delete</th>
+                        <th class="column2">Title</th>
+                        <th class="column3">Tags</th>
+                        <th class="column4">Active</th>
+                        <th class="column5">Delete</th>
+                        <th class="column6">Direct Link</th>
                       </tr>
                     </thead>
                     <tbody>
                       ${Object.values(this._postings).map(post => html`
                       <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
-                          <td class="column1"><img src="/uploads/${post.preview}"></td>
-                        <td class="column2">${document.location.origin}/gallery/${post.slug}</td>
-                        <td class="column3">${post.title}</td>
-                        <td class="column4">${post.tags.join(', ')}</td>
-                        <td class="column5">${post.active}</td>
-                        <td class="column6">
+                        <td class="column1"><img src="/uploads/${post.preview}"></td>
+                        <td class="column2">${post.title}</td>
+                        <td class="column3">${post.tags.join(', ')}</td>
+                        <td class="column4">${post.active ? "Public" : "Unlisted"}</td>
+                        <td class="column5">
                           <button @click="${(e) => { e.stopPropagation(); this.deleteItem(post.slug); }}">Delete</button>
                         </td>
-                      </tr>`
-                    )}
+                        <td class="column6 c">
+                          <mwc-icon
+                            @click=${(e) => {
+                              e.stopPropagation()
+                              const direct_link = `${document.location.origin}/gallery/${post.slug}`
+                              navigator.clipboard.writeText(direct_link)
+                              store.dispatch(showSnackbar(`Link copied: [ ${direct_link} ]`))
+                            }}
+                          >link</mwc-icon>
+                        </td>
+                      </tr>`)}
                   </tbody>
                   </table>
                 </div>
