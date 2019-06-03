@@ -37,6 +37,12 @@ export class PushSubscriptionSetup extends connect(store)(LitElement) {
       ${SharedStyles}
       ${ButtonSharedStyles}
       <style>
+
+        label {
+          display: flex;
+          justify-content: center;
+        }
+
         .push {
           padding-top: 1em;
         }
@@ -48,12 +54,12 @@ export class PushSubscriptionSetup extends connect(store)(LitElement) {
         }
 
         .push__form button {
-          width: 100%;
+          width: 350px;
         }
 
       </style>
       <div class="push">
-        <div>One-click notifications</div>
+        <label for="push-subscription-button">One-click notifications</label>
         <div class="push__form">
           <button id="push-subscription-button" @click=${this.pushSub}>
             ${(() => {

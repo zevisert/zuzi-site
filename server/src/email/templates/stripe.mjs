@@ -3,6 +3,10 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
+/**
+ * Stripe Order processed
+ * @param order Mongoose order model
+ */
 export const orderSuccessTemplate = order => {
 
     const text =

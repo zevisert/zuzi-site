@@ -39,6 +39,7 @@ gulp.task('server:dev', () => {
         node = spawn(
             'node', [
                 '--experimental-modules',
+                '--inspect',
                 'server/src/index.mjs'
             ], {
                 env: {
@@ -64,7 +65,7 @@ gulp.task('server:dev', () => {
 
 gulp.task('server:pipe', () => {
     return new Promise((resolve, reject) => {
-        const serve = spawn('npx', ['polymer', 'serve']);
+        const serve = spawn('polymer', ['serve']);
 
         serve.stdout.on('data', data => log(console.log, data, 'Pipe'));
         serve.stderr.on('data', data => log(console.error, data, 'Pipe'));
