@@ -47,7 +47,7 @@ class ZuziApp extends connect(store)(LitElement) {
         display: flex;
         min-height: calc(100vh + 48px);
         flex-direction: column;
-        background: url(/images/page-bg.jpg);
+        background: url(images/page-bg.jpg);
       }
 
       header {
