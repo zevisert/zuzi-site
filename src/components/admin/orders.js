@@ -161,7 +161,7 @@ class AdminConfirm extends connect(store)(PageViewElement) {
       return;
     } else if (this._rejecting) {
       let reasonInput = this.renderRoot.getElementById('reason');
-      const isText = value => !!value && /^(?![\s.]+$)[a-zA-Z0-9\s.]+$/.test(value);
+      const isText = value => !!value && /^(?![\s\t]+$)[!-~\s\t]+$/.test(value);
 
       if (! isText(reasonInput.value)) {
         reasonInput.value = '';
