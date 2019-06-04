@@ -89,8 +89,16 @@ export const updateOffline = offline => (dispatch, getState) => {
   });
 };
 
-export const updateLayout = wide => (dispatch, getState) => {
-  console.log(`The window changed to a ${wide ? 'wide' : 'narrow'} layout`);
+export const updateLayout = (medium, wide) => (dispatch, getState) => {
+  let size = 'narrow';
+
+  if (wide) {
+    size = 'wide'
+  } else if (medium) {
+    size = 'medium'
+  }
+
+  console.log(`The window changed to a ${size} layout`);
 };
 
 export const login = ({email, password}) => async (dispatch, getState) => {

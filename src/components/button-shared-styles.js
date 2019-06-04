@@ -14,6 +14,7 @@ export const ButtonSharedStyles = html`
     background: transparent;
     border: none;
     cursor: pointer;
+    font-family: 'Thasadith';
 
     border: 2px solid black;
     padding: 8px 16px;

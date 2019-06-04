@@ -19,7 +19,7 @@ export const orderSchema = new mongoose.Schema({
         }
     },
 
-    totalCents: { 
+    totalCents: {
         type: Number,
         min: [1, 'Order must cost more than 0'],
         max: [10000 * 100, 'Orders cannot exceed $10,000.00'],
@@ -27,8 +27,19 @@ export const orderSchema = new mongoose.Schema({
             validator: function (value) {
                 return new Promise( async (resolve, reject) => {
                     try {
-                        const itemPricings = await Promise.all(this.items.map(item => Pricing.findById( item.pricing )));
-                        const shouldCost = itemPricings.map(pricing => pricing.price).reduce((acc, val) => acc + 100 * val, 0);
+                        const itemPricings = await Promise.all(this.items.map(item => {
+                            return Pricing.findById( item.pricing ).then(pricing => {
+                                return {
+                                    pricing,
+                                    quantity: item.quantity
+                                }
+                            });
+                        }));
+
+                        const shouldCost = itemPricings
+                            .map(({ pricing, quantity }) => quantity * pricing.price)
+                            .reduce((acc, val) => acc + 100 * val, 0);
+
                         resolve(value === shouldCost);
                     } catch (error) {
                         reject(error);
@@ -66,7 +77,7 @@ export const orderSchema = new mongoose.Schema({
         required: [true, 'Order must have date it was placed'],
     },
 
-    info: { 
+    info: {
         type: String,
         required: false
     }

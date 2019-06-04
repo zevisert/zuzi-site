@@ -7,10 +7,19 @@ import shortid from 'shortid';
 import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import del from 'del';
 import Spaces from 'aws-sdk';
 
-import { Post, Pricing, Size, Order, AboutPage, User } from './models';
+import {
+  AboutPage,
+  Post,
+  Pricing,
+  Order,
+  Size,
+  Subscription,
+  User,
+} from './models';
 
 const toSlug = title => title
   .toLowerCase()
@@ -19,19 +28,48 @@ const toSlug = title => title
   .trim()
   .replace(/\s+/g, '-');
 
-async function processImage(image) {
-  const uploadName = `${shortid.generate()}.jpg`;
+async function processImage(image, shouldWatermark=false) {
+  const id = shortid.generate()
+  const uploadName = `${id}.jpg`;
+
+  const watermarkName = path.join(process.cwd(), 'images', 'watermark.png')
+  const tmpLocalName = path.join(os.tmpdir(), `${id}.png`);
   const localName = path.join(process.cwd(), 'server', 'uploads', uploadName);
   const cdnName = path.join(process.env.CDN_DIR, uploadName);
 
-  // Resize Img
+  // Resize and downscale image
   await sharp(image.path)
     .resize({width: 1000})
     .jpeg({
       progressive: true,
       quality: 100
     })
-    .toFile(localName);
+    .toFile(tmpLocalName)
+
+  if (shouldWatermark) {
+    const raster = sharp(tmpLocalName)
+    const image = await raster.metadata()
+
+    // Compose the watermark
+    await raster
+      .composite([{
+        input: watermarkName,
+        left: 0,
+        top: Math.floor(image.height * 0.9),
+        blend: 'atop'
+      }])
+      .toFile(localName);
+
+    // Remove the tmpWatermark
+    fs.unlinkSync(tmpLocalName)
+  } else {
+    try {
+      fs.renameSync(tmpLocalName, localName);
+    } catch (err) {
+      fs.copyFileSync(tmpLocalName, localName);
+      fs.unlinkSync(tmpLocalName);
+    }
+  }
 
   // Upload to DO spaces
   const endpoint = new Spaces.Endpoint(`${process.env.CDN_REGION}.${process.env.CDN_HOST}`);
@@ -92,9 +130,14 @@ export async function create(ctx) {
     const body = ctx.request.body;
     const post = new Post();
 
+    // Multipart-forms are not yet JSON parsed
+    body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
+    body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
+    body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
+
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = await processImage(image);
+      const uploadName = await processImage(image, body.should_watermark);
       post.preview = uploadName;
     } else {
       ctx.throw(400, JSON.stringify({ error: 'No file uploaded' }));
@@ -121,11 +164,13 @@ export async function create(ctx) {
     post.title = body.title;
     post.description = body.description;
     post.active = body.active;
+    post.display_position = body.display_position;
 
     await post.save();
 
     ctx.body = { post };
   } catch (error) {
+    console.error(error)
     ctx.throw(400, JSON.stringify({ error }));
   }
 }
@@ -154,18 +199,31 @@ export async function update(ctx) {
   try {
 
     const slug = ctx.params.slug;
-    const post = await Post.findOne({slug}).exec();
+    const post = await Post.findOne({slug});
 
     const body = ctx.request.body;
 
+    // Multipart-forms are not yet JSON parsed
+    body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
+    body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
+    body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
+
     const image = ctx.request.files.image;
     if (image) {
-      const uploadName = await processImage(image);
+      const uploadName = await processImage(image, body.should_watermark);
       post.preview = uploadName;
     }
 
     post.title = body.title || post.title;
     post.description = body.description || post.description;
+    post.active = body.active || post.active;
+    post.display_position = body.display_position || post.display_position;
+    post.slug = toSlug(post.title);
+
+    if (body.tags) {
+      const tags = JSON.parse(body.tags);
+      post.tags = tags;
+    }
 
     if (body.pricings) {
       const pricings = JSON.parse(body.pricings);
@@ -183,19 +241,11 @@ export async function update(ctx) {
       }
     }
 
-    if (body.tags) {
-      const tags = JSON.parse(body.tags);
-      post.tags = tags;
-    }
-
-    post.active = body.active || post.active;
-
-    post.slug = toSlug(post.title);
-
     await post.save();
 
     ctx.body = { post };
   } catch (error) {
+    console.error(error)
     ctx.throw(400, JSON.stringify({ error }));
   }
 }
@@ -270,7 +320,8 @@ export async function env(ctx) {
     env: {
       STRIPE_PK: process.env.STRIPE_PK,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE'
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE',
+      PUSH_PUBKEY: process.env.PUSH_PUBKEY
     }
   }
 }
@@ -318,4 +369,42 @@ export async function changePassword(ctx) {
   ctx.logout();
   ctx.redirect("/login?message=Successfully changed password");
 
+}
+
+export async function createSubscriberUser(ctx) {
+
+  const body = ctx.request.body;
+  try {
+    if (body.email) {
+      const user = await User.create({ admin: false, subscriber: true, email: body.email });
+      await user.save();
+    } else if (body.subscription) {
+      const subscription = await Subscription.create(body.subscription);
+      await subscription.save();
+    }
+
+    ctx.body = { success: true, isNew: true }
+  } catch (error) {
+    if (error.name === "MongoError" && error.code === 11000 /* DuplicateKey */) {
+      ctx.body = { success: true, isNew: false, meta: "Already subscribed" }
+    } else {
+      ctx.throw(400, JSON.stringify({ error }));
+    }
+  }
+}
+
+export async function removeSubscriberUser(ctx) {
+
+  const id = ctx.params.id;
+  let message;
+  try {
+    const user = await User.findById(id)
+    const email = user.email
+    await user.delete();
+    message = new URLSearchParams({ message: `Successfully unsubscribed ${email}`})
+  } catch (error) {
+    message = new URLSearchParams({ message: `Could not perform un-subscription` })
+  } finally {
+    ctx.redirect(`/gallery?${message}`)
+  }
 }

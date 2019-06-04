@@ -6,7 +6,7 @@
 
 import { LitElement, html } from "@polymer/lit-element";
 import { store, connect } from "../../store";
-import { hideSnackbar } from "../../actions/app";
+import { showSnackbar, hideSnackbar } from "../../actions/app";
 
 import '@material/mwc-icon';
 
@@ -106,8 +106,9 @@ class Snackbar extends connect(store)(LitElement) {
           justify-content: space-between;
           padding: 5px 15px;
 
-          width: 40vw;
-          max-width: 600px;
+          width: 90vw;
+          max-width: 90vw;
+
           height: 3em;
           margin: 0 auto;
           background: white;
@@ -139,10 +140,11 @@ class Snackbar extends connect(store)(LitElement) {
           cursor: pointer;
         }
 
-        @media (max-width: 640px) {
+        /* Medium layout */
+        @media only screen and (min-width: 640px) {
           .snackbar {
-            width: 90vw;
-            max-width: 90vw;
+            width: 40vw;
+            max-width: 600px;
           }
         }
 
@@ -152,6 +154,17 @@ class Snackbar extends connect(store)(LitElement) {
         <mwc-icon @click="${() => this._closeMessage()}">close</mwc-icon>
       </div>
     `;
+  }
+
+  firstUpdated() {
+    const params = (new URL(document.location)).searchParams;
+    if (params.has('message')) {
+      store.dispatch(showSnackbar(params.get('message')));
+
+      params.delete('message');
+      const sep = [...params.keys()].length > 0
+      history.replaceState({}, document.title, `${document.location.pathname}${sep ? '?' : ''}${params}`);
+    }
   }
 
   stateChanged(state) {

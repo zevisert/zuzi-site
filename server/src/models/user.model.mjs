@@ -21,6 +21,11 @@ export const userSchema = new mongoose.Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+
+    subscriber: {
+        type: Boolean,
+        default: false
     }
 });
 

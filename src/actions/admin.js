@@ -59,6 +59,10 @@ export const createItem = (data, onProgress, done) => async dispatch => {
 export const editItem = (slug, data, onProgress, done) => async dispatch => {
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
+    if (key === 'image' && value === undefined) {
+      continue
+    }
+
     formData.append(key, value);
   }
 

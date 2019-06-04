@@ -12,6 +12,7 @@ import { store, connect } from '../../store.js';
 
 // These are the elements needed by this element.
 import './gallery-list.js';
+import '../subscriber'
 
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
@@ -85,6 +86,7 @@ class Gallery extends connect(store)(PageViewElement) {
       <section>
         <gallery-list filter=${this.filter}></gallery-list>
       </section>
+      <subscription-setup></subscription-setup>
     `;
   }
 
@@ -98,5 +100,7 @@ class Gallery extends connect(store)(PageViewElement) {
     this._tags = [... (new Set(allTags)).keys()];
   }
 }
+
+
 
 window.customElements.define(Gallery.is, Gallery);

@@ -28,48 +28,64 @@ class GalleryListItem extends connect(store)(LitElement) {
 
         .tile {
           position: relative;
-        }
-
-        .tile .preview {
+          max-height: inherit;
           overflow: hidden;
-          max-height: calc(30vh - 2em);
+          height: 100%;
         }
 
-        .tile .preview img {
+        .tile__preview {
+          max-height: inherit;
+          height: 100%;
+        }
+
+        .tile__preview img {
           width: 100%;
+          height: 100%;
+          object-position: center ${this.item.display_position}%;
+          object-fit: cover;
+
+          position: relative;
         }
 
-        .minor {
+        .tile__minor {
           color: white;
           background-color: var(--tile-bg);
           opacity: 1.0;
           position: absolute;
           bottom: 0;
-          right: 0;
           width: 100%;
           height: 50px;
           transition: transform 200ms;
           display: flex;
           align-items: center;
-        }
-
-        .minor span {
-          margin-left: 1em;
           font-size: 22px;
+          padding-left: 1em;
         }
 
-        .tile:hover .minor {
+        .tile .tile__preview::after {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          border: 5px solid black;
+        }
+
+        .tile:hover .tile__preview::after {
+          content: '';
+        }
+
+        .tile:hover .tile__minor {
           transform: translateY(50px);
         }
 
-
       </style>
       <div class="tile">
-        <div class="preview">
+        <div class="tile__preview">
           <img src="/uploads/${this.item.preview}">
         </div>
-        <header class="minor">
-          <span>${this.item.title}</span>
+        <header class="tile__minor">
+          ${this.item.title}
         </header>
       </div>
     `;

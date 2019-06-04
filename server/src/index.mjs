@@ -26,10 +26,16 @@ import {
   env,
   about,
   uploads,
-  changePassword
+  changePassword,
+  createSubscriberUser,
+  removeSubscriberUser,
 } from './routes';
 
+// Checkout callbacks
 import { checkout, webhook } from './checkout';
+
+// Import event handlers
+import './events/new_artwork'
 
 const app = new koa();
 
@@ -44,7 +50,11 @@ passport.use(User.createStrategy());
 const middleware = [
   ["404", notFound],
   ["session", session({maxAge: 'session'}, app)],
-  ["body parser", body({ multipart: true, rawBody: true, formidable: { maxFileSize: Infinity } })],
+  ["body parser", body({
+    multipart: true,
+    includeUnparsed: true,
+    formidable: { maxFileSize: Infinity }
+  })],
   ["passport initialize", passport.initialize()],
   ["passport session", passport.session()],
   ["protected routes", isProtected]
@@ -64,6 +74,8 @@ const dataRoutes = (new router())
   .get('/artwork/:slug', show)
   .put('/artwork/:slug', upload.single('image'), update)
   .delete('/artwork/:slug', destroy)
+  .post('/subscriber/create', createSubscriberUser)
+  .get('/unsubscribe/:id', removeSubscriberUser)
   .get('/env', env)
   .get('/orders/', info)
   .get('/orders/:id', info)
@@ -105,4 +117,8 @@ app.use(
 // Pipe unmatched requests to polymer
 app.use(pipe);
 
-app.listen(process.env.PORT, console.log(`Server up on port ${process.env.PORT}`));
+app.listen(process.env.PORT, () => {
+  const link = new URL(process.env.SITE_URL)
+  link.port = process.env.PORT;
+  console.log(`App server up. Visit ${link}`)
+});

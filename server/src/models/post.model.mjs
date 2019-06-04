@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import { pricingSchema } from './pricing.model';
+import { pre_save } from './hooks/post.hooks';
 
 export const postSchema = new mongoose.Schema({
     slug: {
@@ -13,7 +14,7 @@ export const postSchema = new mongoose.Schema({
         validate: {
             validator: function (value) {
                 return /^([a-zA-Z0-9-]+[a-zA-Z0-9])|(del_[a-zA-Z0-9]+)$/.test(value);
-            }, 
+            },
             message: params => `${params.value} is not a valid identifier (slug)`
         }
     },
@@ -42,6 +43,11 @@ export const postSchema = new mongoose.Schema({
         type: String,
     },
 
+    display_position: {
+        type: Number,
+        default: 50 // %
+    },
+
     pricings: {
         type: [pricingSchema],
     },
@@ -52,5 +58,7 @@ export const postSchema = new mongoose.Schema({
         select: false
     }
 });
+
+postSchema.pre('save', pre_save)
 
 export const Post = mongoose.model('Post', postSchema);

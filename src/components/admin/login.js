@@ -43,14 +43,6 @@ class LoginView extends PageViewElement {
   firstUpdated() {
     store.dispatch(credentials(undefined));
     sessionStorage.removeItem('credentials');
-
-    const params = (new URL(document.location)).searchParams;
-    if (params.has('message')) {
-      store.dispatch(showSnackbar(params.get('message')));
-
-      params.delete('message');
-      history.replaceState({}, document.title, `/login?${params}`);
-    }
   }
 
   _isEnterPress(event) {
