@@ -7,6 +7,8 @@ import Stripe from 'stripe';
 import { Order, OrderItem, Customer } from '../models';
 import { email } from '../email';
 import { orderSuccessTemplate } from '../email/templates/stripe';
+import unparsed from "koa-body/unparsed";
+
 
 const stripe = Stripe(process.env.STRIPE_SK);
 
@@ -18,7 +20,7 @@ export async function checkout(ctx) {
     quantity: item.quantity,
     item: item.postId,
     pricing: item.pricingId
-  })); 
+  }));
 
   const order = new Order({
     items,
@@ -53,7 +55,7 @@ export async function webhook(ctx) {
   let event = null;
 
   try {
-    event = stripe.webhooks.constructEvent(ctx.request.rawBody, sig, process.env.STRIPE_WHSEC);
+    event = stripe.webhooks.constructEvent(ctx.request.body[unparsed], sig, process.env.STRIPE_WHSEC);
   } catch (err) {
     // invalid signature
     console.log(err.message);
@@ -66,14 +68,14 @@ export async function webhook(ctx) {
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const intent = event.data.object;
-        
+
         const order = await Order.findById(intent.metadata.order_id)
           .populate({path: 'items.item', select: "title description"})
           .populate({path: 'items.pricing'});
 
         order.status = 'paid';
         await email.deliver(orderSuccessTemplate(order));
-        
+
         console.log('Stripe processed order for:', order.customer.name);
         await order.save();
 
