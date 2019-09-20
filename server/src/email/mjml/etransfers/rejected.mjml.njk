@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-title></mj-title>
+    <mj-attributes>
+
+    </mj-attributes>
+    <mj-font name="Julius Sans One" href="https://fonts.googleapis.com/css?family=Julius+Sans+One" />
+    <mj-font name="Thasadith" href="https://fonts.googleapis.com/css?family=Thasadith:700" />
+  </mj-head>
+  <mj-body background-color="#d6dde5">
+
+      {% include "./../header.template.mjml.njk" %}
+
+      <mj-section background-color="#ffffff" background-url="{{process.env.SITE_URL}}/images/email-bg-cosmic.jpg" background-size="cover" padding-bottom="27px" padding-top="0px">
+        <mj-column width="100%" vertical-align="top">
+          <mj-text align="center" color="white" font-weight="bold" font-family="Julius Sans One, Helvetica, Arial, sans-serif" font-size="27px" padding-left="25px" padding-right="25px" padding-bottom="50px" padding-top="50px">
+            <span>
+              Your e-transfer order has been cancelled
+            </span>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+        <mj-column width="70%" vertical-align="top">
+          <mj-text align="center" color="#000000" font-weight="bold" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="20px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            <span>
+              What's going on?
+            </span>
+          </mj-text>
+
+          <mj-text align="justify" color="#000000" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="16px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            <p>
+              Sometimes we have to cancel orders placed with e-transfers;
+              it could be that you seem to have forgotten to send payment,
+              perhaps the wrong payment amount was sent,
+              or the wrong password (secret phrase) was used.
+            </p>
+            <p>
+              In any case, while cancelling your order, the following message was provided:
+            </p>
+
+            <p style="border-left: 1px solid black; padding-left: 10px;">
+              <br>
+              {{ order.info }}
+              <br>
+              <br>
+            </p>
+          </mj-text>
+
+          <mj-button background-color="white" color="black" font-size="13px" align="center" vertical-align="middle" border="1px solid black" border-radius="0px" padding="15px 30px" href="https://mjml.io" font-family="Thasadith, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="10px" padding-top="10px">
+            LEARN MORE
+          </mj-button>
+        </mj-column>
+
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+      </mj-section>
+
+      <mj-divider border-width="1px" border-style="dashed" border-color="lightgrey" />
+
+      {% for item in order.items %}
+        {% include "../order-item.template.mjml.njk" %}
+      {% endfor %}
+
+      {% include "../footer.template.mjml.njk" %}
+    </mj-body>
+</mjml>

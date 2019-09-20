@@ -20,7 +20,7 @@ export async function checkout(ctx) {
     quantity: item.quantity,
     item: item.postId,
     pricing: item.pricingId
-  })); 
+  }));
 
   const order = new Order({
     items,
@@ -68,10 +68,10 @@ export async function webhook(ctx) {
   if (accepted) {
 
     order.status = 'paid';
-    
+
     // Email the customer
     await email.deliver(orderAcceptedTemplate(order));
-    
+
     await order.save();
     ctx.body = { order };
 
@@ -80,14 +80,15 @@ export async function webhook(ctx) {
     const { reason } = ctx.request.body;
     if (reason) {
       order.status = 'rejected';
+      order.info = reason;
       await order.save();
 
       // Email the customer
-      await email.deliver(orderRejectedTemplate(order, ctx.request.body.reason)); 
+      await email.deliver(orderRejectedTemplate(order));
 
       ctx.body = { orders: [ order ] };
     } else {
       ctx.throw(400, JSON.stringify({ error: 'Rejected order must have a reason'}));
     }
   }
-} 
+}
