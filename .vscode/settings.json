@@ -1,4 +1,7 @@
 {
     "mjml.autoPreview": true,
-    "mjml.updateWhenTyping": true
+    "mjml.updateWhenTyping": true,
+    "files.associations": {
+        "*.mjml.njk": "mjml"
+    }
 }

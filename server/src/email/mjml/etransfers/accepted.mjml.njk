@@ -9,7 +9,7 @@
   </mj-head>
   <mj-body background-color="#d6dde5">
 
-      {% include "./../header.template.mjml.njk" %}
+      {% include "../header.template.mjml.njk" %}
 
       <mj-section background-color="#ffffff" background-url="{{process.env.SITE_URL}}/images/email-bg-aurora.jpg" background-size="cover" padding-bottom="27px" padding-top="0px">
         <mj-column width="100%" vertical-align="top">
@@ -36,13 +36,14 @@
               Your purchase helps me buy canvas, paints, brushes, prints, get professional digitization, and otherwise make time for artwork.
               It's very appreciated, your order will be delivered soon!
             </p>
+          </mj-text>
         </mj-column>
         <mj-column width="15%" vertical-align="top"> </mj-column>
       </mj-section>
 
 
       <!-- Customer information -->
-      <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
+      <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px" border-bottom="1px dashed lightgray">
         <mj-column width="15%" vertical-align="top"> </mj-column>
         <mj-column width="70%" vertical-align="top">
           <mj-text align="center" color="black" font-weight="bold" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="20px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
@@ -53,21 +54,20 @@
             <p>
               We'll be delivering your order to:
             </p>
-            <p>
-              {{order.customer.name}}
+            <p>{{order.customer.name}}</p>
+            <p>{% for line in order.customer.shipping.address_lines %}
+                {{line}}<br/>
+                {% endfor %}
             </p>
-            <p>
-              {{order.customer.address}}
-            </p>
+            <p>{{order.customer.shipping.locality}}, {{order.customer.shipping.region}}</p>
+            <p>{{order.customer.shipping.country}} - {{order.customer.shipping.postal_code}}</p>
           </mj-text>
         </mj-column>
         <mj-column width="15%" vertical-align="top"> </mj-column>
       </mj-section>
 
-      <mj-divider border-width="1px" border-style="dashed" border-color="lightgrey" />
-
-      {% for item in order.items %}
-        {% include "../order-item.template.mjml.njk" %}
+      {% for orderItem in order.items %}
+        {% include "../order-item.mjml.njk" %}
       {% endfor %}
 
       {% include "../footer.template.mjml.njk" %}

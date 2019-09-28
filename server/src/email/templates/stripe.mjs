@@ -3,36 +3,70 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
+import {
+    orderAcceptedPlaintext,
+    orderFailedPlaintext,
+    orderAdminGeneratedPlaintext,
+    orderAdminNotProcessedPlaintext
+} from "../plaintext/stripe.mjs"
+import { render } from "../render.mjs"
+
 /**
  * Stripe Order processed
- * @param order Mongoose order model
+ * @param context email rendering context
  */
-export const orderSuccessTemplate = order => {
-
-    const text =
-`Thank you for your order!
-
-To confirm, you ordered:
-${order.items.map(orderItem => { return `
-    - ${orderItem.quantity}x ${orderItem.item.title} $${orderItem.pricing.price}
-        | size: ${orderItem.pricing.size.width} by ${orderItem.pricing.size.height} ${orderItem.pricing.size.unit}
-        | type: ${orderItem.pricing.medium}`
-}).join('\n')}
-
-... and the shipping address is:
-${order.customer.name}
-${order.customer.shipping.address_lines.join(',')}
-${order.customer.shipping.locality}, ${order.customer.shipping.region}
-${order.customer.shipping.country}, ${order.customer.shipping.postal_code}
-
-If anything is wrong with the above, please forward this email to ${process.env.SUPPORT_EMAIL}.
-Note: Do not reply directly to this email as the mailbox is automated and isn't monitored!
-`;
+export const orderAcceptedTemplate = context => {
 
     return {
-        text:    text,
-        from:    process.env.ORDERS_EMAIL,
-        to:      order.customer.email,
+        html:    render('stripe/accepted.mjml.njk', context),
+        text:    orderAcceptedPlaintext(context),
+        from:    context.process.env.ORDERS_EMAIL,
+        to:      context.order.customer.email,
         subject: "Your order from Zuzi Art"
+    }
+}
+
+/**
+ * Stripe Order failed
+ * @param context email rendering context
+ */
+export const orderFailedTemplate = context => {
+
+    return {
+        html:    render('stripe/failed.mjml.njk', context),
+        text:    orderFailedPlaintext(context),
+        from:    context.process.env.ORDERS_EMAIL,
+        to:      context.order.customer.email,
+        subject: "Payment for your order on Zuzi Art failed."
+    }
+}
+
+/**
+ * Stripe Order generated
+ * @param context email rendering context
+ * @param admins List of Administrator emails
+ */
+export const orderAdminGeneratedTemplate = (context, admins) => {
+    return {
+        html:    render('stripe/admin/generated.mjml.njk', context),
+        text:    orderAdminGeneratedPlaintext(context),
+        from:    context.process.env.ORDERS_EMAIL,
+        to:      admins.map(admin => admin.email).join(', '),
+        subject: "Order placed using stripe"
+    }
+}
+
+/**
+ * Stripe Order not processed
+ * @param context email rendering context
+ * @param admins List of Administrator emails
+ */
+export const orderAdminNotProcessedTemplate = (context, admins) => {
+    return {
+        html:    render('stripe/admin/notprocessed.mjml.njk', context),
+        text:    orderAdminNotProcessedPlaintext(context),
+        from:    context.process.env.ORDERS_EMAIL,
+        to:      admins.map(admin => admin.email).join(', '),
+        subject: "An order failed payment processing"
     }
 }

@@ -6,10 +6,10 @@
 import { email } from '../email';
 import { Order, OrderItem, Customer, User } from '../models';
 import {
-  orderGeneratedTemplate,
   orderPendingTemplate,
   orderAcceptedTemplate,
-  orderRejectedTemplate
+  orderRejectedTemplate,
+  orderAdminGeneratedTemplate
 } from '../email/templates/etransfer.mjs';
 
 export async function checkout(ctx) {
@@ -46,7 +46,7 @@ export async function checkout(ctx) {
   await email.deliver(orderPendingTemplate(inflatedOrder));
 
   // Email the admins
-  await email.deliver(orderGeneratedTemplate(inflatedOrder, await User.find({ admin: true })));
+  await email.deliver(orderAdminGeneratedTemplate(inflatedOrder, await User.find({ admin: true })));
 
   ctx.body = { success: true };
 }

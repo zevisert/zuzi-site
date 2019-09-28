@@ -6,7 +6,7 @@
 import Stripe from 'stripe';
 import { Order, OrderItem, Customer } from '../models';
 import { email } from '../email';
-import { orderSuccessTemplate } from '../email/templates/stripe';
+import { orderAcceptedTemplate, orderFailedTemplate } from '../email/templates/stripe';
 
 const stripe = Stripe(process.env.STRIPE_SK);
 
@@ -18,7 +18,7 @@ export async function checkout(ctx) {
     quantity: item.quantity,
     item: item.postId,
     pricing: item.pricingId
-  })); 
+  }));
 
   const order = new Order({
     items,
@@ -66,14 +66,14 @@ export async function webhook(ctx) {
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const intent = event.data.object;
-        
+
         const order = await Order.findById(intent.metadata.order_id)
           .populate({path: 'items.item', select: "title description"})
           .populate({path: 'items.pricing'});
 
         order.status = 'paid';
-        await email.deliver(orderSuccessTemplate(order));
-        
+        await email.deliver(orderAcceptedTemplate(order));
+
         console.log('Stripe processed order for:', order.customer.name);
         await order.save();
 
@@ -81,8 +81,20 @@ export async function webhook(ctx) {
       }
       case 'payment_intent.payment_failed': {
         const intent = event.data.object;
-        const message = intent.last_payment_error && intent.last_payment_error.message;
-        console.log('Stripe failed:', intent.id, message);
+
+        const order = await Order.findById(intent.metadata.order_id)
+          .populate({path: 'items.item', select: "title description"})
+          .populate({path: 'items.pricing'});
+
+        order.status = 'failed';
+        if (intent.last_payment_error) {
+          order.info = intent.last_payment_error.message;
+        }
+
+        await email.deliver(orderFailedTemplate(order));
+        console.log('Stripe failed payment for:', order.customer.email, order.info);
+
+        await order.save();
         break;
       }
       default: {

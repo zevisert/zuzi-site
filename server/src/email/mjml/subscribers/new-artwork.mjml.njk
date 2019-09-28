@@ -9,7 +9,7 @@
   </mj-head>
   <mj-body background-color="#d6dde5">
 
-      {% include "./header.template.mjml.njk" %}
+      {% include "../header.template.mjml.njk" %}
 
       <mj-section background-color="#ffffff" padding-bottom="27px" padding-top="0px">
         <mj-column>
@@ -21,7 +21,10 @@
 
       <mj-section background-color="#ffffff" padding-bottom="27px" padding-top="0px">
         <mj-column>
-          <mj-image href="{{process.env.SITE_URL}}/gallery/{{post.slug}}" src="{{process.env.SITE_URL}}/images/{{post.preview}}" />
+          <mj-image
+            href="{{process.env.SITE_URL}}/gallery/{{post.slug}}"
+            src="{{process.env.SITE_URL}}/images/{{post.preview}}"
+            alt="{{post.title}}"/>
         </mj-column>
       </mj-section>
 
@@ -41,7 +44,7 @@
       </mj-section>
 
       <!-- Gallery call-to-action -->
-      <mj-section background-color="#ffffff" border-top="1px solid black" padding-bottom="20px" padding-top="20px">
+      <mj-section background-color="#ffffff" border-top="1px solid black" padding-bottom="20px" padding-top="20px" border-bottom="1px dashed lightgray">
 
         <mj-column width="15%" vertical-align="top"> </mj-column>
         <mj-column width="70%" vertical-align="top">
@@ -63,9 +66,7 @@
         <mj-column width="15%" vertical-align="top"> </mj-column>
       </mj-section>
 
-      <mj-divider border-width="1px" border-style="dashed" border-color="lightgrey" />
-
-      {% include "./footer.template.mjml.njk" %}
+      {% include "../footer.template.mjml.njk" %}
 
     </mj-body>
 </mjml>
