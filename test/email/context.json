@@ -178,5 +178,12 @@
             "available": "post.pricings[2].available"
         }],
         "deletedOn": "post.deletedOn"
+    },
+    "user": {
+        "_id": "user._id",
+        "name": "user.name",
+        "email": "user.email",
+        "admin": "user.admin",
+        "subscriber": "user.subscriber"
     }
 }

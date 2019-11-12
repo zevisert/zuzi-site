@@ -10,6 +10,7 @@
   "scripts": {
     "start": "gulp default",
     "build": "polymer build",
+    "email:render": "gulp email:render",
     "serve:prpl": "prpl-server --root build/ --config polymer.json",
     "serve:api": "node --experimental-modules server/src/index.mjs",
     "test": "npm run test:unit && npm run test:integration",

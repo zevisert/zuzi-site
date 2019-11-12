@@ -1,0 +1,32 @@
+{% include "../header.template.text.njk" -%}
+|/                                                          \|
+|          Your e-transfer order has been cancelled          |
+|\                                                          /|
+◳------------------------------------------------------------◰
+
+                      What's going on?
+
+Sometimes we  have to  cancel orders  placed  with e-transfers;
+it could  be that  you seem  to have forgotten to send payment,
+perhaps  the  wrong  payment  amount  was sent, or  the  wrong
+password (secret phrase) was used.
+
+In  any  case,  while  cancelling your  order,  the  following
+message was provided:
+|
+| {{ order.info }}
+|
+
+Learn more by visiting:
+{{process.env.SITE_URL}}/cancelled_order
+
+-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-
+
+                Items from the cancelled order
+
+{% asyncEach orderItem in order.items %}
+  {% include "../order-item.text.njk" %}
+                              ---
+{% endeach %}
+
+{%- include "../footer.template.text.njk" %}

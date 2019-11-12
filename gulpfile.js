@@ -85,11 +85,11 @@ gulp.task('email:render', () => {
     const nunjucks = require('nunjucks');
 
     const env = new nunjucks.Environment(
-        new nunjucks.FileSystemLoader('server/src/email/mjml'),
+        new nunjucks.FileSystemLoader('server/src/email/templates/'),
         { throwOnUndefined: true }
     );
 
-    env.addFilter('price', val => `$${val} CAD`)
+    env.addFilter('asCAD', val => `$${val} CAD`)
 
     const render = (template, context) => {
         return mjml2html(env.render(template, context));
@@ -97,20 +97,41 @@ gulp.task('email:render', () => {
 
     del('build/email').then( () => {
       for (const template of [
-        'etransfers/accepted.mjml.njk',
-        'etransfers/pending.mjml.njk',
-        'etransfers/rejected.mjml.njk',
-        'etransfers/admin/generated.mjml.njk',
-        'stripe/accepted.mjml.njk',
-        'stripe/failed.mjml.njk',
-        'stripe/admin/generated.mjml.njk',
-        'stripe/admin/notprocessed.mjml.njk',
-        'subscribers/new-artwork.mjml.njk',
+        'mjml/etransfer/accepted.mjml.njk',
+        'mjml/etransfer/pending.mjml.njk',
+        'mjml/etransfer/rejected.mjml.njk',
+        'mjml/etransfer/admin/generated.mjml.njk',
+        'mjml/stripe/accepted.mjml.njk',
+        'mjml/stripe/failed.mjml.njk',
+        'mjml/stripe/admin/generated.mjml.njk',
+        'mjml/stripe/admin/notprocessed.mjml.njk',
+        'mjml/subscribers/new-artwork.mjml.njk',
         // 'subscribers/message.mjml.njk'
       ]) {
         try {
           const stream = source(template.replace('mjml.njk', 'html'))
           stream.end(render(template, { ...context }).html)
+          stream.pipe(gulp.dest('build/email/'))
+        } catch (e) {
+          reject(e);
+        }
+      }
+
+      for (const template of [
+        'plaintext/etransfer/accepted.text.njk',
+        'plaintext/etransfer/pending.text.njk',
+        'plaintext/etransfer/rejected.text.njk',
+        'plaintext/etransfer/admin/generated.text.njk',
+        'plaintext/stripe/accepted.text.njk',
+        'plaintext/stripe/failed.text.njk',
+        'plaintext/stripe/admin/generated.text.njk',
+        'plaintext/stripe/admin/notprocessed.text.njk',
+        'plaintext/subscribers/new-artwork.text.njk',
+        // 'subscribers/message.text.njk'
+      ]) {
+        try {
+          const stream = source(template.replace('text.njk', 'txt'))
+          stream.end(env.render(template, { ...context }))
           stream.pipe(gulp.dest('build/email/'))
         } catch (e) {
           reject(e);
