@@ -3,6 +3,7 @@
  * @license
  * Copyright (c) Zev Isert, All rights reserved
  */
+import { MailingTopics } from '../../models/mailing.model'
 import { render, plaintext } from "../render.mjs"
 
 /**
@@ -13,7 +14,7 @@ export const notifySubscribersPosting = async context => {
     const topic = MailingTopics.subscribers.newartwork;
 
     return {
-        text:    plaintext(topic.template, context),
+        text:    await plaintext(topic.template, context),
         from:    context.process.env.SUBSCRIBERS_EMAIL,
         to:      context.user.email,
         subject: topic.subject,

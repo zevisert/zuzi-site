@@ -6,10 +6,12 @@
 
 Visit the gallery to see the new content:
 
-### {{post.title}} ###
-| {{post.description}}
+### {{post.title | center(55)}} ###
+{{post.description | justified(63)}}
 
-{{process.env.SITE_URL}}/gallery/{{post.slug}}
+
+See the artwork:
+> {{process.env.SITE_URL}}/gallery/{{post.slug}}
 
 ===============================================================
 

@@ -3,14 +3,16 @@ import mjml2html from 'mjml';
 import nunjucks from 'nunjucks';
 import stream from 'stream';
 import Spaces from 'aws-sdk';
-import path from 'path'
+import path from 'path';
+import justified from 'justified';
 
 const env = new nunjucks.Environment(
-    new nunjucks.FileSystemLoader('server/src/email/'),
+    new nunjucks.FileSystemLoader('server/src/email/templates'),
     { throwOnUndefined: true }
 );
 
 env.addFilter('asCAD', totalCents => `$${(totalCents / 100).toFixed(2)} CAD`)
+env.addFilter('justified', (text, width=63) => justified(text, {width}))
 
 export const render = async (template, context) => {
 

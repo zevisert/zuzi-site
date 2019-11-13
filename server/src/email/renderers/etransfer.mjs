@@ -13,7 +13,7 @@ export const orderPendingMessage = async context => {
     const topic = MailingTopics.orders.etransfer.pending;
 
     return {
-        text: plaintext(topic.template, context),
+        text: await plaintext(topic.template, context),
         from: context.process.env.ORDERS_EMAIL,
         to: context.order.customer.email,
         subject: topic.subject,
@@ -32,7 +32,7 @@ export const orderAcceptedMessage = async context => {
     const topic = MailingTopics.orders.etransfer.accepted;
 
     return {
-        text: plaintext(topic.template, context),
+        text: await plaintext(topic.template, context),
         from: context.process.env.ORDERS_EMAIL,
         to: context.order.customer.email,
         subject: topic.subject,
@@ -51,7 +51,7 @@ export const orderRejectedMessage = async context => {
     const topic = MailingTopics.orders.etransfer.rejected
 
     return {
-        text: plaintext(topic.template, context),
+        text: await plaintext(topic.template, context),
         from: context.process.env.ORDERS_EMAIL,
         to: context.order.customer.email,
         subject: topic.subject,
@@ -71,7 +71,7 @@ export const orderAdminGeneratedMessage = async (context, admins) => {
     const topic = MailingTopics.orders.etransfer.admin.generated;
 
     return {
-        text: plaintext(topic.template, context),
+        text: await plaintext(topic.template, context),
         from: context.process.env.ORDERS_EMAIL,
         to: admins.map(admin => admin.email).join(', '),
         subject: topic.subject,

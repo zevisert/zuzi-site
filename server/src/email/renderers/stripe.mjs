@@ -14,7 +14,7 @@ export const orderAcceptedMessage = async context => {
     const topic = MailingTopics.orders.stripe.accepted;
 
     return {
-        text:    plaintext(topic.template, context),
+        text:    await plaintext(topic.template, context),
         from:    context.process.env.ORDERS_EMAIL,
         to:      context.order.customer.email,
         subject: topic.subject,
@@ -33,7 +33,7 @@ export const orderFailedMessage = async context => {
     const topic = MailingTopics.orders.stripe.failed;
 
     return {
-        text:    plaintext(topic.template, context),
+        text:    await plaintext(topic.template, context),
         from:    context.process.env.ORDERS_EMAIL,
         to:      context.order.customer.email,
         subject: topic.subject,
@@ -53,7 +53,7 @@ export const orderAdminGeneratedMessage = async (context, admins) => {
     const topic = MailingTopics.orders.stripe.admin.generated;
 
     return {
-        text:    plaintext(topic.template, context),
+        text:    await plaintext(topic.template, context),
         from:    context.process.env.ORDERS_EMAIL,
         to:      admins.map(admin => admin.email).join(', '),
         subject: topic.subject,
@@ -73,7 +73,7 @@ export const orderAdminNotProcessedMessage = async (context, admins) => {
     const topic = MailingTopics.orders.stripe.admin.notprocessed;
 
     return {
-        text:    plaintext(topic.template, context),
+        text:    await plaintext(topic.template, context),
         from:    context.process.env.ORDERS_EMAIL,
         to:      admins.map(admin => admin.email).join(', '),
         subject: topic.subject,
