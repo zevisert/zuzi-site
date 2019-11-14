@@ -1,0 +1,189 @@
+{
+    "message": {
+        "headline": "message.headline",
+        "permalink": "message.permalink",
+        "delivery_reason": "message.delivery_reason",
+        "mailing_address": "message.mailing_address",
+        "instagram_permalink": "message.instagram_permalink",
+        "facebook_permalink": "message.facebook_permalink"
+    },
+    "process": {
+        "env": {
+            "EMAIL_SYS_ADDR": "system-address@test.domain",
+            "SITE_ADMIN_EMAIL": "admin-address@test.domain",
+            "ORDERS_EMAIL": "orders-address@test.domain",
+            "SUBSCRIBERS_EMAIL": "subscribers-address@test.domain",
+            "SUPPORT_EMAIL": "support-address@test.domain",
+            "ETRANSFER_EMAIL": "etransfer-address@test.domain",
+            "ETRANSFER_PW": "etransfer_password",
+            "SITE_URL": "https://zuzi.ngrok.io",
+            "API_URL": "/api/v1"
+        }
+    },
+    "order": {
+        "_id": "order._id",
+        "items": [
+            {
+                "quantity": "order.items[0].quantity",
+                "item": {
+                    "slug": "order.items[0].item.slug",
+                    "title": "order.items[0].item.title",
+                    "tags": [
+                        "order.items[0].item.tags[0]", "order.items[0].item.tags[1]"
+                    ],
+                    "description": "order.items[0].item.description",
+                    "active": "order.items[0].item.active",
+                    "preview": "order.items[0].item.preview",
+                    "display_position": "order.items[0].item.display_position",
+                    "pricings": [
+                        {
+                            "price": "order.items[0].item.pricings[0].price",
+                            "size": {
+                                "width": "order.items[0].item.pricings[0].size.width",
+                                "height": "order.items[0].item.pricings[0].size.height",
+                                "unit": "order.items[0].item.pricings[0].size.unit"
+                            },
+                            "medium": "order.items[0].item.pricings[0].medium",
+                            "available": "order.items[0].item.pricings[0].available"
+                        },
+                        {
+                            "price": "order.items[0].item.pricings[1].price",
+                            "size": {
+                                "width": "order.items[0].item.pricings[1].size.width",
+                                "height": "order.items[0].item.pricings[1].size.height",
+                                "unit": "order.items[0].item.pricings[1].size.unit"
+                            },
+                            "medium": "order.items[0].item.pricings[1].medium",
+                            "available": "order.items[0].item.pricings[1].available"
+                        }
+                    ],
+                    "deletedOn": "order.items[0].item.deletedOn"
+                },
+                "pricing": {
+                    "price": "order.items[0].pricing.price",
+                    "size": {
+                        "width": "order.items[0].pricing.size.width",
+                        "height": "order.items[0].pricing.size.height",
+                        "unit": "order.items[0].pricing.size.unit"
+                    },
+                    "medium": "order.items[0].pricing.medium",
+                    "available": "order.items[0].pricing.available"
+                }
+            },
+            {
+                "quantity": "order.items[1].quantity",
+                "item": {
+                    "slug": "order.items[1].item.slug",
+                    "title": "order.items[1].item.title",
+                    "tags": [
+                        "order.items[1].item.tags[0]", "order.items[1].item.tags[1]"
+                    ],
+                    "description": "order.items[1].item.description",
+                    "active": "order.items[1].item.active",
+                    "preview": "order.items[1].item.preview",
+                    "display_position": "order.items[1].item.display_position",
+                    "pricings": [
+                        {
+                            "price": "order.items[1].item.pricings[0].price",
+                            "size": {
+                                "width": "order.items[1].item.pricings[0].size.width",
+                                "height": "order.items[1].item.pricings[0].size.height",
+                                "unit": "order.items[1].item.pricings[0].size.unit"
+                            },
+                            "medium": "order.items[1].item.pricings[0].medium",
+                            "available": "order.items[1].item.pricings[0].available"
+                        },
+                        {
+                            "price": "order.items[1].item.pricings[1].price",
+                            "size": {
+                                "width": "order.items[1].item.pricings[1].size.width",
+                                "height": "order.items[1].item.pricings[1].size.height",
+                                "unit": "order.items[1].item.pricings[1].size.unit"
+                            },
+                            "medium": "order.items[1].item.pricings[1].medium",
+                            "available": "order.items[1].item.pricings[1].available"
+                        }
+                    ],
+                    "deletedOn": "order.items[1].item.deletedOn"
+                },
+                "pricing": {
+                    "price": "order.items[1].pricing.price",
+                    "size": {
+                        "width": "order.items[1].pricing.size.width",
+                        "height": "order.items[1].pricing.size.height",
+                        "unit": "order.items[1].pricing.size.unit"
+                    },
+                    "medium": "order.items[1].pricing.medium",
+                    "available": "order.items[1].pricing.available"
+                }
+            }
+        ],
+        "totalCents": "order.totalCents",
+        "customer": {
+            "name": "order.customer.name",
+            "email": "order.customer.email",
+            "shipping": {
+                "address_lines": [
+                    "order.customer.shipping.address_lines[0]",
+                    "order.customer.shipping.address_lines[1]",
+                    "order.customer.shipping.address_lines[2]",
+                    "order.customer.shipping.address_lines[3]"
+                ],
+                "postal_code": "order.customer.shipping.postal_code",
+                "locality": "order.customer.shipping.locality",
+                "region": "order.customer.shipping.region",
+                "country": "order.customer.shipping.country"
+            }
+        },
+        "type": "order.type",
+        "intent_id": "order.intent_id",
+        "status": "order.status",
+        "date": "order.date",
+        "info": "order.info"
+    },
+    "post": {
+        "slug": "post.slug",
+        "title": "post.title",
+        "tags": ["post.tags[0]", "post.tags[1]"],
+        "description": "post.description",
+        "active": "post.active",
+        "preview": "post.preview",
+        "display_position": "post.display_position",
+        "pricings": [{
+            "price": "post.pricings[0].price",
+            "size": {
+                "width": "post.pricings[0].size.width",
+                "height": "post.pricings[0].size.height",
+                "unit": "post.pricings[0].size.unit"
+            },
+            "medium": "post.pricings[0].medium",
+            "available": "post.pricings[0].available"
+        },{
+            "price": "post.pricings[1].price",
+            "size": {
+                "width": "post.pricings[1].size.width",
+                "height": "post.pricings[1].size.height",
+                "unit": "post.pricings[1].size.unit"
+            },
+            "medium": "post.pricings[1].medium",
+            "available": "post.pricings[1].available"
+        },{
+            "price": "post.pricings[2].price",
+            "size": {
+                "width": "post.pricings[2].size.width",
+                "height": "post.pricings[2].size.height",
+                "unit": "post.pricings[2].size.unit"
+            },
+            "medium": "post.pricings[2].medium",
+            "available": "post.pricings[2].available"
+        }],
+        "deletedOn": "post.deletedOn"
+    },
+    "user": {
+        "_id": "user._id",
+        "name": "user.name",
+        "email": "user.email",
+        "admin": "user.admin",
+        "subscriber": "user.subscriber"
+    }
+}

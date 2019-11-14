@@ -1,0 +1,27 @@
+<mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
+  <mj-column width="50%" vertical-align="top">
+    <mj-image
+      href="{{process.env.SITE_URL}}/gallery/{{orderItem.item.slug}}"
+      src="{{process.env.SITE_URL}}/uploads/{{orderItem.item.preview}}"
+      alt="{{orderItem.item.title}}"
+      align="center" border="none" width="250px" padding="10px 25px">
+    </mj-image>
+  </mj-column>
+  <mj-column width="50%" vertical-align="top">
+    <mj-text align="left" color="#000000" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="13px" padding="10px 25px">
+      <p>
+        <span style="font-size: 17px;">
+          {{orderItem.quantity}}x {{orderItem.item.title}}
+        </span>
+        <br>
+        <p style="border-left: 1px solid lightgrey; padding-left: 10px;">
+          <span>Price ${{orderItem.pricing.price}} Each</span>
+          <br>
+          <span>Size: {{orderItem.pricing.size.width}} by {{orderItem.pricing.size.height}} {{orderItem.pricing.size.unit}}</span>
+          <br>
+          <span>Type: {{orderItem.pricing.medium}}</span>
+        </p>
+      </p>
+    </mj-text>
+  </mj-column>
+</mj-section>
