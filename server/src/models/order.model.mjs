@@ -80,6 +80,19 @@ export const orderSchema = new mongoose.Schema({
     info: {
         type: String,
         required: false
+    },
+
+    receipt: {
+        type: String,
+        required: false,
+        default: null
+    },
+
+    mailings: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Mailing",
+        required: false,
+        default: null
     }
 });
 

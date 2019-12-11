@@ -204,9 +204,17 @@ export async function update(ctx) {
     const body = ctx.request.body;
 
     // Multipart-forms are not yet JSON parsed
-    body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
-    body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
-    body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
+    if (body.active) {
+      body.active = typeof body.active === 'boolean' ? body.active : body.active === 'true'
+    }
+
+    if (body.display_position) {
+      body.display_position = typeof body.display_position === 'number' ? body.display_position : +body.display_position
+    }
+
+    if (body.should_watermark) {
+      body.should_watermark = typeof body.should_watermark === 'boolean' ? body.should_watermark : body.should_watermark === 'true'
+    }
 
     const image = ctx.request.files.image;
     if (image) {
@@ -216,8 +224,8 @@ export async function update(ctx) {
 
     post.title = body.title || post.title;
     post.description = body.description || post.description;
-    post.active = body.active || post.active;
-    post.display_position = body.display_position || post.display_position;
+    post.active = body.active !== undefined ? body.active : post.active;
+    post.display_position = body.display_position !== undefined ? body.display_position : post.display_position;
     post.slug = toSlug(post.title);
 
     if (body.tags) {

@@ -1,0 +1,23 @@
+{% include "../header.template.text.njk" -%}
+|/                                                          \|
+|      New artwork has been posted to Zuzana's gallery!      |
+|\                                                          /|
+◳------------------------------------------------------------◰
+
+Visit the gallery to see the new content:
+
+### {{post.title | center(55)}} ###
+{{post.description | justified(63)}}
+
+
+See the artwork:
+> {{process.env.SITE_URL}}/gallery/{{post.slug}}
+
+===============================================================
+
+               View this piece and shop for many
+               others at Zuzana's online gallery.
+
+               {{process.env.SITE_URL}}/gallery
+
+{% include "../footer.template.text.njk" %}

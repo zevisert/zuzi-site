@@ -1,0 +1,137 @@
+<mjml>
+  <mj-head>
+    <mj-title></mj-title>
+    <mj-attributes>
+
+    </mj-attributes>
+    <mj-font name="Julius Sans One" href="https://fonts.googleapis.com/css?family=Julius+Sans+One" />
+    <mj-font name="Thasadith" href="https://fonts.googleapis.com/css?family=Thasadith:700" />
+  </mj-head>
+  <mj-body background-color="#d6dde5">
+
+      {% include "../header.template.mjml.njk" %}
+
+      <mj-section background-color="#443f3b" background-url="{{process.env.SITE_URL}}/uploads/email-bg-waves.jpg" background-size="cover" padding-bottom="27px" padding-top="0px">
+        <mj-column width="100%" vertical-align="top">
+          <mj-text align="center" color="white" font-weight="bold" font-family="Julius Sans One, Helvetica, Arial, sans-serif" font-size="27px" padding-left="25px" padding-right="25px" padding-bottom="50px" padding-top="50px">
+            <span>
+              Your e-transfer order is awaiting your payment
+            </span>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <!-- Message body -->
+      <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px">
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+        <mj-column width="70%" vertical-align="top">
+          <mj-text align="center" color="black" font-weight="bold" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="20px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            <span>
+              What's next?
+            </span>
+          </mj-text>
+
+          <mj-text align="left" color="black" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="16px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            <p>
+              When accepting orders paid with e-transfers, we keep your order in a pending state until
+              payment is received.
+            </p>
+            <p>
+              To complete your order, visit your financial institution's website and place an e-transfer using
+              the following information:
+            </p>
+          </mj-text>
+        </mj-column>
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+      </mj-section>
+
+      <!-- E-Transfer information -->
+      <mj-wrapper background-color="white" padding="0px 30px 50px">
+        <mj-section border-top="1px solid #aaaaaa" border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" padding="10px 0px">
+          <mj-column>
+            <mj-text font-size="20px">E-Transfer Information</mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" border-bottom="1px dashed lightgray" padding="0px 20px">
+          <mj-column width="40%">
+            <mj-text padding="20px" font-style="italic"> Recipient email address </mj-text>
+          </mj-column>
+          <mj-column width="60%">
+            <mj-text padding="20px" align="right" font-weight="bold">{{process.env.ETRANSFER_EMAIL}}</mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" border-bottom="1px dashed lightgray" padding="0px 20px">
+          <mj-column width="40%">
+            <mj-text padding="20px" font-style="italic">Security question</mj-text>
+          </mj-column>
+          <mj-column width="60%">
+            <mj-text padding="20px" align="right" font-weight="bold">Art Store Security Phrase</mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" border-bottom="1px dashed lightgray" padding="0px 20px">
+          <mj-column width="40%">
+            <mj-text padding="20px" font-style="italic"> Secret phrase (password) </mj-text>
+          </mj-column>
+          <mj-column width="60%">
+            <mj-text padding="20px" align="right" font-weight="bold">{{process.env.ETRANSFER_PW}}</mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" border-bottom="1px dashed lightgray" padding="0px 20px">
+          <mj-column width="40%">
+            <mj-text padding="20px" font-style="italic"> Amount</mj-text>
+          </mj-column>
+          <mj-column width="60%">
+            <mj-text padding="20px" align="right" font-weight="bold">{{order.totalCents | asCAD }}</mj-text>
+          </mj-column>
+        </mj-section>
+
+        <mj-section border-left="1px solid #aaaaaa" border-right="1px solid #aaaaaa" padding="0px 20px 20px" border-bottom="1px solid #aaaaaa">
+          <mj-column width="40%">
+            <mj-text padding="20px" font-style="italic"> Description (optional) </mj-text>
+          </mj-column>
+          <mj-column width="60%">
+            <mj-text padding="20px" align="right" font-weight="bold"> Order# {{order._id}} </mj-text>
+          </mj-column>
+        </mj-section>
+      </mj-wrapper>
+
+      <!-- Customer information -->
+      <mj-section background-color="#ffffff" padding-bottom="20px" padding-top="20px" border-bottom="1px dashed lightgray">
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+        <mj-column width="70%" vertical-align="top">
+          <mj-text align="center" color="black" font-weight="bold" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="20px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            Your information
+          </mj-text>
+
+          <mj-text align="justify" color="#000000" background-color="white" font-family="Thasadith, Helvetica, Arial, sans-serif" font-size="16px" padding-left="25px" padding-right="25px" padding-bottom="0px" padding-top="0px">
+            <p>
+              The shipping address received is:
+            </p>
+            <p>{{order.customer.name}}</p>
+            <p>
+            {% for line in order.customer.shipping.address_lines %}
+              {{line}}<br/>
+            {% endfor %}
+            </p>
+            <p>{{order.customer.shipping.locality}}, {{order.customer.shipping.region}}</p>
+            <p>{{order.customer.shipping.country}} - {{order.customer.shipping.postal_code}}</p>
+            <p>
+              If something here does't look right, describe your issue and forward this email to
+              <a href="mailto:{{process.env.SUPPORT_EMAIL}}">{{process.env.SUPPORT_EMAIL}}</a>
+            </p>
+          </mj-text>
+        </mj-column>
+        <mj-column width="15%" vertical-align="top"> </mj-column>
+      </mj-section>
+
+      {% asyncEach orderItem in order.items %}
+        {% include "../order-item.mjml.njk" %}
+      {% endeach %}
+
+      {% include "../footer.template.mjml.njk" %}
+    </mj-body>
+</mjml>

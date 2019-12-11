@@ -1,0 +1,51 @@
+{% include "../header.template.text.njk" -%}
+|/                                                          \|
+|       Your e-transfer order is awaiting your payment       |
+|\                                                          /|
+◳------------------------------------------------------------◰
+
+                          What's next?
+
+When accepting orders paid with e-transfers, we keep your order
+in a pending state until payment is received.  To complete your
+order,  visit your financial institution's website and place an
+e-transfer using the following information:
+
+| > E-Transfer Information
+|   - Recipient email address:
+|     > {{process.env.ETRANSFER_EMAIL}}
+|
+|   - Security question:
+|     > Art Store Security Phrase
+|
+|   - Secret phrase (password):
+|     > {{process.env.ETRANSFER_PW}}
+|
+|   - Amount:
+|     > {{order.totalCents | asCAD }}
+|
+|   - Description (optional):
+|     > Order# {{order._id}}
+
+-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-
+
+                        Your information
+
+The shipping address received is:
+
+    {{order.customer.name}}
+{%- for line in order.customer.shipping.address_lines %}
+    {{line}}
+{%- endfor %}
+    {{order.customer.shipping.locality}}, {{order.customer.shipping.region}}
+    {{order.customer.shipping.country}} - {{order.customer.shipping.postal_code}}
+
+
+                 Items from your pending order
+
+{% asyncEach orderItem in order.items %}
+  {% include "../order-item.text.njk" %}
+                              ---
+{% endeach %}
+
+{%- include "../footer.template.text.njk" %}
