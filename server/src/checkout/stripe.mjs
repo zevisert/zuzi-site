@@ -114,9 +114,7 @@ export async function webhook(ctx) {
         ));
 
         console.log('Stripe processed order for:', order.customer.name);
-        order.mailings
         await order.save();
-
         break;
       }
       case 'payment_intent.payment_failed': {
