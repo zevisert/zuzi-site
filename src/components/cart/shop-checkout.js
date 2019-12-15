@@ -164,7 +164,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
 
           <button
             id='checkout'
-            ?disabled="${this._paymentMethod !== CHECKOUT_METHODS_ENUM.STRIPE && !this._cardComplete}"
+            ?disabled="${this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE && !this._cardComplete}"
             ?hidden="${this._quantity == 0}"
             @click="${this._checkoutButtonClicked}">
               Checkout
