@@ -22,8 +22,8 @@ export const email = new AsyncClient({
   user: process.env.EMAIL_SYS_ADDR,
   password: process.env.EMAIL_SYS_PW,
   host: process.env.EMAIL_SYS_HOST,
-  port: 587,
-  tls: true
+  port: +process.env.EMAIL_SYS_PORT,
+  tls: process.env.EMAIL_SYS_USE_TLS,
 });
 
 
@@ -33,7 +33,6 @@ export const withContext = (
     delivery_reason,
     mailing_address = "1103 Cashato Dr, Revelstoke, B.C., Canada",
     instagram_permalink = "https://www.instagram.com/zuzi11_/",
-    facebook_permalink = ""
   },
   order={},
   post={},
@@ -50,7 +49,6 @@ export const withContext = (
       delivery_reason,
       mailing_address,
       instagram_permalink,
-      facebook_permalink
     },
     order: { ...(order.toObject ? order.toObject() : order) },
     post:  { ...(post.toObject  ? post.toObject()  : post)  },
