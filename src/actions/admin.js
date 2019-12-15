@@ -168,19 +168,19 @@ export const processEtransfer = ({ accepted=false, orderId='', reason=undefined}
     })
   });
 
-  const { orders: ordersList } = await response.json();
+  const { order, error } = await response.json();
 
-  const orders = ordersList.reduce((obj, product) => {
-    return {
-      ... obj,
-      [product._id]: product
-    };
-  }, {});
+  if (error) {
+    dispatch(showSnackbar(error));
+    return;
+  }
 
   dispatch({
     type: ADMIN_GET_ORDERS,
     payload: {
-      orders
+      orders: {
+        [order._id]: order
+      }
     }
   });
 }

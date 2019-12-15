@@ -5,6 +5,7 @@
 
 import mongoose from 'mongoose';
 import { orderItemSchema } from './order-item.model';
+import { mailingSchema } from './mailing.model';
 import { customerSchema } from './customer.model';
 import { Pricing } from './pricing.model.mjs';
 
@@ -80,6 +81,18 @@ export const orderSchema = new mongoose.Schema({
     info: {
         type: String,
         required: false
+    },
+
+    receipt: {
+        type: String,
+        required: false,
+        default: null
+    },
+
+    mailings: {
+        type: [mailingSchema],
+        required: false,
+        default: []
     }
 });
 

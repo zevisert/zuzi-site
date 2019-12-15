@@ -20,6 +20,10 @@ export class ShopPayment extends connect(store)(LitElement) {
 
   static get is() { return 'shop-payment-select'; }
 
+  static get properties() { return {
+    _checkout_method: { type: Number, default: null },
+  }}
+
   render() {
     return html`
       ${ButtonSharedStyles}
@@ -120,9 +124,10 @@ export class ShopPayment extends connect(store)(LitElement) {
 
       <section class="radio-group">
         <div>
-          <input type="radio"  name="payment-method" checked
+          <input type="radio"  name="payment-method"
             id="stripe"
             value="${CHECKOUT_METHODS_ENUM.STRIPE}"
+            ?checked="${this._checkout_method === CHECKOUT_METHODS_ENUM.STRIPE}"
             @change="${e => this._radioChange(e)}"
           >
           <label for="stripe">
@@ -135,6 +140,7 @@ export class ShopPayment extends connect(store)(LitElement) {
           <input type="radio" name="payment-method"
             id="etransfer"
             value="${CHECKOUT_METHODS_ENUM.ETRANSFER}"
+            ?checked="${this._checkout_method === CHECKOUT_METHODS_ENUM.ETRANSFER}"
             @change="${e => this._radioChange(e)}"
           >
           <label for="etransfer">
@@ -171,6 +177,10 @@ export class ShopPayment extends connect(store)(LitElement) {
     `;
   }
 
+  firstUpdated() {
+    store.dispatch(setCheckoutMethod(store.getState().shop.method))
+  }
+
   _radioChange(e) {
     store.dispatch(setCheckoutMethod(Number(e.target.value)));
   }
@@ -181,6 +191,10 @@ export class ShopPayment extends connect(store)(LitElement) {
 
   _checkoutButtonClicked() {
     store.dispatch(advanceCheckout());
+  }
+
+  stateChanged(state) {
+    this._checkout_method = state.shop.method;
   }
 }
 

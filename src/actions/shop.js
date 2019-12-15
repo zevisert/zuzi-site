@@ -19,10 +19,12 @@ export const CHECKOUT_STAGES_ENUM = {
   CART: 1,
   PAYMENT_MODE: 2,
   CHECKOUT: 3,
+  SUCCESS: 4,
   properties: {
     1: { name: "CART", value: 1, next: 2, prev: 1 },
     2: { name: "PAYMENT_MODE", value: 2, next: 3, prev: 1 },
-    3: { name: "CHECKOUT", value: 3, next: 1, prev: 2 }
+    3: { name: "CHECKOUT", value: 3, next: 4, prev: 2 },
+    4: { name: "SUCCESS", value: 4, next: 1, prev: 4 },
   }
 };
 
@@ -87,7 +89,7 @@ export const checkoutStripe = (card, { amount, metadata }) => async dispatch => 
     if (error) {
       dispatch(showSnackbar(error.message));
     } else {
-      dispatch({ type: CHECKOUT_SUCCESS });
+      dispatch(checkoutSuccess());
       dispatch(showSnackbar('Your order has been submitted.'));
     }
   } else if (reply.errors) {
@@ -113,7 +115,7 @@ export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
   const reply = await response.json();
 
   if (reply.success) {
-    dispatch({ type: CHECKOUT_SUCCESS });
+    dispatch(checkoutSuccess());
     dispatch(showSnackbar('Your order has been submitted.'));
   } else if (reply.errors) {
     for (const value of Object.values(reply.errors)) {
@@ -126,6 +128,11 @@ export const checkoutEtransfer = ({amount, metadata}) => async dispatch => {
     dispatch(checkoutFailed('Something went wrong while processing your order.'));
   }
 };
+
+export const checkoutSuccess = message => async dispatch => {
+  dispatch({ type: CHECKOUT_SUCCESS, payload: { message }});
+  dispatch(advanceCheckout());
+}
 
 export const checkoutFailed = message => async dispatch => {
   dispatch(showSnackbar(message));
