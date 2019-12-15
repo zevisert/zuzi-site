@@ -5,7 +5,6 @@
         "delivery_reason": "message.delivery_reason",
         "mailing_address": "message.mailing_address",
         "instagram_permalink": "message.instagram_permalink",
-        "facebook_permalink": "message.facebook_permalink"
     },
     "process": {
         "env": {
