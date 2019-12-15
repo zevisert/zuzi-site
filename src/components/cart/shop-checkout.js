@@ -9,7 +9,14 @@ import { store, connect } from '../../store.js';
 
 
 // These are the actions needed by this element.
-import { checkoutEtransfer, checkoutStripe, checkoutFailed, CHECKOUT_METHODS_ENUM, setCheckoutStage, retreatCheckout, CHECKOUT_STAGES_ENUM } from '../../actions/shop.js';
+import {
+  checkoutEtransfer,
+  checkoutStripe,
+  checkoutFailed,
+  retreatCheckout,
+  CHECKOUT_METHODS_ENUM,
+  CHECKOUT_STAGES_ENUM
+} from '../../actions/shop.js';
 import { cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
 
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -26,7 +33,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
     _totalCents: { type: Number },
     _quantity: { type: Number },
     _paymentMethod: { type: Number },
-    _cardComplete: { type: Boolean, default: false }
+    _cardComplete: { type: Boolean, default: false },
   }}
 
   constructor() {
@@ -64,6 +71,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
 
         #card-errors {
           height: 1em;
+          color: #d32f2f;
         }
 
         section article:last-of-type {
@@ -155,6 +163,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
           </button>
 
           <button
+            id='checkout'
             ?disabled="${this._paymentMethod !== CHECKOUT_METHODS_ENUM.STRIPE && !this._cardComplete}"
             ?hidden="${this._quantity == 0}"
             @click="${this._checkoutButtonClicked}">
@@ -172,7 +181,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
       // Card mount must be in light-dom
       cardMount: document.getElementById('stripe-card-mount'),
       cardErrors: this.renderRoot.getElementById('card-errors'),
-
+      checkout: this.renderRoot.getElementById('checkout'),
       customer: {
         name: this.renderRoot.getElementById('cust-name'),
         email: this.renderRoot.getElementById('cust-email'),
@@ -236,6 +245,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
       }
     }
 
+    this.__els.checkout.disabled = true;
     store.dispatch(checkout({
       amount: this._totalCents,
       metadata
@@ -314,6 +324,10 @@ export class ShopCheckout extends connect(store)(LitElement) {
     this._quantity = cartQuantitySelector(state);
     this._paymentMethod = state.shop.method;
     this.__stage = state.shop.stage;
+
+    if (state.shop.error || state.shop.stage != CHECKOUT_STAGES_ENUM.CHECKOUT) {
+      this.__els.checkout.disabled = false;
+    }
   }
 }
 
