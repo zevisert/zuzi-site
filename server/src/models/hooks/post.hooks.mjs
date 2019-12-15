@@ -7,20 +7,18 @@ import { Post } from '../post.model';
 import { customEvents, ARTWORK_NEW }  from "../../events/registration";
 
 export async function pre_save() {
-    const before = await Post.findById(this._id);
-    const after = this;
+    const existing = await Post.findById(this._id);
 
     const conditions = Object.values({
-        isNewPost: before === null,
-        isNowPublishedPost: before !== null && before.active === false
+        newPost: existing === null,
+        publishedPost: existing !== null && existing.active === false && this.active === true
     });
 
     const requirements = Object.values({
-        isActive: after.active === true,
-        isChanged: before !== null && before.active !== after.active
+        isActive: this.active === true
     });
 
-    if (conditions.some(cond => cond) && requirements.every(req => req)) {
-        customEvents.emit(ARTWORK_NEW, after._id);
+    if (conditions.some(cond => cond === true) && requirements.every(req => req === true)) {
+        customEvents.emit(ARTWORK_NEW, this);
     }
 }
