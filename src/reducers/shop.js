@@ -40,9 +40,15 @@ const shop = (state = INITIAL_STATE, action) => {
         ...state,
         products: action.payload.products
       };
+    case CHECKOUT_SUCCESS:
+      return {
+        ...state,
+        cart: cart(state.cart, action),
+        error: '',
+        message: action.payload ? action.payload.message : '',
+      }
     case ADD_TO_CART:
     case REMOVE_FROM_CART:
-    case CHECKOUT_SUCCESS:
       return {
         ...state,
         cart: cart(state.cart, action),
@@ -64,7 +70,6 @@ const shop = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         error: action.payload.error,
-        message: ''
       };
     case ADMIN_CREATE_ITEM:
       return {

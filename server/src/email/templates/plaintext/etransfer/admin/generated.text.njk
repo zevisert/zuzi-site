@@ -1,0 +1,64 @@
+{% include "../../header.template.text.njk" -%}
+|/                                                          \|
+|          Your e-transfer order has been accepted           |
+|\                                                          /|
+◳------------------------------------------------------------◰
+
+                  New e-transfer order placed
+                       Wait for payment
+
+The system  has generated  an order but it  should remain in a
+pending state until you receive payment via etransfer from the
+person  listed below.  When payment is received,  remember  to
+visit the order admin page and confirm the customer's order so
+that they get their confirmation email!
+
+
+| > Order Information (Admin viewable only)
+|   - Customer name:
+|     > {{order.customer.name}}
+|
+|   - Customer email address:
+|     > {{order.customer.email}}
+|
+|   - Customer address:
+{%- for line in order.customer.shipping.address_lines %}
+|     > {{line}}
+{%- endfor %}
+|     > {{order.customer.shipping.locality}}, {{order.customer.shipping.region}}
+|     > {{order.customer.shipping.country}} - {{order.customer.shipping.postal_code}}
+|
+|   - Amount:
+|     > {{order.totalCents | asCAD}}
+|
+|   - Order Admin Page:
+|     > {{process.env.SITE_URL}}/admin/orders/{{order._id}}
+|
+|
+| > E-Transfer Information (Shown to customer)
+|   - Recipient email address:
+|     > {{process.env.ETRANSFER_EMAIL}}
+|
+|   - Security question:
+|     > Art Store Security Phrase
+|
+|   - Secret phrase (password):
+|     > {{process.env.ETRANSFER_PW}}
+|
+|   - Amount:
+|     > {{order.totalCents | asCAD }}
+|
+|   - Description (optional):
+|     > Order# {{order._id}}
+
+
+-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-
+
+                Items from the incoming order
+
+{% asyncEach orderItem in order.items %}
+  {% include "../../order-item.text.njk" %}
+                              ---
+{% endeach %}
+
+{%- include "../../footer.template.text.njk" %}

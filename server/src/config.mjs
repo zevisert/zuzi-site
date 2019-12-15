@@ -25,6 +25,8 @@ const required_env = new Set([
     'SENTRY_ENABLE',
     'EMAIL_SYS_ADDR',
     'EMAIL_SYS_HOST',
+    'EMAIL_SYS_PORT',
+    'EMAIL_SYS_USE_TLS',
     'EMAIL_SYS_PW',
     'SITE_ADMIN_EMAIL',
     'SITE_ADMIN_DEFAULTPW',

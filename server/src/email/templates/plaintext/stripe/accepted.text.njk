@@ -1,0 +1,42 @@
+{% include "../header.template.text.njk" -%}
+|/                                                          \|
+|                Your order has been received                |
+|\                                                          /|
+◳------------------------------------------------------------◰
+
+                  Thank you for your support!
+
+Your  purchase  helps me  buy canvas,  paints, brushes, prints,
+get  professional digitization,  and otherwise  make  time for
+artwork.  It's very appreciated,  your order will be delivered
+soon!
+
+===============================================================
+
+{%- if order.receipt %}
+A receipt was generated for your order, you can view it here:
+{{order.receipt}}
+{%- endif%}
+
+-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-:-
+
+                      Your information
+
+The shipping address received is:
+
+    {{order.customer.name}}
+{%- for line in order.customer.shipping.address_lines %}
+    {{line}}
+{%- endfor %}
+    {{order.customer.shipping.locality}}, {{order.customer.shipping.region}}
+    {{order.customer.shipping.country}} - {{order.customer.shipping.postal_code}}
+
+
+                Items from your purchase
+
+{% asyncEach orderItem in order.items %}
+  {% include "../order-item.text.njk" %}
+                              ---
+{% endeach %}
+
+{%- include "../footer.template.text.njk" %}
