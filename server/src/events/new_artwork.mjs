@@ -11,11 +11,10 @@ import {
 }  from "./registration"
 
 import { User } from './../models/user.model';
-import { Post } from './../models/post.model';
 import { Subscription } from '../models/subscription.model';
-import { email, withContext } from '../email';
+import { email } from '../email';
 
-import { notifySubscribersPosting } from '../email/renderers/subscriptions'
+import { notifySubscribersPosting } from '../email/templates/subscriptions'
 
 webpush.setVapidDetails(
     `mailto:${process.env.SUPPORT_EMAIL}`,
@@ -23,24 +22,14 @@ webpush.setVapidDetails(
     process.env.PUSH_SECRET
 );
 
-customEvents.on(ARTWORK_NEW, async post_id => {
-
-    const post = await Post.findById(post_id);
+customEvents.on(ARTWORK_NEW, post => {
 
     // Do this asynchronously
     setImmediate(async () => {
-
         // Send emails
         const users = await User.find({ subscriber: true });
         for (const user of users) {
-            email.deliver(notifySubscribersPosting(withContext({
-                headline: "Activity update",
-                delivery_reason: [
-                    "This message was automatically generated in response to activity within the gallery.",
-                    "A new piece of artwork has been published.",
-                    "You are a recipient of this message because your email address is registered for activity updates."
-                ].join(" ")
-            }, undefined, post, user)))
+            email.deliver(notifySubscribersPosting(post, user))
             .catch(error => {
                 console.log(`Email to ${user.email} failed to deliver`)
                 console.warn(error)

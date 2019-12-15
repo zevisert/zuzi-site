@@ -9,14 +9,7 @@ import { store, connect } from '../../store.js';
 
 
 // These are the actions needed by this element.
-import {
-  checkoutEtransfer,
-  checkoutStripe,
-  checkoutFailed,
-  retreatCheckout,
-  CHECKOUT_METHODS_ENUM,
-  CHECKOUT_STAGES_ENUM
-} from '../../actions/shop.js';
+import { checkoutEtransfer, checkoutStripe, checkoutFailed, CHECKOUT_METHODS_ENUM, setCheckoutStage, retreatCheckout, CHECKOUT_STAGES_ENUM } from '../../actions/shop.js';
 import { cartTotalSelector, cartQuantitySelector } from '../../reducers/shop.js';
 
 import { ButtonSharedStyles } from '../button-shared-styles.js';
@@ -32,8 +25,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
     _items: { type: Array },
     _totalCents: { type: Number },
     _quantity: { type: Number },
-    _paymentMethod: { type: Number },
-    _cardComplete: { type: Boolean, default: false },
+    _paymentMethod: { type: Number }
   }}
 
   constructor() {
@@ -67,11 +59,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
         #payment-method,
         #address-group {
           display: inline-block;
-        }
-
-        #card-errors {
-          height: 1em;
-          color: #d32f2f;
         }
 
         section article:last-of-type {
@@ -145,7 +132,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
               html`
                 <div id="payment-method" class="card-mount">
                   <slot name="stripe-card"> </slot>
-                  <div id="card-errors"></div>
                 </div>`
             : html`
                 <p id="payment-method">
@@ -162,12 +148,8 @@ export class ShopCheckout extends connect(store)(LitElement) {
             <div><mwc-icon>keyboard_backspace</mwc-icon> Payment Type</div>
           </button>
 
-          <button
-            id='checkout'
-            ?disabled="${this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE && !this._cardComplete}"
-            ?hidden="${this._quantity == 0}"
-            @click="${this._checkoutButtonClicked}">
-              Checkout
+          <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
+            Checkout
           </button>
 
         </section>
@@ -180,8 +162,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
     this.__els = {
       // Card mount must be in light-dom
       cardMount: document.getElementById('stripe-card-mount'),
-      cardErrors: this.renderRoot.getElementById('card-errors'),
-      checkout: this.renderRoot.getElementById('checkout'),
+
       customer: {
         name: this.renderRoot.getElementById('cust-name'),
         email: this.renderRoot.getElementById('cust-email'),
@@ -207,15 +188,9 @@ export class ShopCheckout extends connect(store)(LitElement) {
       const elements = stripe.elements();
 
       // Create an instance of the card Element.
-      this.cardElement = elements.create('card', { hidePostalCode: true });
+      this.cardElement = elements.create('card');
       this.cardElement.mount(this.__els.cardMount);
-      this.cardElement.addEventListener('change', this._cardChanged.bind(this));
     }
-  }
-
-  _cardChanged(event) {
-    this._cardComplete = event.complete;
-    this.__els.cardErrors.textContent = event.error ? event.error.message : ""
   }
 
   _checkoutBackButtonClicked() {
@@ -224,32 +199,24 @@ export class ShopCheckout extends connect(store)(LitElement) {
 
   _checkoutButtonClicked() {
     const { ok, metadata } = this._validateInput();
-    let checkout = _ => checkoutFailed('Please review the highlighted inputs. Some seem to be invalid.');
 
     if (ok) {
-      switch (this._paymentMethod) {
-        case CHECKOUT_METHODS_ENUM.STRIPE: {
-          checkout = info => checkoutStripe(this.cardElement, info);
-          break;
-        }
-
-        case CHECKOUT_METHODS_ENUM.ETRANSFER: {
-          checkout = info => checkoutEtransfer(info);
-          break;
-        }
-
-        default: {
-          checkout = _ => checkoutFailed('Sorry. Unknown payment type.');
-          return
-        }
+      if (this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE) {
+        store.dispatch(checkoutStripe(this.cardElement, {
+          amount: this._totalCents,
+          metadata
+        }));
+      } else if (this._paymentMethod === CHECKOUT_METHODS_ENUM.ETRANSFER) {
+        store.dispatch(checkoutEtransfer({
+          amount: this._totalCents,
+          metadata
+        }));
+      } else {
+        store.dispatch(checkoutFailed('Sorry. Unknown payment type.'));
       }
+    } else {
+      store.dispatch(checkoutFailed('Please review the input fields in red'));
     }
-
-    this.__els.checkout.disabled = true;
-    store.dispatch(checkout({
-      amount: this._totalCents,
-      metadata
-    }));
   }
 
   _validateInput() {
@@ -286,11 +253,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
       }
     }
 
-    if (! this._cardComplete) {
-      this.__els.cardErrors.textContent = "Please complete your card information"
-      ok = false;
-    }
-
     if (!ok) {
       return { ok, metadata: null };
     }
@@ -324,10 +286,6 @@ export class ShopCheckout extends connect(store)(LitElement) {
     this._quantity = cartQuantitySelector(state);
     this._paymentMethod = state.shop.method;
     this.__stage = state.shop.stage;
-
-    if (state.shop.error || state.shop.stage != CHECKOUT_STAGES_ENUM.CHECKOUT) {
-      this.__els.checkout.disabled = false;
-    }
   }
 }
 

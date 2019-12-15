@@ -3,14 +3,14 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import { email, withContext } from '../email';
+import { email } from '../email';
 import { Order, OrderItem, Customer, User } from '../models';
 import {
-  orderPendingMessage,
-  orderAcceptedMessage,
-  orderRejectedMessage,
-  orderAdminGeneratedMessage
-} from '../email/renderers/etransfer.mjs';
+  orderGeneratedTemplate,
+  orderPendingTemplate,
+  orderAcceptedTemplate,
+  orderRejectedTemplate
+} from '../email/templates/etransfer.mjs';
 
 export async function checkout(ctx) {
 
@@ -20,9 +20,9 @@ export async function checkout(ctx) {
     quantity: item.quantity,
     item: item.postId,
     pricing: item.pricingId
-  }));
+  })); 
 
-  const new_order = new Order({
+  const order = new Order({
     items,
     type: 'etransfer',
     status: 'pending',
@@ -33,47 +33,22 @@ export async function checkout(ctx) {
   });
 
   try {
-    await new_order.save();
+    await order.save();
   } catch (errors) {
     ctx.throw(422, JSON.stringify({ errors: errors.errors }));
   }
 
-  try {
+  const inflatedOrder = await Order.findById(order._id)
+    .populate({path: 'items.item', select: "title description"})
+    .populate({path: 'items.pricing'});
 
-    const order = await Order.findById(new_order._id)
-      .populate({path: 'items.item', select: "title description preview slug"})
-      .populate({path: 'items.pricing'});
+  // Email the customer
+  await email.deliver(orderPendingTemplate(inflatedOrder));
 
-    // Email the customer
-    await email.deliver(orderPendingMessage(
-      withContext({
-        headline: "Pending Order",
-        delivery_reason: "This message was automatically generated in response to a recently placed order using this email address."
-      }, order)
-    ));
+  // Email the admins
+  await email.deliver(orderGeneratedTemplate(inflatedOrder, await User.find({ admin: true })));
 
-    // Email the admins
-    await email.deliver(orderAdminGeneratedMessage(
-      withContext({
-        headline: "Newly placed order",
-        delivery_reason: [
-          "This message was automatically generated in response to a recently placed order.",
-          "You are a recipient because this email address is listed as a store administrator."
-        ].join(" ")
-      }, order),
-      await User.find({ admin: true })
-    ));
-
-    ctx.body = { success: true };
-
-  } catch (errors) {
-    console.error(errors);
-    ctx.throw(400, JSON.stringify({ errors: errors.errors }));
-  } finally {
-    if (!ctx.body || !ctx.body.success) {
-      await Order.deleteOne({ _id: new_order._id });
-    }
-  }
+  ctx.body = { success: true };
 }
 
 export async function webhook(ctx) {
@@ -84,29 +59,19 @@ export async function webhook(ctx) {
 
   const { accepted, orderId } = ctx.request.body;
 
-  const order = await Order.findOne({ _id: orderId, status: "pending" })
-    .populate({path: 'items.item', select: "title description preview slug"})
-    .populate({path: 'items.pricing'});
+  console.log({ accepted, orderId });
 
-  if (!order) {
-    ctx.throw(400, JSON.stringify({error: `Order does not exist or is not pending`}));
-  }
+  const order = await Order.findById(orderId)
+    .populate({path: 'items.item', select: "title description preview"})
+    .populate({path: 'items.pricing'});
 
   if (accepted) {
 
     order.status = 'paid';
-
+    
     // Email the customer
-    await email.deliver(orderAcceptedMessage(
-      withContext({
-        headline: "Order Accepted",
-        delivery_reason: [
-          "This message was generated in response to an update to the status of an order associated with this email address.",
-          "Interac E-transfer based payment for the associated order has been accepted."
-        ].join(" ")
-      }, order)
-    ));
-
+    await email.deliver(orderAcceptedTemplate(order));
+    
     await order.save();
     ctx.body = { order };
 
@@ -115,23 +80,14 @@ export async function webhook(ctx) {
     const { reason } = ctx.request.body;
     if (reason) {
       order.status = 'rejected';
-      order.info = reason;
+      await order.save();
 
       // Email the customer
-      await email.deliver(orderRejectedMessage(
-        withContext({
-          headline: "Rejected Order",
-          delivery_reason: [
-            "This message was generated in response to an update to the status of an order associated with this email address.",
-            "The associated order has been rejected, an no further processing will occur."
-          ].join(" ")
-        }, order)
-      ));
+      await email.deliver(orderRejectedTemplate(order, ctx.request.body.reason)); 
 
-      await order.save();
-      ctx.body = { order };
+      ctx.body = { orders: [ order ] };
     } else {
       ctx.throw(400, JSON.stringify({ error: 'Rejected order must have a reason'}));
     }
   }
-}
+} 

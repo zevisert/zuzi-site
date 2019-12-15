@@ -15,4 +15,3 @@ export { Pricing } from './pricing.model'
 export { Size } from './size.model'
 export { Subscription } from './subscription.model'
 export { User } from './user.model';
-export { Mailing } from './mailing.model';
