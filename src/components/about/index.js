@@ -33,8 +33,8 @@ class About extends connect(store)(PageViewElement) {
       ${SharedStyles}
       <style>
         .title {
-          font-family: "Kristi";
-          font-size: 100px;
+          font-family: "Syncopate";
+          font-size: 70px;
           font-weight: 100;
         }
 
@@ -53,12 +53,13 @@ class About extends connect(store)(PageViewElement) {
           align-items: center;
           max-width: 1200px;
           margin: 0 auto;
+          text-align: center;
         }
 
       </style>
       <section>
         <article>
-          <h2 class="title">Welcome to Zuzana Riha Art</h2>
+          <h2 class="title">Welcome to <br>Zuzana Riha Art</h2>
           <img class="about-img" src="images/about-bg.jpg">
           <p>
             ${this.__lines.map(line => html`${line}<br>`)}
