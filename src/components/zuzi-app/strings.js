@@ -10,5 +10,6 @@ export const pages = {
     cart: "cart",
     login: "login",
     admin: "admin",
+    tour: "tour",
     none: "no-view"
 };

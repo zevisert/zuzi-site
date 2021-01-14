@@ -51,6 +51,9 @@ const loadPage = (page, subPage) => dispatch => {
     case appStr.pages.cart:
       import('../components/cart/index.js');
       break;
+    case appStr.pages.tour:
+        import('../components/virtual-tour/index.js');
+        break;
     case appStr.pages.admin:
       if (subPage) {
         if (subPage === 'change-password') {
