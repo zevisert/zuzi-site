@@ -70,7 +70,8 @@ export const db_connect = (server) => {
         await mongoose.connect(process.env.MONGO_URL, {
             user: process.env.MONGO_USER,
             pass: process.env.MONGO_PW,
-            useNewUrlParser: true
+            useNewUrlParser: true,
+            useUnifiedTopology: true
         });
 
         if ((await User.countDocuments({admin: true})) < 1) {
