@@ -43,6 +43,22 @@ class About extends connect(store)(PageViewElement) {
           width: 100%;
         }
 
+        .about-video {
+          max-width: 1200px;
+          width: 100%;
+          /* 16:9 aspect ratio */
+          padding-top: calc(100% * 9 / 16);
+          position: relative;
+        }
+
+        .about-video > iframe {
+          position: absolute;
+          top: 0; 
+          left: 0;
+          height: 100%;
+          width: 100%;
+        }
+
         section {
           font-size: xx-large;
         }
@@ -61,9 +77,19 @@ class About extends connect(store)(PageViewElement) {
         <article>
           <h2 class="title">Welcome to <br>Zuzana Riha Art</h2>
           <img class="about-img" src="images/about-bg.jpg">
+
           <p>
             ${this.__lines.map(line => html`${line}<br>`)}
           </p>
+
+          <div class="about-video">
+            <iframe
+              allowfullscreen
+              src="https://player.vimeo.com/video/472820112"
+              frameborder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+            ></iframe>
+          </div>
         </article>
       </section>
     `;

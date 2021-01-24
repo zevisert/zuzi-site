@@ -164,6 +164,7 @@ class ZuziApp extends connect(store)(LitElement) {
           <nav-box title="About"   page="${this._page}" target="${str.pages.about}"></nav-box>
           <nav-box title="Gallery" page="${this._page}" target="${str.pages.gallery}"></nav-box>
           <nav-box title="Cart"    page="${this._page}" target="${str.pages.cart}"></nav-box>
+          <nav-box title="Tour"    page="${this._page}" target="${str.pages.tour}"></nav-box>
           ${(() => {
             if (this._loggedIn) {
               return html`<nav-box title="Admin"   page="${this._page}" target="${str.pages.admin}"></nav-box>`
@@ -183,6 +184,10 @@ class ZuziApp extends connect(store)(LitElement) {
       <gallery-view class="page"
         ?active="${this._page === str.pages.gallery && this._subPage === null}">
       </gallery-view>
+
+      <virtual-tour-page class="page"
+        ?active="${this._page === str.pages.tour && this._subPage === null}">
+      </virtual-tour-page>
 
       <gallery-item class="page"
         ?active="${this._page === str.pages.gallery && this._subPage !== null}">
