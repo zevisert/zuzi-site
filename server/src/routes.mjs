@@ -328,7 +328,7 @@ export async function env(ctx) {
     env: {
       STRIPE_PK: process.env.STRIPE_PK,
       SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'TRUE',
+      SENTRY_ENABLE: process.env.SENTRY_ENABLE === 'true',
       PUSH_PUBKEY: process.env.PUSH_PUBKEY
     }
   }
