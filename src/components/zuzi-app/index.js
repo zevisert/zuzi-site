@@ -9,6 +9,8 @@ import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
+import * as Sentry from "@sentry/browser"
+import { Integrations } from "@sentry/tracing"
 
 // This element is connected to the Redux store.
 import { store, connect } from '../../store.js';
@@ -266,7 +268,11 @@ class ZuziApp extends connect(store)(LitElement) {
     }
 
     if ( process.env.SENTRY_ENABLE ) {
-      Sentry.init({ dsn: process.env.SENTRY_DSN });
+      Sentry.init({
+        dsn: process.env.SENTRY_DSN,
+        integrations: [new Integrations.BrowserTracing()],
+        tracesSampleRate: 1.0
+      });
     }
   }
 
