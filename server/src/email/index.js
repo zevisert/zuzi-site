@@ -3,7 +3,7 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import client from 'emailjs/smtp/client';
+import client from 'emailjs/smtp/client.js';
 import shortid from 'shortid';
 
 class AsyncClient extends client.Client {

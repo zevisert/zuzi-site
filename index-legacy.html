@@ -7,15 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Artwork by Zuzana">
 
-    <!--
-      The `<base>` tag below is present to support two advanced deployment options:
-      1) Differential serving. 2) Serving from a non-root path.
-
-      Instead of manually editing the `<base>` tag yourself, you should generally either:
-      a) Add a `basePath` property to the build configuration in your `polymer.json`.
-      b) Use the `--base-path` command-line option for `polymer build`.
-    -->
-    <base href="/">
+    <base href="/legacy/">
 
     <link rel="icon" href="images/favicon.ico">
 
@@ -58,43 +50,6 @@
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate" />
     <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate" rel="stylesheet">
 
-
-    <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
-    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <!-- Built with love using PWA Starter Kit -->
-    <script type="module" src="src/components/zuzi-app/index.js" crossorigin></script>
-
-    <script>
-      // Load and register pre-caching Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register(new URL('service-worker.js', document.baseURI).pathname, {
-            scope: '/',
-          })
-          .then(function(swReg) {
-            window.process.swRegistration = swReg;
-            console.log("Service worker registered")
-            document.dispatchEvent(new CustomEvent('zuzi-app-sw-registered', { detail: swReg }));
-          });
-        });
-      }
-
-      // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
-      // https://github.com/reactjs/redux/issues/2907
-      window.process = {
-        env: {
-          NODE_ENV: 'production',
-          API_URL: '/api/v1'
-        },
-        stripe: null
-      };
-
-      (async () => {
-        const { env } = await (await fetch(`${process.env.API_URL}/env`)).json();
-        window.process.env = { ...window.process.env, ...env };
-      })();
-    </script>
-
     <!-- Add any global styles for body, document, etc. -->
     <style>
       body {
@@ -115,5 +70,60 @@
       Please enable JavaScript to view this website.
     </noscript>
 
+    <script src="babel-polyfills-nomodule.js"></script>
+    <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <script>
+      // Subset of fetch polyfill for IE11 (supports GET requests for JSON only).
+      // Requires Promise to be defined.
+      window.fetch = window.fetch || function(url) {
+        return new Promise(function(resolve, reject) {
+          var xhr = new XMLHttpRequest();
+          xhr.onload = function() {
+            resolve({
+              json: function() {
+                return new Promise(function(resolve, reject) {
+                  try {
+                    resolve(JSON.parse(xhr.responseText));
+                  } catch (e) {
+                    reject(e);
+                  }
+                });
+              }
+            });
+          };
+          xhr.onerror = reject;
+          xhr.open('GET', url);
+          xhr.send();
+        });
+      };
+    </script>
+    <script src="node_modules/systemjs/dist/s.min.js"></script>
+    <script>
+      System.import('./index4.js');
+    </script>
+
+    <script>
+      // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
+      // https://github.com/reactjs/redux/issues/2907
+      window.process = {
+        env: {
+          NODE_ENV: 'production',
+          API_URL: '/api/v1'
+        },
+        stripe: null
+      };
+
+      (function () {
+        fetch(process.env.API_URL + '/env')
+        .then(function(resp) { return resp.json() })
+        .then(function(json) { 
+          Object.keys(json).forEach(function (key) {
+            window.process.env[key] = json[key]
+          })
+        });
+      })();
+    </script>
   </body>
 </html>

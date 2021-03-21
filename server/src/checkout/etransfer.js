@@ -3,14 +3,14 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import { email, withContext } from '../email';
-import { Order, OrderItem, Customer, User } from '../models';
+import { email, withContext } from '../email/index.js';
+import { Order, OrderItem, Customer, User } from '../models/index.js';
 import {
   orderPendingMessage,
   orderAcceptedMessage,
   orderRejectedMessage,
   orderAdminGeneratedMessage
-} from '../email/renderers/etransfer.mjs';
+} from '../email/renderers/etransfer.js';
 
 export async function checkout(ctx) {
 

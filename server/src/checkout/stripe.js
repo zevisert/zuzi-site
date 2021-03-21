@@ -4,17 +4,17 @@
 */
 
 import Stripe from 'stripe';
-import unparsed from 'koa-body/unparsed';
+import unparsed from 'koa-body/unparsed.js';
 
-import { Order, OrderItem, Customer, User, Mailing } from '../models';
-import { MailingTopics } from '../models/mailing.model';
-import { email, withContext } from '../email';
+import { Order, OrderItem, Customer, User, Mailing } from '../models/index.js';
+import { MailingTopics } from '../models/mailing.model.js';
+import { email, withContext } from '../email/index.js';
 import {
   orderAcceptedMessage,
   orderFailedMessage,
   orderAdminGeneratedMessage,
   orderAdminNotProcessedMessage
-} from '../email/renderers/stripe';
+} from '../email/renderers/stripe.js';
 
 const stripe = Stripe(process.env.STRIPE_SK);
 

@@ -4,10 +4,10 @@
 */
 
 import mongoose from 'mongoose';
-import { orderItemSchema } from './order-item.model';
-import { mailingSchema } from './mailing.model';
-import { customerSchema } from './customer.model';
-import { Pricing } from './pricing.model.mjs';
+import { orderItemSchema } from './order-item.model.js';
+import { mailingSchema } from './mailing.model.js';
+import { customerSchema } from './customer.model.js';
+import { Pricing } from './pricing.model.js';
 
 export const orderSchema = new mongoose.Schema({
     items: {

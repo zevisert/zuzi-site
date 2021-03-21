@@ -1,0 +1,12 @@
+{
+  "entrypoint": "index.html",
+  "builds": [
+    {
+      "name": "modern",
+      "browserCapabilities": ["es2015", "push", "serviceworker", "modules"]
+    },
+    {
+      "name": "legacy"
+    }
+  ]
+}
