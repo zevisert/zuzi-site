@@ -201,27 +201,27 @@ class AdminEdit extends connect(store)(PageViewElement) {
               <div>
                 <div class="block">
                   <label for="title">Title</label>
-                  <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}">
+                  <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}"></underline-input>
                 </div>
 
                 <div class="block">
                   <label for="desc">Description</label>
-                  <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}">
+                  <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}"></underline-input>
                 </div>
 
                 <div class="block">
                   <label for="tags">Tags</label>
-                  <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space">
+                  <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space"></simple-chip>
                 </div>
 
                 <div class="block">
                   <label for="active">Active</label>
-                  <toggle-input id="active" type="checkbox" ?checked="${this.item.active}">
+                  <toggle-input id="active" type="checkbox" ?checked="${this.item.active}"></toggle-input>
                 </div>
 
                 <div class="block" ?hidden="${!(this.__els.file && this.__els.file.files[0])}">
                   <label for="watermark">Watermark</label>
-                  <toggle-input id="watermark" type="checkbox">
+                  <toggle-input id="watermark" type="checkbox"></toggle-input>
                 </div>
               </div>
 
@@ -452,6 +452,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
       // Test for .tiff
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
+        await import('tiff.js');
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
         Tiff.initialize({ TOTAL_MEMORY: 1e9 });
