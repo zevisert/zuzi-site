@@ -3,7 +3,7 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import { SMTPClient } from 'emailjs/smtp/client.js';
+import { SMTPClient } from 'emailjs';
 import shortid from 'shortid';
 
 class AsyncEmailClient extends SMTPClient {
