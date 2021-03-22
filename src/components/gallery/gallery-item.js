@@ -8,7 +8,7 @@ import { html } from 'lit-element';
 import { PageViewElement } from '../page-view-element';
 import { store, connect } from "../../store.js";
 
-import { getAllProducts, addToCart } from '../../actions/shop';
+import { getAllProducts } from '../../actions/shop';
 import { selectedItemSelector } from '../../reducers/shop';
 
 import { ButtonSharedStyles } from '../button-shared-styles';

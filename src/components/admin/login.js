@@ -10,7 +10,7 @@ import { PageViewElement } from '../page-view-element.js';
 // These are the shared styles needed by this element.
 import { SharedStyles } from '../shared-styles.js';
 import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { login, credentials, showSnackbar } from '../../actions/app.js';
+import { login, credentials } from '../../actions/app.js';
 
 import { store } from '../../store.js';
 import '../underline-input.js';

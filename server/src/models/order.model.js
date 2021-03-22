@@ -16,7 +16,7 @@ export const orderSchema = new mongoose.Schema({
             validator: function (value) {
                 return value.length > 0;
             },
-            message: params => `Order contains no items`
+            message: () => `Order contains no items`
         }
     },
 
@@ -25,29 +25,24 @@ export const orderSchema = new mongoose.Schema({
         min: [1, 'Order must cost more than 0'],
         max: [10000 * 100, 'Orders cannot exceed $10,000.00'],
         validate: {
-            validator: function (value) {
-                return new Promise( async (resolve, reject) => {
-                    try {
-                        const itemPricings = await Promise.all(this.items.map(item => {
-                            return Pricing.findById( item.pricing ).then(pricing => {
-                                return {
-                                    pricing,
-                                    quantity: item.quantity
-                                }
-                            });
-                        }));
-
-                        const shouldCost = itemPricings
-                            .map(({ pricing, quantity }) => quantity * pricing.price)
-                            .reduce((acc, val) => acc + 100 * val, 0);
-
-                        resolve(value === shouldCost);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            },
-            message: params => `Order price not properly received`
+            validator: (value) => new Promise((resolve, reject) => {
+                Promise.all(
+                    this.items.map(
+                        item => Pricing.findById( item.pricing )
+                        .then(pricing => ({
+                            pricing,
+                            quantity: item.quantity
+                        }))
+                    )
+                ).then(itemPricings => {
+                    resolve(value === itemPricings
+                        .map(({ pricing, quantity }) => quantity * pricing.price)
+                        .reduce((acc, val) => acc + 100 * val, 0)
+                    );
+                })
+                .catch(error => reject(error))
+            }),
+            message: () => `Order price not properly received`
         }
     },
 

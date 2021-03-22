@@ -224,7 +224,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
 
   _checkoutButtonClicked() {
     const { ok, metadata } = this._validateInput();
-    let checkout = _ => checkoutFailed('Please review the highlighted inputs. Some seem to be invalid.');
+    let checkout = () => checkoutFailed('Please review the highlighted inputs. Some seem to be invalid.');
 
     if (ok) {
       switch (this._paymentMethod) {
@@ -239,7 +239,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
         }
 
         default: {
-          checkout = _ => checkoutFailed('Sorry. Unknown payment type.');
+          checkout = () => checkoutFailed('Sorry. Unknown payment type.');
           return
         }
       }
@@ -255,7 +255,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
   _validateInput() {
     const isText = value => !!value && /^(?![\s.]+$)[a-zA-Z0-9\s.]+$/.test(value);
     const isEmail = value => !!value && (new RegExp([
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))/,
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))/,
       /@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     ].map(part => part.source).join(''))).test(value);
 

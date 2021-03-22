@@ -119,7 +119,7 @@ class AdminView extends connect(store)(PageViewElement) {
           <h3>About Page</h3>
           <textarea id="about-text" placeholder="Text below image on about page" .value=${store.getState().app.about.lines.join('\n')}></textarea>
 
-          <button @click="${(e) => this.submitAboutText() }">Update Welcome Text</button>
+          <button @click="${() => this.submitAboutText() }">Update Welcome Text</button>
         </section>
 
         <section id="section-artwork">

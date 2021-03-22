@@ -14,7 +14,7 @@ import {
 
 export async function checkout(ctx) {
 
-  const { amount, metadata, ...rest } = ctx.request.body;
+  const { amount, metadata } = ctx.request.body;
 
   const items = metadata.items.map(item => new OrderItem({
     quantity: item.quantity,

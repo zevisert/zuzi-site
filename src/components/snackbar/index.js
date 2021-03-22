@@ -22,7 +22,7 @@ class Timer {
       this._started = null;
       callback();
     };
-  };
+  }
 
   reset() {
     this._remaining = this._total;

@@ -76,7 +76,7 @@ export class AdminPricingCard extends LitElement {
     `;
   }
 
-  _removePricing(e) {
+  _removePricing() {
     this.dispatchEvent(
       new CustomEvent('admin-pricing-removed', {
         detail: {
