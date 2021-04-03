@@ -7,7 +7,7 @@ import koa from 'koa';
 import body from 'koa-body';
 import session from 'koa-session';
 import router from 'koa-router';
-import multer from 'koa-multer';
+import multer from '@koa/multer';
 import passport from 'koa-passport';
 
 // Must be first, side effects import process.env

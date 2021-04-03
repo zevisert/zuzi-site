@@ -1,11 +1,11 @@
 import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import minifyHTML from "rollup-plugin-minify-html-literals";
 import externals from "rollup-plugin-node-externals";
 import copy from "rollup-plugin-copy";
 import { generateSW } from "rollup-plugin-workbox";
-import babel from "rollup-plugin-babel";
-import commonjs from "rollup-plugin-commonjs";
 import workboxConfig from "./workbox-config.js";
 
 // The main JavaScript bundle for modern browsers that support
