@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html } from 'lit-element';
 
 // This element is connected to the Redux store.
 import { store, connect } from '../../store.js';

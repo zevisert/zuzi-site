@@ -36,10 +36,7 @@ export const navigate = path => dispatch => {
 const loadPage = (page, subPage) => dispatch => {
   switch(page) {
     case appStr.pages.about:
-      import('../components/about/index.js').then((module) => {
-        // Put code in here that you want to run every time when
-        // navigating to view1 after my-view1.js is loaded.
-      });
+      import('../components/about/index.js');
       break;
     case appStr.pages.gallery:
       if (subPage) {
