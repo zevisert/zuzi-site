@@ -1,4 +1,4 @@
-import { LitElement, html } from "@polymer/lit-element";
+import { LitElement, html } from 'lit-element';
 
 import { showSnackbar } from '../../actions/app';
 import { connect, store } from '../../store'

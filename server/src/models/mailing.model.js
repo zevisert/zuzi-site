@@ -106,7 +106,7 @@ export const mailingSchema = new mongoose.Schema({
             validator: function (value) {
                 return value.length > 0;
             },
-            message: params => `Mailing must have at least 1 recipient`
+            message: () => `Mailing must have at least 1 recipient`
         }
     },
     topic: {

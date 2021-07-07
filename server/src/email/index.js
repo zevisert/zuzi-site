@@ -3,10 +3,10 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import client from 'emailjs/smtp/client';
+import { SMTPClient } from 'emailjs';
 import shortid from 'shortid';
 
-class AsyncClient extends client.Client {
+class AsyncEmailClient extends SMTPClient {
   async deliver(messagePromise) {
     return email.send(
       await messagePromise,
@@ -18,7 +18,7 @@ class AsyncClient extends client.Client {
   }
 }
 
-export const email = new AsyncClient({
+export const email = new AsyncEmailClient({
   user: process.env.EMAIL_SYS_ADDR,
   password: process.env.EMAIL_SYS_PW,
   host: process.env.EMAIL_SYS_HOST,

@@ -3,8 +3,8 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import { Post } from '../post.model';
-import { customEvents, ARTWORK_NEW }  from "../../events/registration";
+import { Post } from '../post.model.js';
+import { customEvents, ARTWORK_NEW }  from "../../events/registration.js";
 
 export async function pre_save() {
     const before = await Post.findById(this._id);

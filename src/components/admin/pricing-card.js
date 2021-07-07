@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { html, LitElement } from '@polymer/lit-element';
+import { html, LitElement } from 'lit-element';
 import { ButtonSharedStyles } from '../button-shared-styles';
 
 const JsonType = {
@@ -76,7 +76,7 @@ export class AdminPricingCard extends LitElement {
     `;
   }
 
-  _removePricing(e) {
+  _removePricing() {
     this.dispatchEvent(
       new CustomEvent('admin-pricing-removed', {
         detail: {

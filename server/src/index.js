@@ -7,13 +7,13 @@ import koa from 'koa';
 import body from 'koa-body';
 import session from 'koa-session';
 import router from 'koa-router';
-import multer from 'koa-multer';
+import multer from '@koa/multer';
 import passport from 'koa-passport';
 
 // Must be first, side effects import process.env
-import { db_connect, pipe, isProtected } from './config';
+import { db_connect, pipe, isProtected } from './config.js';
 
-import { User } from './models';
+import { User } from './models/index.js';
 
 import {
   index,
@@ -29,13 +29,13 @@ import {
   changePassword,
   createSubscriberUser,
   removeSubscriberUser,
-} from './routes';
+} from './routes.js';
 
 // Checkout callbacks
-import { checkout, webhook } from './checkout';
+import { checkout, webhook } from './checkout/index.js';
 
 // Import event handlers
-import './events/new_artwork'
+import './events/new_artwork.js'
 
 const app = new koa();
 

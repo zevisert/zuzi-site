@@ -6,18 +6,24 @@
 
 const puppeteer = require('puppeteer');
 const expect = require('chai').expect;
-const {startServer} = require('polyserve');
+const {createConfig, startServer} = require('es-dev-server');
 const path = require('path');
 const appUrl = 'http://127.0.0.1:4444';
 
 describe('routing tests', function() {
-  let polyserve, browser, page;
+  let result, browser, page;
 
   before(async function() {
-    polyserve = await startServer({port:4444, root:path.join(__dirname, '../..'), moduleResolution:'node'});
+    const config = createConfig({
+      port:4444,
+      appIndex: path.join(__dirname, '../..', 'index.html'),
+      moduleDirs: ['src', 'node_modules'].map(dir => path.join(__dirname, '../..', dir)),
+      nodeResolve: true
+    })
+    result = await startServer(config);
   });
 
-  after((done) => polyserve.close(done));
+  after((done) => result.server.close(done));
 
   beforeEach(async function() {
     browser = await puppeteer.launch();

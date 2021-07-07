@@ -3,86 +3,17 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-const gulp = require('gulp');
-const source = require('vinyl-source-stream');
-const del = require('del');
-const spawn = require('child_process').spawn;
-const grey = require('ansi-grey');
-
-let node;
-
-process.on('exit', () => {
-  if (node) {
-    node.kill();
-    log(console.info, 'Killed hanging node instance', 'gulpfile');
-  }
-});
-
-function log(output, data, tag) {
-  tag = tag.length % 2 == 0 ? tag : `${tag} `;
-
-  const timestamp = (new Date).toLocaleTimeString(undefined, { hour12: false });
-  const fill = ' '.repeat(Math.max((8 - tag.length) / 2, 0));
-  const prefix = `[${grey(timestamp)}][${fill}${grey(tag)}${fill}]`;
-  const lines = data
-    .toString()
-    .split('\n')
-    .filter(line => line.length > 0)
-    .map(line => `${prefix} ${line}`)
-    .join('\n');
-
-  output(lines);
-}
-
-gulp.task('server:dev', () => {
-
-  return new Promise((resolve, reject) => {
-    if (node) node.kill()
-    node = spawn(
-      'node', [
-      '--experimental-modules',
-      '--inspect',
-      'server/src/index.mjs'
-    ], {
-      env: {
-        PATH: process.env.PATH
-      }
-    }
-    );
-
-    node.on('close', code => {
-      if (code === 8) {
-        log(console.warn, 'Error detected, waiting for changes...', 'gulpfile');
-      } else {
-        reject();
-      }
-    });
-
-    node.stdout.on('data', data => log(console.log, data, 'Node'));
-    node.stderr.on('data', data => log(console.error, data, 'Node'));
-
-    resolve();
-  });
-});
-
-gulp.task('server:pipe', () => {
-  return new Promise((resolve, reject) => {
-    const serve = spawn('polymer', ['serve']);
-
-    serve.stdout.on('data', data => log(console.log, data, 'Pipe'));
-    serve.stderr.on('data', data => log(console.error, data, 'Pipe'));
-
-    serve.stdout.once('data', resolve);
-    serve.stderr.once('data', reject);
-  });
-});
-
+import gulp from 'gulp';
+import source from 'vinyl-source-stream';
+import del from 'del';
+import mjml2html from 'mjml';
+import nunjucks from 'nunjucks';
+import fs from 'fs';
+import justified from 'justified'
 
 gulp.task('email:render', () => {
-  return new Promise((resolve, reject) => {
-    const context = require('./test/email/context.json')
-    const mjml2html = require('mjml');
-    const nunjucks = require('nunjucks');
+  return new Promise(async (resolve, reject) => {
+    const context = JSON.parse(await fs.promises.readFile('./test/email/context.json'))
 
     const env = new nunjucks.Environment(
         new nunjucks.FileSystemLoader('server/src/email/templates/'),
@@ -90,6 +21,7 @@ gulp.task('email:render', () => {
     );
 
     env.addFilter('asCAD', val => `$${val} CAD`)
+    env.addFilter('justified', (text, width=63) => justified(text, {width}))
 
     const render = (template, context) => {
         return mjml2html(env.render(template, context));
@@ -142,9 +74,3 @@ gulp.task('email:render', () => {
     })
   })
 })
-
-
-gulp.task('default', () => {
-  gulp.parallel('server:dev', 'server:pipe')();
-  gulp.watch(['server/src/**/*.mjs', 'server/process.env'], gulp.series('server:dev'));
-});

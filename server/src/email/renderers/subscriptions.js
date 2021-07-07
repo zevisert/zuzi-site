@@ -3,8 +3,8 @@
  * @license
  * Copyright (c) Zev Isert, All rights reserved
  */
-import { MailingTopics } from '../../models/mailing.model'
-import { render, plaintext } from "../render.mjs"
+import { MailingTopics } from '../../models/mailing.model.js'
+import { render, plaintext } from "../render.js"
 
 /**
  * Email subscribers about new artwork

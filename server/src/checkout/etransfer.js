@@ -3,18 +3,18 @@
 * Copyright (c) Zev Isert, All rights reserved
 */
 
-import { email, withContext } from '../email';
-import { Order, OrderItem, Customer, User } from '../models';
+import { email, withContext } from '../email/index.js';
+import { Order, OrderItem, Customer, User } from '../models/index.js';
 import {
   orderPendingMessage,
   orderAcceptedMessage,
   orderRejectedMessage,
   orderAdminGeneratedMessage
-} from '../email/renderers/etransfer.mjs';
+} from '../email/renderers/etransfer.js';
 
 export async function checkout(ctx) {
 
-  const { amount, metadata, ...rest } = ctx.request.body;
+  const { amount, metadata } = ctx.request.body;
 
   const items = metadata.items.map(item => new OrderItem({
     quantity: item.quantity,

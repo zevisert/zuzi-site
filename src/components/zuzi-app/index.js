@@ -4,13 +4,11 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html } from 'lit-element';
 import { installMediaQueryWatcher } from 'pwa-helpers/media-query.js';
 import { installOfflineWatcher } from 'pwa-helpers/network.js';
 import { installRouter } from 'pwa-helpers/router.js';
 import { updateMetadata } from 'pwa-helpers/metadata.js';
-import * as Sentry from "@sentry/browser"
-import { Integrations } from "@sentry/tracing"
 
 // This element is connected to the Redux store.
 import { store, connect } from '../../store.js';
@@ -268,12 +266,36 @@ class ZuziApp extends connect(store)(LitElement) {
     }
 
     if ( process.env.SENTRY_ENABLE ) {
-      Sentry.init({
-        dsn: process.env.SENTRY_DSN,
-        integrations: [new Integrations.BrowserTracing()],
-        tracesSampleRate: 1.0
-      });
+      window.requestIdleCallback = window.requestIdleCallback || function(handler) {
+        let startTime = Date.now();
+      
+        return setTimeout(function() {
+          handler({
+            didTimeout: false,
+            timeRemaining: function() {
+              return Math.max(0, 50.0 - (Date.now() - startTime));
+            }
+          });
+        }, 1);
+      }
+
+      // import * as Sentry from "@sentry/browser"
+      // import { Integrations } from "@sentry/tracing"
+      window.requestIdleCallback(() => Promise.all([
+        import('@sentry/browser'),
+        import('@sentry/tracing'),
+      ]).then(([{ init }, { Integrations }]) => {
+        init({
+          dsn: process.env.SENTRY_DSN,
+          integrations: [new Integrations.BrowserTracing()],
+          tracesSampleRate: 1.0
+        });
+      }));
     }
+
+    window.requestIdleCallback(() => {
+      import('https://js.stripe.com/v3/')
+    })
   }
 
   updated(changedProps) {

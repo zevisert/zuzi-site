@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { html, LitElement } from '@polymer/lit-element'
+import { html, LitElement } from 'lit-element'
 
 // This element dispatches to the Redux store.
 import { store } from '../../store.js'
@@ -79,7 +79,7 @@ export class EmailSubscriptionSetup extends LitElement {
 
   emailValidate() {
     const isEmail = value => !!value && (new RegExp([
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))/,
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))/,
       /@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     ].map(part => part.source).join(''))).test(value);
 

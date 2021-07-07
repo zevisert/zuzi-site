@@ -6,12 +6,12 @@
 import {
     checkout as stripeCheckout,
     webhook as stripeWebhook
-} from './stripe';
+} from './stripe.js';
 
 import {
     checkout as etransferCheckout,
     webhook as etransferWebhook
-} from './etransfer';
+} from './etransfer.js';
 
 export const checkout = {
     stripe: stripeCheckout,

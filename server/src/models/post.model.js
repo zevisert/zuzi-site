@@ -4,8 +4,8 @@
 */
 
 import mongoose from 'mongoose';
-import { pricingSchema } from './pricing.model';
-import { pre_save } from './hooks/post.hooks';
+import { pricingSchema } from './pricing.model.js';
+import { pre_save } from './hooks/post.hooks.js';
 
 export const postSchema = new mongoose.Schema({
     slug: {

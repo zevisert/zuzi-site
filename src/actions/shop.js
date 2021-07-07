@@ -143,7 +143,6 @@ export const checkoutFailed = message => async dispatch => {
 };
 
 export const addToCart = (productId, pricing, quantity=1) => (dispatch, getState) =>{
-  const state = getState();
   // Just because the UI thinks you can add this to the cart
   // doesn't mean it's in the inventory (user could've fixed it);
   dispatch(addToCartUnsafe(productId, pricing, quantity));

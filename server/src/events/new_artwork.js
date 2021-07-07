@@ -8,14 +8,14 @@ import webpush from 'web-push'
 import {
     customEvents,
     ARTWORK_NEW
-}  from "./registration"
+}  from './registration.js'
 
-import { User } from './../models/user.model';
-import { Post } from './../models/post.model';
-import { Subscription } from '../models/subscription.model';
-import { email, withContext } from '../email';
+import { User } from './../models/user.model.js';
+import { Post } from './../models/post.model.js';
+import { Subscription } from '../models/subscription.model.js';
+import { email, withContext } from '../email/index.js';
 
-import { notifySubscribersPosting } from '../email/renderers/subscriptions'
+import { notifySubscribersPosting } from '../email/renderers/subscriptions.js'
 
 webpush.setVapidDetails(
     `mailto:${process.env.SUPPORT_EMAIL}`,

@@ -19,7 +19,7 @@ import {
   Size,
   Subscription,
   User,
-} from './models';
+} from './models/index.js';
 
 const toSlug = title => title
   .toLowerCase()

@@ -4,7 +4,7 @@
 */
 
 import mongoose from 'mongoose';
-import { sizeSchema } from './size.model';
+import { sizeSchema } from './size.model.js';
 
 
 export const pricingSchema = new mongoose.Schema({

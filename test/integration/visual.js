@@ -6,7 +6,7 @@
 
 const puppeteer = require('puppeteer');
 const expect = require('chai').expect;
-const {startServer} = require('polyserve');
+const {createConfig, startServer} = require('es-dev-server');
 const path = require('path');
 const fs = require('fs');
 const PNG = require('pngjs').PNG;
@@ -16,10 +16,17 @@ const currentDir = `${process.cwd()}/test/integration/screenshots-current`;
 const baselineDir = `${process.cwd()}/test/integration/screenshots-baseline`;
 
 describe('👀 page screenshots are correct', function() {
-  let polyserve, browser, page;
+  let result, browser, page;
+
 
   before(async function() {
-    polyserve = await startServer({port:4444, root:path.join(__dirname, '../..'), moduleResolution:'node'});
+    const config = createConfig({
+      port:4444,
+      appIndex: path.join(__dirname, '../..', 'index.html'),
+      moduleDirs: ['src', 'node_modules'].map(dir => path.join(__dirname, '../..', dir)),
+      nodeResolve: true
+    })
+    result = await startServer(config);
 
     // Create the test directory if needed.
     if (!fs.existsSync(currentDir)){
@@ -34,7 +41,8 @@ describe('👀 page screenshots are correct', function() {
     }
   });
 
-  after((done) => polyserve.close(done));
+  after((done) => result.server.close(done));
+  
 
   beforeEach(async function() {
     browser = await puppeteer.launch();

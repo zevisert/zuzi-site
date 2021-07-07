@@ -4,7 +4,7 @@
         "permalink": "message.permalink",
         "delivery_reason": "message.delivery_reason",
         "mailing_address": "message.mailing_address",
-        "instagram_permalink": "message.instagram_permalink",
+        "instagram_permalink": "message.instagram_permalink"
     },
     "process": {
         "env": {
