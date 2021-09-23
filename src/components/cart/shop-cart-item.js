@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { ButtonSharedStyles } from '../button-shared-styles';
 import { store } from '../../store.js';
 

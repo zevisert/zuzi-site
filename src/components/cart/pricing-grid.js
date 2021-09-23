@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 
 import { showSnackbar } from '../../actions/app';
 import { connect, store } from '../../store'

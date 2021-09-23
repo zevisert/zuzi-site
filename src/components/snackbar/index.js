@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { store, connect } from "../../store";
 import { showSnackbar, hideSnackbar } from "../../actions/app";
 
