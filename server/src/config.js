@@ -99,20 +99,3 @@ export const isProtected = async (ctx, next) => {
         await next();
     }
 }
-
-let page_pipe;
-if (process.env.NODE_ENV === 'DEVELOPMENT') {
-    page_pipe = async ctx => {
-        const uri = `http://localhost:8081${ctx.request.originalUrl}`;
-        ctx.body = ctx.req
-          .pipe(request(uri))
-          .on('error', (err) => { console.log(err); throw err; });
-    };
-} else {
-    page_pipe = async ctx => {
-        console.error('Should not be receiving requests in non-development.');
-        console.warn(ctx.request.originalUrl);
-    };
-}
-
-export const pipe = page_pipe;
