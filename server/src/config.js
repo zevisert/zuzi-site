@@ -64,6 +64,8 @@ export const db_connect = (server) => {
             await mongoose.connect(
                 await fsp.readFile('/secrets/mongodb/connectionString.standard', {encoding: 'utf-8'}),
                 {
+                    dbName: process.env.MONGO_DBNAME,
+                    authSource: process.env.MONGO_AUTHSOURCE,
                     useNewUrlParser: true,
                     useUnifiedTopology: true
                 }
@@ -74,6 +76,8 @@ export const db_connect = (server) => {
                 {
                     user: process.env.MONGO_USER,
                     pass: process.env.MONGO_PW,
+                    dbName: process.env.MONGO_DBNAME,
+                    authSource: process.env.MONGO_AUTHSOURCE,
                     useNewUrlParser: true,
                     useUnifiedTopology: true
                 }
