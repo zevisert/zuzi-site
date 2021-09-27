@@ -35,6 +35,7 @@ spec:
         volumeMounts:
           - mountPath: /secrets/mongodb
             name: mongodb-creds
+            readOnly: true
         ports:
         - containerPort: 80
           protocol: TCP

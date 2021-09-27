@@ -4,8 +4,7 @@
 */
 
 import mongoose from 'mongoose';
-import * as fsp 
-from 'fs/promises';
+import * as fsp from 'fs/promises';
 import dotenv from 'dotenv';
 import { User } from './models/user.model.js';
 dotenv.config({path: 'server/process.env'});
@@ -62,7 +61,7 @@ export const db_connect = (server) => {
 
     const connect = async () => {
 
-        if (await fsp.access('/secrets/mongodb/connectionString.standard').catch(() => false)) {
+        try {
             await mongoose.connect(
                 await fsp.readFile('/secrets/mongodb/connectionString.standard', {encoding: 'utf-8'}),
                 {
@@ -72,18 +71,22 @@ export const db_connect = (server) => {
                     useUnifiedTopology: true
                 }
             );
-        } else {
-            await mongoose.connect(
-                process.env.MONGO_URL,
-                {
-                    user: process.env.MONGO_USER,
-                    pass: process.env.MONGO_PW,
-                    dbName: process.env.MONGO_DBNAME,
-                    authSource: process.env.MONGO_AUTHSOURCE,
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true
-                }
-            );
+        } catch (error) {
+            if (error.code in ['EACCES', 'ENOENT', 'EPERM']) {
+                await mongoose.connect(
+                    process.env.MONGO_URL,
+                    {
+                        user: process.env.MONGO_USER,
+                        pass: process.env.MONGO_PW,
+                        dbName: process.env.MONGO_DBNAME,
+                        authSource: process.env.MONGO_AUTHSOURCE,
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true
+                    }
+                    );
+            } else {
+                throw error
+            }
         }
 
         if ((await User.countDocuments({admin: true})) < 1) {
