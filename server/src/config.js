@@ -16,6 +16,8 @@ const required_env = new Set([
     'PORT',
     'SECRET_KEY',
     'MONGO_URL',
+    'MONGO_AUTHSOURCE',
+    'MONGO_DBNAME',
     'MONGO_USER',
     'MONGO_PW',
     'STRIPE_PK',
