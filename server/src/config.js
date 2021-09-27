@@ -59,20 +59,26 @@ export const db_connect = (server) => {
 
     const connect = async () => {
 
-        const connectionString = (await fs.access('/secrets/mongodb').catch(() => false))
-            ? await fs.readFile('/secrets/mongodb/connectionString.standard', 'UTF-8')
-            : process.env.MONGO_URL;
+        if (await fs.access('/secrets/mongodb').catch(() => false)) {
+            await mongoose.connect(
+                await fs.readFile('/secrets/mongodb/connectionString.standard', 'UTF-8'),
+                {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true
+                }
+            );
+        } else {
+            await mongoose.connect(
+                process.env.MONGO_URL,
+                {
+                    user: process.env.MONGO_USER,
+                    pass: process.env.MONGO_PW,
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true
+                }
+            );
+        }
 
-        await mongoose.connect(
-            connectionString,
-            {
-                user: process.env.MONGO_USER,
-                pass: process.env.MONGO_PW,
-                useNewUrlParser: true,
-                useUnifiedTopology: true
-            }
-        );
-            
         if ((await User.countDocuments({admin: true})) < 1) {
             const user = new User({ email: process.env.SITE_ADMIN_EMAIL, admin: true });
             await user.setPassword(process.env.SITE_ADMIN_DEFAULTPW);
