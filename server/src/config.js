@@ -62,7 +62,7 @@ export const db_connect = (server) => {
 
     const connect = async () => {
 
-        if (await fsp.access('/secrets/mongodb').catch(() => false)) {
+        if (await fsp.access('/secrets/mongodb/connectionString.standard').catch(() => false)) {
             await mongoose.connect(
                 await fsp.readFile('/secrets/mongodb/connectionString.standard', {encoding: 'utf-8'}),
                 {

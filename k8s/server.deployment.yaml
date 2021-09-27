@@ -49,4 +49,3 @@ spec:
         - name: mongodb-creds
           secret:
             secretName: mongodb-admin-koa
-            optional: true
