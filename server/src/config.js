@@ -4,7 +4,8 @@
 */
 
 import mongoose from 'mongoose';
-import * as fs from 'fs/promises';
+import * as fsp 
+from 'fs/promises';
 import dotenv from 'dotenv';
 import { User } from './models/user.model.js';
 dotenv.config({path: 'server/process.env'});
@@ -59,9 +60,9 @@ export const db_connect = (server) => {
 
     const connect = async () => {
 
-        if (await fs.access('/secrets/mongodb').catch(() => false)) {
+        if (await fsp.access('/secrets/mongodb').catch(() => false)) {
             await mongoose.connect(
-                await fs.readFile('/secrets/mongodb/connectionString.standard', 'UTF-8'),
+                await fsp.readFile('/secrets/mongodb/connectionString.standard', {encoding: 'utf-8'}),
                 {
                     useNewUrlParser: true,
                     useUnifiedTopology: true
