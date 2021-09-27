@@ -23,6 +23,10 @@ spec:
           db: admin
         - name: dbAdminAnyDatabase
           db: admin
+        - name: dbOwner
+          db: admin
+        - name: readWriteAnyDatabase
+          db: admin
       scramCredentialsSecretName: mongodb-scram
   statefulSet:
     spec:
