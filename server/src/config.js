@@ -4,7 +4,7 @@
 */
 
 import mongoose from 'mongoose';
-
+import * as fs from 'fs/promises';
 import dotenv from 'dotenv';
 import { User } from './models/user.model.js';
 dotenv.config({path: 'server/process.env'});
@@ -58,13 +58,21 @@ if (missing_env.length > 0) {
 export const db_connect = (server) => {
 
     const connect = async () => {
-        await mongoose.connect(process.env.MONGO_URL, {
-            user: process.env.MONGO_USER,
-            pass: process.env.MONGO_PW,
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
 
+        const connectionString = (await fs.access('/secrets/mongodb').catch(() => false))
+            ? await fs.readFile('/secrets/mongodb/connectionString.standard', 'UTF-8')
+            : process.env.MONGO_URL;
+
+        await mongoose.connect(
+            connectionString,
+            {
+                user: process.env.MONGO_USER,
+                pass: process.env.MONGO_PW,
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            }
+        );
+            
         if ((await User.countDocuments({admin: true})) < 1) {
             const user = new User({ email: process.env.SITE_ADMIN_EMAIL, admin: true });
             await user.setPassword(process.env.SITE_ADMIN_DEFAULTPW);

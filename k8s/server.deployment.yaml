@@ -32,6 +32,9 @@ spec:
         envFrom:
         - secretRef:
             name: env
+        volumeMounts:
+          - mountPath: /secrets/mongodb
+            name: mongodb-creds
         ports:
         - containerPort: 80
           protocol: TCP
@@ -42,3 +45,8 @@ spec:
           requests:
             cpu: 200m
             memory: 100M
+      volumes:
+        - name: mongodb-creds
+          secret:
+            secretName: mongodb-admin-koa
+            optional: true
