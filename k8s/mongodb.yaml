@@ -21,7 +21,7 @@ spec:
       roles:
         - name: clusterAdmin
           db: admin
-        - name: userAdminAnyDatabase
+        - name: dbAdminAnyDatabase
           db: admin
       scramCredentialsSecretName: mongodb-scram
   statefulSet:
