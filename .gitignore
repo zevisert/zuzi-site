@@ -8,3 +8,4 @@ server/uploads
 !server/uploads/.gitfolder
 
 *.env
+k8s/**/*.secret.yaml

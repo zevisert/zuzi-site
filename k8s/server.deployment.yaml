@@ -4,7 +4,7 @@ metadata:
   labels:
     app: server
   name: server
-  namespace: zuzi-site
+
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -22,16 +22,23 @@ spec:
       labels:
         app: server
     spec:
-      containers:
-      - name: zuzi-site
-        image: zevisert/zuzi-site:server
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: server-env
-        ports:
-        - containerPort: 8080
-          protocol: TCP
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 10
+      containers:
+      - name: zuzi-site
+        image: zevisert/zuzi-site-server
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - secretRef:
+            name: env
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 800m
+            memory: 500M
+          requests:
+            cpu: 200m
+            memory: 100M

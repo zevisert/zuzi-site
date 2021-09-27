@@ -1,8 +1,8 @@
-FROM node:15.11.0
+FROM node:15.11.0 as base
 
 WORKDIR /site
 
-COPY package-lock.json package.json /site/
+COPY package*.json /site/
 RUN npm clean-install
 
 COPY src/ /site/src/
@@ -20,7 +20,11 @@ COPY \
     workbox-config.js \
     /site/
 
-RUN npm run build
+EXPOSE 80
 
-EXPOSE 8081
-CMD [ "npm", "run", "serve:prpl", "--",  "--host", "0.0.0.0"]
+FROM base as prpl
+RUN npm run build
+CMD ["npm", "run", "serve:prpl", "--", "--host=0.0.0.0", "--port=80"]
+
+FROM base as dev
+CMD ["npm", "run", "start", "--", "--host=0.0.0.0", "--port=80"]

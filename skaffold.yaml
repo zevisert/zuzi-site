@@ -1,0 +1,81 @@
+apiVersion: skaffold/v2beta23
+kind: Config
+metadata:
+  name: zuzi-site
+
+build:
+  local:
+    useBuildkit: true
+  artifacts:
+  - image: zevisert/zuzi-site-frontend
+    docker:
+      dockerfile: src/Dockerfile
+      target: prpl
+    sync: {}
+  - image: zevisert/zuzi-site-server
+    docker:
+      dockerfile: server/Dockerfile
+
+deploy:
+  kubectl:
+    defaultNamespace: zuzi-staging
+    manifests:
+    - k8s/staging/namespace.yaml
+    - k8s/staging/env.secret.yaml
+    - k8s/staging/ingress.yaml
+    - k8s/api.service.yaml
+    - k8s/http.service.yaml
+    - k8s/server.deployment.yaml
+    - k8s/frontend.deployment.yaml
+    - k8s/mongodb.yaml
+
+profiles:
+  - name: dev
+    patches:
+      - op: replace
+        path: /deploy/kubectl/defaultNamespace
+        value: zuzi-dev
+      - op: replace
+        path: /deploy/kubectl/manifests/0
+        value: k8s/dev/namespace.yaml
+      - op: replace
+        path: /deploy/kubectl/manifests/1
+        value: k8s/dev/env.secret.yaml
+      - op: replace
+        path: /deploy/kubectl/manifests/2
+        value: k8s/dev/ingress.yaml
+      - op: remove
+        path: /deploy/kubectl/manifests/7
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: dev
+      - op: replace
+        path: /build/artifacts/0/sync
+        value:
+          manual:
+            - src: src/**/*.js
+              dest: /site/
+            - src: images/**/*.png
+              dest: /site/
+            - src: images/**/*.jpg
+              dest: /site
+            - src: images/**/*.ico
+              dest: /site/
+    activation:
+      - command: dev
+        kubeContext: docker-desktop
+
+  - name: prod
+    patches:
+      - op: replace
+        path: /deploy/kubectl/defaultNamespace
+        value: zuzi-site
+      - op: replace
+        path: /deploy/kubectl/manifests/0
+        value: k8s/prod/namespace.yaml
+      - op: replace
+        path: /deploy/kubectl/manifests/1
+        value: k8s/prod/env.secret.yaml
+      - op: replace
+        path: /deploy/kubectl/manifests/2
+        value: k8s/prod/ingress.yaml

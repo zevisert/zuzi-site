@@ -4,14 +4,14 @@ metadata:
   labels:
     app: http
   name: http
-  namespace: zuzi-site
+  
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: frontend
   ports:
   - name: http
     port: 80
     protocol: TCP
-    targetPort: 8081
+    targetPort: 80
   

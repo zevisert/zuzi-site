@@ -4,7 +4,6 @@
 */
 
 import mongoose from 'mongoose';
-import request from 'request';
 
 import dotenv from 'dotenv';
 import { User } from './models/user.model.js';
@@ -55,14 +54,6 @@ if (missing_env.length > 0) {
     console.log(`Supply them and try again`);
     process.exit()
 }
-
-const extra_env = new Set([...Object.keys(process.env)].filter(x => !required_env.has(x)));
-if (extra_env.size > 0) {
-    console.log(`Unknown environment variables found:`)
-    console.log([...extra_env.values()].map(key => `- ${key}`).join('\n'));
-    console.log('Remove access to the above or update the known list of required env variables');
-}
-
 
 export const db_connect = (server) => {
 

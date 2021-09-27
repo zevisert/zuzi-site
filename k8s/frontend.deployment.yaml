@@ -4,7 +4,7 @@ metadata:
   labels:
     app: frontend
   name: frontend
-  namespace: zuzi-site
+  
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -23,11 +23,11 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: zevisert/zuzi-site:frontend
+      - image: zevisert/zuzi-site-frontend
         imagePullPolicy: IfNotPresent
         name: zuzi-site
         ports:
-          - containerPort: 8081
+          - containerPort: 80
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       terminationGracePeriodSeconds: 5
