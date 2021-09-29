@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schemas/mongodb-kubernetes-operator/master/mongodbcommunity.mongodbcommunity.mongodb.com-v1.json
 apiVersion: mongodbcommunity.mongodb.com/v1
 kind: MongoDBCommunity
 metadata:
@@ -31,7 +32,24 @@ spec:
   statefulSet:
     spec:
       template:
+        metadata:
+          labels:
+            environment: production
         spec:
+          affinity:
+            podAntiAffinity:
+              # read: A pod should not be scheduled on the node if a pod with 
+              # the label environment=production is already running on it.
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: environment
+                      operator: In
+                      values:
+                      - production
+                  topologyKey: kubernetes.io/hostname
           containers:
             - name: mongod
               resources:
