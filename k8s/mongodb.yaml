@@ -3,12 +3,11 @@ apiVersion: mongodbcommunity.mongodb.com/v1
 kind: MongoDBCommunity
 metadata:
   name: mongodb
-
 spec:
   members: 2
   arbiters: 1
   type: ReplicaSet
-  version: "4.4.0"
+  version: "4.0.2"
   security:
     authentication:
       modes: 
@@ -67,3 +66,43 @@ spec:
                 requests:
                   cpu: 100m
                   memory: 100M
+---
+
+# These resources are from the mongodb-kubernetes-operator repository
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mongodb-kubernetes-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mongodb-kubernetes-operator
+rules:
+- apiGroups: [""]
+  verbs:     ["create", "delete", "get", "list", "patch", "update", "watch"]
+  resources: ["pods", "services", "configmaps", "secrets"]
+
+- apiGroups: ["apps"]
+  verbs:     ["create", "delete", "get", "list", "patch", "update", "watch"]
+  resources: ["statefulsets"]
+
+- apiGroups: ["mongodbcommunity.mongodb.com"]
+  verbs:     ["get", "patch", "list", "update", "watch"]
+  resources:
+  - mongodbcommunity
+  - mongodbcommunity/status
+  - mongodbcommunity/spec
+  - mongodbcommunity/finalizers
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mongodb-kubernetes-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mongodb-kubernetes-operator
+subjects:
+- kind: ServiceAccount
+  name: mongodb-kubernetes-operator
