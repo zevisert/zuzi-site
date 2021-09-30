@@ -7,7 +7,7 @@ spec:
   members: 2
   arbiters: 1
   type: ReplicaSet
-  version: "4.0.2"
+  version: "5.0.3"
   security:
     authentication:
       modes: 
