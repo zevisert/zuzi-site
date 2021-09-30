@@ -4,8 +4,7 @@
 */
 
 import mongoose from 'mongoose';
-import request from 'request';
-
+import * as fsp from 'fs/promises';
 import dotenv from 'dotenv';
 import { User } from './models/user.model.js';
 dotenv.config({path: 'server/process.env'});
@@ -16,6 +15,8 @@ const required_env = new Set([
     'PORT',
     'SECRET_KEY',
     'MONGO_URL',
+    'MONGO_AUTHSOURCE',
+    'MONGO_DBNAME',
     'MONGO_USER',
     'MONGO_PW',
     'STRIPE_PK',
@@ -56,23 +57,37 @@ if (missing_env.length > 0) {
     process.exit()
 }
 
-const extra_env = new Set([...Object.keys(process.env)].filter(x => !required_env.has(x)));
-if (extra_env.size > 0) {
-    console.log(`Unknown environment variables found:`)
-    console.log([...extra_env.values()].map(key => `- ${key}`).join('\n'));
-    console.log('Remove access to the above or update the known list of required env variables');
-}
-
-
 export const db_connect = (server) => {
 
     const connect = async () => {
-        await mongoose.connect(process.env.MONGO_URL, {
-            user: process.env.MONGO_USER,
-            pass: process.env.MONGO_PW,
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+
+        try {
+            await mongoose.connect(
+                await fsp.readFile('/secrets/mongodb/connectionString.standard', {encoding: 'utf-8'}),
+                {
+                    dbName: process.env.MONGO_DBNAME,
+                    authSource: process.env.MONGO_AUTHSOURCE,
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true
+                }
+            );
+        } catch (error) {
+            if (error.code in ['EACCES', 'ENOENT', 'EPERM']) {
+                await mongoose.connect(
+                    process.env.MONGO_URL,
+                    {
+                        user: process.env.MONGO_USER,
+                        pass: process.env.MONGO_PW,
+                        dbName: process.env.MONGO_DBNAME,
+                        authSource: process.env.MONGO_AUTHSOURCE,
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true
+                    }
+                    );
+            } else {
+                throw error
+            }
+        }
 
         if ((await User.countDocuments({admin: true})) < 1) {
             const user = new User({ email: process.env.SITE_ADMIN_EMAIL, admin: true });
@@ -99,20 +114,3 @@ export const isProtected = async (ctx, next) => {
         await next();
     }
 }
-
-let page_pipe;
-if (process.env.NODE_ENV === 'DEVELOPMENT') {
-    page_pipe = async ctx => {
-        const uri = `http://localhost:8081${ctx.request.originalUrl}`;
-        ctx.body = ctx.req
-          .pipe(request(uri))
-          .on('error', (err) => { console.log(err); throw err; });
-    };
-} else {
-    page_pipe = async ctx => {
-        console.error('Should not be receiving requests in non-development.');
-        console.warn(ctx.request.originalUrl);
-    };
-}
-
-export const pipe = page_pipe;

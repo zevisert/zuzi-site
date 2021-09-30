@@ -9,10 +9,10 @@
   "license": "BSD-3-Clause",
   "repository": "zevisert/zuzi-site",
   "scripts": {
-    "start": "es-dev-server --app-index=index.html --port 8081 --node-resolve --watch --open",
+    "start": "es-dev-server --app-index=index.html --node-resolve --watch",
     "build": "del-cli build && rollup -c rollup.config.js",
     "email:render": "gulp email:render",
-    "serve:prpl": "prpl-server --port 8081 --root build/ --config prpl.config.json",
+    "serve:prpl": "prpl-server --root build/ --config prpl.config.json",
     "serve:api": "node --experimental-modules server/src/index.js",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "mocha test/integration --timeout=10000",

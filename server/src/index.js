@@ -11,7 +11,7 @@ import multer from '@koa/multer';
 import passport from 'koa-passport';
 
 // Must be first, side effects import process.env
-import { db_connect, pipe, isProtected } from './config.js';
+import { db_connect, isProtected } from './config.js';
 
 import { User } from './models/index.js';
 
@@ -114,10 +114,8 @@ app.use(
   apiRoutes.allowedMethods()
 );
 
-// Pipe unmatched requests to polymer
-app.use(pipe);
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, '0.0.0.0', () => {
   const link = new URL(process.env.SITE_URL)
   link.port = process.env.PORT;
   console.log(`App server up. Visit ${link}`)
