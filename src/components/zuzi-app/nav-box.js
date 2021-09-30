@@ -1,4 +1,4 @@
-import { LitElement, html } from '@polymer/lit-element';
+import { LitElement, html } from 'lit-element';
 
 export class NavBox extends LitElement {
   static get is() { return 'nav-box' }

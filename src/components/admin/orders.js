@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { html } from '@polymer/lit-element';
+import { html } from 'lit-element';
 import { PageViewElement } from '../page-view-element.js';
 
 // These are the shared styles needed by this element.
@@ -75,8 +75,8 @@ class AdminConfirm extends connect(store)(PageViewElement) {
         <h3>Status: ${order.status}</h3>
         ${order.type === 'etransfer' && order.status === 'pending'
           ? html`
-            <button id="confirm" @click="${e => this._processOrder(true)}">Confirm Payment Received</button>
-            <button id="reject" @click="${e => this._processOrder(false)}">Reject Order</button>
+            <button id="confirm" @click="${() => this._processOrder(true)}">Confirm Payment Received</button>
+            <button id="reject" @click="${() => this._processOrder(false)}">Reject Order</button>
           `
           : html``
         }

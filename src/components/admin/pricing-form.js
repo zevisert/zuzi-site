@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { html, LitElement } from '@polymer/lit-element';
+import { html, LitElement } from 'lit-element';
 import { ButtonSharedStyles } from '../button-shared-styles';
 
 import '../underline-input';
@@ -56,7 +56,7 @@ export class AdminPricingForm extends LitElement {
       <underline-input id="price" type="number" placeholder="Price"
         @input="${e => this._onChange('price', e)}"
         .value="${this.pricing.price}"
-      >
+      ></underline-input>
     </div>
 
     <div class="block">
@@ -64,7 +64,7 @@ export class AdminPricingForm extends LitElement {
       <underline-input id="width" type="number" placeholder="Width"
         @input="${e => this._onChange('width', e)}"
         .value="${this.pricing.size.width}"
-      >
+      ></underline-input>
     </div>
 
     <div class="block">
@@ -72,7 +72,7 @@ export class AdminPricingForm extends LitElement {
       <underline-input id="height" type="number" placeholder="Height"
         @input="${e => this._onChange('height', e)}"
         .value="${this.pricing.size.height}"
-      >
+      ></underline-input>
     </div>
 
     <div class="block">
@@ -80,7 +80,7 @@ export class AdminPricingForm extends LitElement {
       <underline-input id="medium" type="text" placeholder="Medium"
         @input="${e => this._onChange('medium', e)}"
         .value="${this.pricing.medium}"
-      >
+      ></underline-input>
     </div>
 
     <div class="block">
@@ -88,7 +88,7 @@ export class AdminPricingForm extends LitElement {
       <toggle-input id="available" type="checkbox"
         @changed="${e => this._onChange('available', e)}"
         .checked="${this.pricing.available}"
-      >
+      ></toggle-input>
     </div>
     `;
   }
@@ -124,7 +124,7 @@ export class AdminPricingForm extends LitElement {
     }
   }
 
-  broadcastPricing(e) {
+  broadcastPricing() {
     this.dispatchEvent(
       new CustomEvent('admin-pricing-added', {
         detail: {
