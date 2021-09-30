@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: zuzi-ingress
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
+    cert-manager.io/cluster-issuer: ca-issuer
 
 spec:
   ingressClassName: nginx
