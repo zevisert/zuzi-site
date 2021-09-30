@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit-element';
+import { LitElement, html } from 'lit';
 
 export class NavBox extends LitElement {
   static get is() { return 'nav-box' }

@@ -4,7 +4,7 @@
 * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
 */
 
-import { html } from 'lit-element';
+import { html } from 'lit';
 
 
 export const SharedDynamicTable = html`
