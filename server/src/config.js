@@ -72,18 +72,19 @@ export const db_connect = (server) => {
                 }
             );
         } catch (error) {
-            if (error.code in ['EACCES', 'ENOENT', 'EPERM']) {
+            if (['EACCES', 'ENOENT', 'EPERM'].includes(error.code)) {
                 await mongoose.connect(
                     process.env.MONGO_URL,
                     {
-                        user: process.env.MONGO_USER,
-                        pass: process.env.MONGO_PW,
+                        auth: {
+                            user: process.env.MONGO_USER,
+                            password: process.env.MONGO_PW
+                        },
                         dbName: process.env.MONGO_DBNAME,
-                        authSource: process.env.MONGO_AUTHSOURCE,
                         useNewUrlParser: true,
                         useUnifiedTopology: true
                     }
-                    );
+                );
             } else {
                 throw error
             }
