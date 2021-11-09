@@ -32,23 +32,36 @@ deploy:
 profiles:
   - name: dev
     patches:
+        # Set the namespace to zuzi-dev
       - op: replace
         path: /deploy/kubectl/defaultNamespace
         value: zuzi-dev
+
+        # Target the dev config
       - op: replace
         path: /deploy/kubectl/manifests/0
         value: k8s/dev/namespace.yaml
+
+        # Target the dev config
       - op: replace
         path: /deploy/kubectl/manifests/1
         value: k8s/dev/env.secret.yaml
+        
+        # Target the dev config
       - op: replace
         path: /deploy/kubectl/manifests/2
         value: k8s/dev/ingress.yaml
+
+        # Don't deploy mongo - using mlab here
       - op: remove
         path: /deploy/kubectl/manifests/7
+
+        # Docker build target is the dev image
       - op: replace
         path: /build/artifacts/0/docker/target
         value: dev
+
+        # Set sync config for fast reload 
       - op: replace
         path: /build/artifacts/0/sync
         value:
@@ -67,15 +80,22 @@ profiles:
 
   - name: prod
     patches:
+      # Set the prod namespace to zuzi-site
       - op: replace
         path: /deploy/kubectl/defaultNamespace
         value: zuzi-site
+
+        # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/0
         value: k8s/prod/namespace.yaml
+
+        # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/1
         value: k8s/prod/env.secret.yaml
+        
+        # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/2
         value: k8s/prod/ingress.yaml
