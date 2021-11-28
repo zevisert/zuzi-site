@@ -1,6 +1,6 @@
 {
   "name": "zuzi-site-frontend",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "type": "module",
   "contributors": [
     "@zevisert",
@@ -10,7 +10,7 @@
   "repository": "zevisert/zuzi-site",
   "scripts": {
     "dev": "es-dev-server --app-index=index.html --node-resolve --watch",
-    "prestart": "del-cli build && rollup -c rollup.config.js",
+    "build": "del-cli build && rollup -c rollup.config.js",
     "start": "prpl-server --root build/ --config prpl.config.json"
   },
   "dependencies": {
