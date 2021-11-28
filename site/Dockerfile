@@ -24,7 +24,7 @@ EXPOSE 80
 
 FROM base as prpl
 RUN npm run build
-CMD ["npm", "run", "serve:prpl", "--", "--host=0.0.0.0", "--port=80"]
+CMD ["npm", "start", "--", "--host=0.0.0.0", "--port=80"]
 
 FROM base as dev
-CMD ["npm", "run", "start", "--", "--host=0.0.0.0", "--port=80"]
+CMD ["npm", "run", "dev", "--", "--host=0.0.0.0", "--port=80"]

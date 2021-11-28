@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta23.json
 apiVersion: skaffold/v2beta23
 kind: Config
 metadata:
@@ -8,11 +9,13 @@ build:
     useBuildkit: true
   artifacts:
   - image: zevisert/zuzi-site-frontend
+    context: site
     docker:
-      dockerfile: src/Dockerfile
+      dockerfile: site/Dockerfile
       target: prpl
     sync: {}
   - image: zevisert/zuzi-site-server
+    context: server
     docker:
       dockerfile: server/Dockerfile
 
@@ -30,7 +33,10 @@ deploy:
     - k8s/mongodb.yaml
 
 profiles:
-  - name: dev
+  - activation:
+      - command: dev
+        kubeContext: docker-desktop
+    name: dev
     patches:
         # Set the namespace to zuzi-dev
       - op: replace
@@ -66,17 +72,14 @@ profiles:
         path: /build/artifacts/0/sync
         value:
           manual:
-            - src: src/**/*.js
+            - src: site/src/**/*.js
               dest: /site/
-            - src: images/**/*.png
+            - src: site/images/**/*.png
               dest: /site/
-            - src: images/**/*.jpg
+            - src: site/images/**/*.jpg
               dest: /site
-            - src: images/**/*.ico
+            - src: site/images/**/*.ico
               dest: /site/
-    activation:
-      - command: dev
-        kubeContext: docker-desktop
 
   - name: prod
     patches:

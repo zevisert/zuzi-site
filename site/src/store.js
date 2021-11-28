@@ -11,12 +11,12 @@ import {
   combineReducers
 } from 'redux';
 import thunk from 'redux-thunk';
-import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer.js';
+import { lazyReducerEnhancer } from 'pwa-helpers/lazy-reducer-enhancer';
 
 import app from './reducers/app.js';
 import shop from './reducers/shop.js';
 
-export { connect } from 'pwa-helpers/connect-mixin.js';
+export { connect } from 'pwa-helpers/connect-mixin';
 
 // Sets up a Chrome extension for time travel debugging.
 // See https://github.com/zalmoxisus/redux-devtools-extension for more information.
