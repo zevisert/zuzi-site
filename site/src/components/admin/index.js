@@ -1,40 +1,48 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
-import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { SharedDynamicTable } from '../dynamic-table-styles.js';
+import { SharedStyles } from "../shared-styles.js";
+import { ButtonSharedStyles } from "../button-shared-styles.js";
+import { SharedDynamicTable } from "../dynamic-table-styles.js";
 
 // This element is connection to the Redux store
-import { store, connect } from '../../store.js';
+import { store, connect } from "../../store.js";
 
 // These are the actions needed by this element
-import { getAllProducts } from '../../actions/shop.js';
-import { navigate, updateAboutText, getAboutText,  showSnackbar } from '../../actions/app.js';
-import { deleteItem, getOrders } from '../../actions/admin.js';
+import { getAllProducts } from "../../actions/shop.js";
+import {
+  navigate,
+  updateAboutText,
+  getAboutText,
+  showSnackbar,
+} from "../../actions/app.js";
+import { deleteItem, getOrders } from "../../actions/admin.js";
 
 // These are the elements needed by this element
 import "@material/mwc-icon";
 
 // We are lazy-loading the admin reducer
-import { admin } from '../../reducers/admin.js';
+import { admin } from "../../reducers/admin.js";
 store.addReducers({ admin });
 
 class AdminView extends connect(store)(PageViewElement) {
+  static get is() {
+    return "admin-view";
+  }
 
-  static get is() { return 'admin-view'; }
-
-  static get properties() { return {
-    _postings: { type: Object, attribute: false },
-    _orders: { type: Array, attribute: false }
-  }}
+  static get properties() {
+    return {
+      _postings: { type: Object, attribute: false },
+      _orders: { type: Array, attribute: false },
+    };
+  }
 
   constructor() {
     super();
@@ -44,9 +52,7 @@ class AdminView extends connect(store)(PageViewElement) {
 
   render() {
     return html`
-      ${SharedStyles}
-      ${ButtonSharedStyles}
-      ${SharedDynamicTable}
+      ${SharedStyles} ${ButtonSharedStyles} ${SharedDynamicTable}
       <style>
         #about-text {
           border: 2px solid black;
@@ -85,7 +91,7 @@ class AdminView extends connect(store)(PageViewElement) {
         }
 
         td.column6 mwc-icon:hover {
-          color: black
+          color: black;
         }
 
         .admin-centered {
@@ -96,19 +102,43 @@ class AdminView extends connect(store)(PageViewElement) {
         }
 
         @media screen and (max-width: 725px) {
-          #section-artwork table tbody tr td:nth-child(1):before { content: "Icon"; }
-          #section-artwork table tbody tr td:nth-child(2):before { content: "Title"; }
-          #section-artwork table tbody tr td:nth-child(3):before { content: "Tags"; }
-          #section-artwork table tbody tr td:nth-child(4):before { content: "Active"; }
-          #section-artwork table tbody tr td:nth-child(5):before { content: "Delete"; }
-          #section-artwork table tbody tr td:nth-child(6):before { content: "Direct Link"; }
+          #section-artwork table tbody tr td:nth-child(1):before {
+            content: "Icon";
+          }
+          #section-artwork table tbody tr td:nth-child(2):before {
+            content: "Title";
+          }
+          #section-artwork table tbody tr td:nth-child(3):before {
+            content: "Tags";
+          }
+          #section-artwork table tbody tr td:nth-child(4):before {
+            content: "Active";
+          }
+          #section-artwork table tbody tr td:nth-child(5):before {
+            content: "Delete";
+          }
+          #section-artwork table tbody tr td:nth-child(6):before {
+            content: "Direct Link";
+          }
 
-          #section-orders table tbody tr td:nth-child(1):before { content: "Customer"; }
-          #section-orders table tbody tr td:nth-child(2):before { content: "Total"; }
-          #section-orders table tbody tr td:nth-child(3):before { content: "Items"; }
-          #section-orders table tbody tr td:nth-child(4):before { content: "Payment Type"; }
-          #section-orders table tbody tr td:nth-child(5):before { content: "Status"; }
-          #section-orders table tbody tr td:nth-child(6):before { content: "Order ID"; }
+          #section-orders table tbody tr td:nth-child(1):before {
+            content: "Customer";
+          }
+          #section-orders table tbody tr td:nth-child(2):before {
+            content: "Total";
+          }
+          #section-orders table tbody tr td:nth-child(3):before {
+            content: "Items";
+          }
+          #section-orders table tbody tr td:nth-child(4):before {
+            content: "Payment Type";
+          }
+          #section-orders table tbody tr td:nth-child(5):before {
+            content: "Status";
+          }
+          #section-orders table tbody tr td:nth-child(6):before {
+            content: "Order ID";
+          }
         }
       </style>
 
@@ -117,9 +147,13 @@ class AdminView extends connect(store)(PageViewElement) {
 
         <section id="section-about-text">
           <h3>About Page</h3>
-          <textarea id="about-text" placeholder="Text below image on about page" .value=${store.getState().app.about.lines.join('\n')}></textarea>
+          <textarea
+            id="about-text"
+            placeholder="Text below image on about page"
+            .value=${store.getState().app.about.lines.join("\n")}
+          ></textarea>
 
-          <button @click="${() => this.submitAboutText() }">Update Welcome Text</button>
+          <button @click="${() => this.submitAboutText()}">Update Welcome Text</button>
         </section>
 
         <section id="section-artwork">
@@ -140,27 +174,45 @@ class AdminView extends connect(store)(PageViewElement) {
                       </tr>
                     </thead>
                     <tbody>
-                      ${Object.values(this._postings).map(post => html`
-                      <tr @click="${() => store.dispatch(navigate(`/admin/${post.slug}`))}">
-                        <td class="column1"><img src="/uploads/${post.preview}"></td>
-                        <td class="column2">${post.title}</td>
-                        <td class="column3">${post.tags.join(', ')}</td>
-                        <td class="column4">${post.active ? "Public" : "Unlisted"}</td>
-                        <td class="column5">
-                          <button @click="${(e) => { e.stopPropagation(); this.deleteItem(post.slug); }}">Delete</button>
-                        </td>
-                        <td class="column6 c">
-                          <mwc-icon
-                            @click=${(e) => {
-                              e.stopPropagation()
-                              const direct_link = `${document.location.origin}/gallery/${post.slug}`
-                              navigator.clipboard.writeText(direct_link)
-                              store.dispatch(showSnackbar(`Link copied: [ ${direct_link} ]`))
-                            }}
-                          >link</mwc-icon>
-                        </td>
-                      </tr>`)}
-                  </tbody>
+                      ${Object.values(this._postings).map(
+                        (post) => html` <tr
+                          @click="${() =>
+                            store.dispatch(navigate(`/admin/${post.slug}`))}"
+                        >
+                          <td class="column1">
+                            <img src="/uploads/${post.preview}" />
+                          </td>
+                          <td class="column2">${post.title}</td>
+                          <td class="column3">${post.tags.join(", ")}</td>
+                          <td class="column4">
+                            ${post.active ? "Public" : "Unlisted"}
+                          </td>
+                          <td class="column5">
+                            <button
+                              @click="${(e) => {
+                                e.stopPropagation();
+                                this.deleteItem(post.slug);
+                              }}"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                          <td class="column6 c">
+                            <mwc-icon
+                              @click=${(e) => {
+                                e.stopPropagation();
+                                const direct_link = `${document.location.origin}/gallery/${post.slug}`;
+                                navigator.clipboard.writeText(direct_link);
+                                store.dispatch(
+                                  showSnackbar(`Link copied: [ ${direct_link} ]`)
+                                );
+                              }}
+                              >link</mwc-icon
+                            >
+                          </td>
+                        </tr>`
+                      )}
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -187,11 +239,21 @@ class AdminView extends connect(store)(PageViewElement) {
                       </tr>
                     </thead>
                     <tbody>
-                      ${Object.values(this._orders).map(order => html`
-                      <tr @click="${() => store.dispatch(navigate(`/admin/orders/${order._id}`))}">
+                      ${Object.values(this._orders).map(
+                        (order) => html` <tr
+                          @click="${() =>
+                            store.dispatch(navigate(`/admin/orders/${order._id}`))}"
+                        >
                           <td class="column1">${order.customer.name}</td>
-                          <td class="column2">${(order.totalCents / 100).toFixed(2)}</td>
-                          <td class="column3">${order.items.reduce((count, {quantity}) => count + quantity, 0)}</td>
+                          <td class="column2">
+                            ${(order.totalCents / 100).toFixed(2)}
+                          </td>
+                          <td class="column3">
+                            ${order.items.reduce(
+                              (count, { quantity }) => count + quantity,
+                              0
+                            )}
+                          </td>
                           <td class="column4">${order.type}</td>
                           <td class="column5">${order.status}</td>
                           <td class="column6">${order._id}</td>
@@ -205,7 +267,7 @@ class AdminView extends connect(store)(PageViewElement) {
           </div>
         </section>
       </div>
-      `;
+    `;
   }
 
   stateChanged(newState) {
@@ -224,8 +286,8 @@ class AdminView extends connect(store)(PageViewElement) {
   }
 
   async submitAboutText() {
-    const lines = this.shadowRoot.getElementById('about-text').value;
-    store.dispatch(updateAboutText(lines.split('\n')));
+    const lines = this.shadowRoot.getElementById("about-text").value;
+    store.dispatch(updateAboutText(lines.split("\n")));
   }
 }
 

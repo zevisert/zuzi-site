@@ -1,26 +1,27 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
+import { SharedStyles } from "../shared-styles.js";
 
-import { store, connect } from '../../store.js';
-import { getAboutText } from '../../actions/app.js';
+import { store, connect } from "../../store.js";
+import { getAboutText } from "../../actions/app.js";
 
 class About extends connect(store)(PageViewElement) {
-
-  static get is() { return 'about-page'; }
+  static get is() {
+    return "about-page";
+  }
 
   static get properties() {
     return {
-      __lines: { type: Array }
-    }
+      __lines: { type: Array },
+    };
   }
 
   constructor() {
@@ -53,7 +54,7 @@ class About extends connect(store)(PageViewElement) {
 
         .about-video > iframe {
           position: absolute;
-          top: 0; 
+          top: 0;
           left: 0;
           height: 100%;
           width: 100%;
@@ -71,16 +72,13 @@ class About extends connect(store)(PageViewElement) {
           margin: 0 auto;
           text-align: center;
         }
-
       </style>
       <section>
         <article>
-          <h2 class="title">Welcome to <br>Zuzana Riha Art</h2>
-          <img class="about-img" src="images/about-bg.jpg">
+          <h2 class="title">Welcome to <br />Zuzana Riha Art</h2>
+          <img class="about-img" src="images/about-bg.jpg" />
 
-          <p>
-            ${this.__lines.map(line => html`${line}<br>`)}
-          </p>
+          <p>${this.__lines.map((line) => html`${line}<br />`)}</p>
 
           <div class="about-video">
             <iframe
@@ -104,4 +102,4 @@ class About extends connect(store)(PageViewElement) {
   }
 }
 
-window.customElements.define('about-view', About);
+window.customElements.define("about-view", About);

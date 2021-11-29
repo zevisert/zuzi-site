@@ -1,8 +1,8 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
 import {
   UPDATE_PAGE,
@@ -11,18 +11,18 @@ import {
   SHOW_SNACKBAR,
   HIDE_SNACKBAR,
   UPDATE_ABOUT_TEXT,
-} from '../actions/app.js';
+} from "../actions/app.js";
 
 const INITIAL_STATE = {
-  page: '',
+  page: "",
   offline: false,
   about: {
-    lines: []
+    lines: [],
   },
   snackbar: {
     active: false,
-    message: ''
-  }
+    message: "",
+  },
 };
 
 const app = (state = INITIAL_STATE, action) => {
@@ -31,31 +31,31 @@ const app = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         page: action.payload.page,
-        subPage: action.payload.subPage
+        subPage: action.payload.subPage,
       };
     case UPDATE_OFFLINE:
       return {
         ...state,
-        offline: action.payload.offline
+        offline: action.payload.offline,
       };
     case UPDATE_CREDENTIALS:
       return {
         ...state,
-        credentials: action.payload.credentials
+        credentials: action.payload.credentials,
       };
     case SHOW_SNACKBAR:
     case HIDE_SNACKBAR:
       return {
         ...state,
-        snackbar: snackbar(state.snackbar, action)
+        snackbar: snackbar(state.snackbar, action),
       };
     case UPDATE_ABOUT_TEXT:
       return {
         ...state,
         about: {
-          lines: action.payload.lines
-        }
-      }
+          lines: action.payload.lines,
+        },
+      };
     default:
       return state;
   }
@@ -63,22 +63,21 @@ const app = (state = INITIAL_STATE, action) => {
 
 export default app;
 
-
 const snackbar = (state, action) => {
   switch (action.type) {
     case SHOW_SNACKBAR:
       return {
         active: true,
-        message: action.payload.message
+        message: action.payload.message,
       };
     case HIDE_SNACKBAR:
       return {
         active: false,
-        message: ''
+        message: "",
       };
     default:
       return {
-        ...state
+        ...state,
       };
   }
 };

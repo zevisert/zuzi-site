@@ -1,28 +1,31 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element";
 import { store, connect } from "../../store.js";
 
-import { getAllProducts } from '../../actions/shop';
-import { selectedItemSelector } from '../../reducers/shop';
+import { getAllProducts } from "../../actions/shop";
+import { selectedItemSelector } from "../../reducers/shop";
 
-import { ButtonSharedStyles } from '../button-shared-styles';
+import { ButtonSharedStyles } from "../button-shared-styles";
 
-import '../cart/pricing-grid'
+import "../cart/pricing-grid";
 
 // This element is *not* connected to the Redux store.
 class GalleryItem extends connect(store)(PageViewElement) {
+  static get is() {
+    return "gallery-item";
+  }
 
-  static get is() { return 'gallery-item'; }
-
-  static get properties() { return {
-      item: { type: Object }
-  }}
+  static get properties() {
+    return {
+      item: { type: Object },
+    };
+  }
 
   render() {
     return html`
@@ -52,13 +55,12 @@ class GalleryItem extends connect(store)(PageViewElement) {
             margin: 0 auto;
           }
         }
-
       </style>
       <section>
         <a href="/gallery"><button>Return to Gallery</button></a>
       </section>
       <article class="item">
-        <img .src="/uploads/${this.item.preview}">
+        <img .src="/uploads/${this.item.preview}" />
         <h2>${this.item.title}</h2>
         <p>${this.item.description}</p>
 

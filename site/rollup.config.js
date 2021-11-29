@@ -29,7 +29,7 @@ export default [
       format: "es",
       preserveModules: true,
     },
-    external: [ 'tiff.js' ],
+    external: ["tiff.js"],
     plugins: [
       minifyHTML(),
       copy({
@@ -47,9 +47,7 @@ export default [
             src: "index.html",
             dest: "build/modern",
             transform: (contents, filename) =>
-              contents
-                .toString()
-                .replace('<base href="/">', '<base href="/modern/">'),
+              contents.toString().replace('<base href="/">', '<base href="/modern/">'),
           },
           { src: "manifest.json", dest: "build/modern" },
           { src: "push-manifest.json", dest: "build/modern" },
@@ -63,10 +61,7 @@ export default [
 
   // Modern build service worker
   {
-    input: [
-      "service-worker.js",
-      "push-listener.js",
-    ],
+    input: ["service-worker.js", "push-listener.js"],
     output: {
       format: "es",
       dir: "build/modern",
@@ -86,7 +81,7 @@ export default [
       "src/components/gallery/index.js",
       "src/components/zuzi-app/index.js",
     ],
-    external: [ 'tiff.js' ],
+    external: ["tiff.js"],
     output: {
       dir: `build/legacy/`,
       format: "systemjs",
@@ -127,12 +122,12 @@ export default [
           {
             src: "index-legacy.html",
             dest: "build/legacy",
-            rename: "index.html"
+            rename: "index.html",
           },
           { src: "manifest.json", dest: "build/legacy" },
         ],
       }),
-      process.env.NODE_ENV !== "development" ? terser() : () => {}
+      process.env.NODE_ENV !== "development" ? terser() : () => {},
     ],
   },
   // Babel polyfills for older browsers that don't support ES2015+.

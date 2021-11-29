@@ -1,33 +1,35 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html, LitElement } from 'lit';
-import { store, connect } from '../../store.js';
+import { html, LitElement } from "lit";
+import { store, connect } from "../../store.js";
 
-import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { SharedStyles } from '../shared-styles.js';
+import { ButtonSharedStyles } from "../button-shared-styles.js";
+import { SharedStyles } from "../shared-styles.js";
 import {
   advanceCheckout,
   retreatCheckout,
   setCheckoutMethod,
-  CHECKOUT_METHODS_ENUM
-} from '../../actions/shop.js';
+  CHECKOUT_METHODS_ENUM,
+} from "../../actions/shop.js";
 
 export class ShopPayment extends connect(store)(LitElement) {
+  static get is() {
+    return "shop-payment-select";
+  }
 
-  static get is() { return 'shop-payment-select'; }
-
-  static get properties() { return {
-    _checkout_method: { type: Number, default: null },
-  }}
+  static get properties() {
+    return {
+      _checkout_method: { type: Number, default: null },
+    };
+  }
 
   render() {
     return html`
-      ${ButtonSharedStyles}
-      ${SharedStyles}
+      ${ButtonSharedStyles} ${SharedStyles}
       <style>
         .radio-group {
           display: flex;
@@ -119,17 +121,18 @@ export class ShopPayment extends connect(store)(LitElement) {
           justify-content: center;
           align-items: center;
         }
-
       </style>
 
       <section class="radio-group">
         <div>
-          <input type="radio"  name="payment-method"
+          <input
+            type="radio"
+            name="payment-method"
             id="stripe"
             value="${CHECKOUT_METHODS_ENUM.STRIPE}"
             ?checked="${this._checkout_method === CHECKOUT_METHODS_ENUM.STRIPE}"
-            @change="${e => this._radioChange(e)}"
-          >
+            @change="${(e) => this._radioChange(e)}"
+          />
           <label for="stripe">
             <h2>Pay by Card</h2>
             <p>Visa, Mastercard, American Express</p>
@@ -137,24 +140,31 @@ export class ShopPayment extends connect(store)(LitElement) {
           <mwc-icon>check</mwc-icon>
         </div>
         <div>
-          <input type="radio" name="payment-method"
+          <input
+            type="radio"
+            name="payment-method"
             id="etransfer"
             value="${CHECKOUT_METHODS_ENUM.ETRANSFER}"
             ?checked="${this._checkout_method === CHECKOUT_METHODS_ENUM.ETRANSFER}"
-            @change="${e => this._radioChange(e)}"
-          >
+            @change="${(e) => this._radioChange(e)}"
+          />
           <label for="etransfer">
             <h2>Interac E-transfer</h2>
-            <p>Your order will stay in a pending state until an E-transfer is accepted</p>
+            <p>
+              Your order will stay in a pending state until an E-transfer is accepted
+            </p>
           </label>
           <mwc-icon>check</mwc-icon>
         </div>
         <div>
-          <input type="radio" name="payment-method" disabled
+          <input
+            type="radio"
+            name="payment-method"
+            disabled
             id="paypal"
             value="${-1}"
-            @change="${e => this._radioChange(e)}"
-          >
+            @change="${(e) => this._radioChange(e)}"
+          />
           <label for="paypal">
             <h2>PayPal</h2>
             <p>Coming Soon</p>
@@ -164,21 +174,22 @@ export class ShopPayment extends connect(store)(LitElement) {
       </section>
 
       <section class="advance-button">
-
         <button class="retreat-checkout" @click="${this._checkoutBackButtonClicked}">
           <div><mwc-icon>keyboard_backspace</mwc-icon> Modify cart</div>
         </button>
 
-        <button ?hidden="${this._quantity == 0}" @click="${this._checkoutButtonClicked}">
+        <button
+          ?hidden="${this._quantity == 0}"
+          @click="${this._checkoutButtonClicked}"
+        >
           Proceed to Checkout
         </button>
-
       </section>
     `;
   }
 
   firstUpdated() {
-    store.dispatch(setCheckoutMethod(store.getState().shop.method))
+    store.dispatch(setCheckoutMethod(store.getState().shop.method));
   }
 
   _radioChange(e) {

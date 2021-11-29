@@ -1,33 +1,36 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { LitElement, html } from 'lit';
-import { ButtonSharedStyles } from '../button-shared-styles';
-import { store } from '../../store.js';
+import { LitElement, html } from "lit";
+import { ButtonSharedStyles } from "../button-shared-styles";
+import { store } from "../../store.js";
 
-import { showSnackbar } from '../../actions/app.js';
-import { removeFromCart } from '../../actions/shop.js';
+import { showSnackbar } from "../../actions/app.js";
+import { removeFromCart } from "../../actions/shop.js";
 
-import '@material/mwc-icon';
+import "@material/mwc-icon";
 
 // This element is *not* connected to the Redux store.
 class ShopItem extends LitElement {
+  static get is() {
+    return "shop-cart-item";
+  }
 
-  static get is() { return 'shop-cart-item'; }
-
-  static get properties() { return {
-    key: { type: String },
-    item: { type: Object, attribute: false },
-    pricing: { type: Object, attribute: false },
-    quantity: { type: Number, attribute: false }
-  }}
+  static get properties() {
+    return {
+      key: { type: String },
+      item: { type: Object, attribute: false },
+      pricing: { type: Object, attribute: false },
+      quantity: { type: Number, attribute: false },
+    };
+  }
 
   constructor() {
     super();
-    this.key = null
+    this.key = null;
     this.item = null;
     this.pricing = null;
   }
@@ -78,15 +81,18 @@ class ShopItem extends LitElement {
       </style>
 
       <div class="self">
-        <img src="/uploads/${this.item.preview}" class="preview">
+        <img src="/uploads/${this.item.preview}" class="preview" />
         <div class="context">
           <h2>${this.item.title}</h2>
           <div><label>Medium:</label>${this.pricing.medium}</div>
-          <div><label>Size:</label>${this.pricing.size.width}${this.pricing.size.unit} by ${this.pricing.size.height}${this.pricing.size.unit}</div>
+          <div>
+            <label>Size:</label>${this.pricing.size.width}${this.pricing.size.unit} by
+            ${this.pricing.size.height}${this.pricing.size.unit}
+          </div>
           <div><label>Price:</label>$ ${this.pricing.price.toFixed(2)}</div>
           <div><label>Quantity:</label>${this.quantity}</div>
           <div class="remove" @click="${this._removeButtonClicked}">
-              <mwc-icon>close</mwc-icon>
+            <mwc-icon>close</mwc-icon>
           </div>
         </div>
       </div>
@@ -98,14 +104,13 @@ class ShopItem extends LitElement {
     store.dispatch(removeFromCart(this.key));
   }
 
-
   shouldUpdate() {
-    const [itemID, pricingID] = this.key.split('-');
+    const [itemID, pricingID] = this.key.split("-");
 
     if (itemID !== undefined && pricingID !== undefined) {
       const state = store.getState();
       this.item = state.shop.products[itemID];
-      this.pricing = this.item.pricings.find(pricing => pricing._id === pricingID);
+      this.pricing = this.item.pricings.find((pricing) => pricing._id === pricingID);
       this.quantity = state.shop.cart[this.key].quantity;
 
       return true;

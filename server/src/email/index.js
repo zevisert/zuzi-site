@@ -1,20 +1,17 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ */
 
-import { SMTPClient } from 'emailjs';
-import shortid from 'shortid';
+import { SMTPClient } from "emailjs";
+import shortid from "shortid";
 
 class AsyncEmailClient extends SMTPClient {
   async deliver(messagePromise) {
-    return email.send(
-      await messagePromise,
-      (err, message) => {
-        if (err) throw (err);
-        return message;
-      }
-    );
+    return email.send(await messagePromise, (err, message) => {
+      if (err) throw err;
+      return message;
+    });
   }
 }
 
@@ -26,7 +23,6 @@ export const email = new AsyncEmailClient({
   tls: process.env.EMAIL_SYS_USE_TLS,
 });
 
-
 export const withContext = (
   {
     headline,
@@ -34,13 +30,14 @@ export const withContext = (
     mailing_address = "1103 Cashato Dr, Revelstoke, B.C., Canada",
     instagram_permalink = "https://www.instagram.com/zuzi11_/",
   },
-  order={},
-  post={},
-  user={}
+  order = {},
+  post = {},
+  user = {}
 ) => {
-
-  const id = shortid.generate()
-  const permalink = `email-${id}-${order._id || post._id || user._id || shortid.generate()}.html`;
+  const id = shortid.generate();
+  const permalink = `email-${id}-${
+    order._id || post._id || user._id || shortid.generate()
+  }.html`;
 
   return {
     message: {
@@ -51,8 +48,8 @@ export const withContext = (
       instagram_permalink,
     },
     order: { ...(order.toObject ? order.toObject() : order) },
-    post:  { ...(post.toObject  ? post.toObject()  : post)  },
-    user:  { ...(user.toObject  ? user.toObject()  : user)  },
+    post: { ...(post.toObject ? post.toObject() : post) },
+    user: { ...(user.toObject ? user.toObject() : user) },
     process: {
       env: {
         EMAIL_SYS_ADDR: process.env.EMAIL_SYS_ADDR,
@@ -64,7 +61,7 @@ export const withContext = (
         ETRANSFER_PW: process.env.ETRANSFER_PW,
         SITE_URL: process.env.SITE_URL,
         API_URL: process.env.API_URL,
-      }
-    }
-  }
-}
+      },
+    },
+  };
+};

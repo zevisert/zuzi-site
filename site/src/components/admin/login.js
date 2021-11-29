@@ -1,28 +1,28 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
-import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { login, credentials } from '../../actions/app.js';
+import { SharedStyles } from "../shared-styles.js";
+import { ButtonSharedStyles } from "../button-shared-styles.js";
+import { login, credentials } from "../../actions/app.js";
 
-import { store } from '../../store.js';
-import '../underline-input.js';
+import { store } from "../../store.js";
+import "../underline-input.js";
 
 class LoginView extends PageViewElement {
-
-  static get is() { return 'login-view'; }
+  static get is() {
+    return "login-view";
+  }
 
   render() {
     return html`
-      ${SharedStyles}
-      ${ButtonSharedStyles}
+      ${SharedStyles} ${ButtonSharedStyles}
       <style>
         section {
           display: grid;
@@ -34,7 +34,12 @@ class LoginView extends PageViewElement {
       <section>
         <h2>Admin Login</h2>
         <underline-input id="email" type="email" placeholder="Email"></underline-input>
-        <underline-input id="password" type="password" placeholder="Password" @keypress="${this._isEnterPress}"></underline-input>
+        <underline-input
+          id="password"
+          type="password"
+          placeholder="Password"
+          @keypress="${this._isEnterPress}"
+        ></underline-input>
         <button @click="${this._submitForm}">Login</button>
       </section>
     `;
@@ -42,23 +47,23 @@ class LoginView extends PageViewElement {
 
   firstUpdated() {
     store.dispatch(credentials(undefined));
-    sessionStorage.removeItem('credentials');
+    sessionStorage.removeItem("credentials");
   }
 
   _isEnterPress(event) {
     const charCode = event.keyCode || event.which;
 
-    if ( charCode == '13' ) {
+    if (charCode == "13") {
       // Enter pressed
       this._submitForm();
     }
   }
 
   async _submitForm() {
-    const email = this.renderRoot.getElementById('email').value;
-    const password = this.renderRoot.getElementById('password').value;
+    const email = this.renderRoot.getElementById("email").value;
+    const password = this.renderRoot.getElementById("password").value;
 
-    store.dispatch(login({email, password}));
+    store.dispatch(login({ email, password }));
   }
 }
 

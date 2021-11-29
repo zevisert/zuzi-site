@@ -1,24 +1,24 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
+import { SharedStyles } from "../shared-styles.js";
 
 class Virtual extends PageViewElement {
-
-  static get is() { return 'virtual-tour-page'; }
+  static get is() {
+    return "virtual-tour-page";
+  }
 
   render() {
     return html`
       ${SharedStyles}
       <style>
-
         article {
           display: flex;
           flex-direction: column;
@@ -36,7 +36,6 @@ class Virtual extends PageViewElement {
           height: 80vh;
           width: 100%;
         }
-
       </style>
       <section>
         <article>
@@ -47,7 +46,8 @@ class Virtual extends PageViewElement {
             src="https://my.matterport.com/show/?m=A8HFnGeF8Vz"
             frameborder="0"
             allowfullscreen
-            allow="xr-spatial-tracking">
+            allow="xr-spatial-tracking"
+          >
           </iframe>
         </article>
       </section>

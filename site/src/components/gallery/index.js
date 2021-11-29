@@ -1,86 +1,84 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // This element is connected to the Redux store.
-import { store, connect } from '../../store.js';
+import { store, connect } from "../../store.js";
 
 // These are the elements needed by this element.
-import './gallery-list.js';
-import '../subscriber'
+import "./gallery-list.js";
+import "../subscriber";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
-import { ButtonSharedStyles } from '../button-shared-styles.js';
+import { SharedStyles } from "../shared-styles.js";
+import { ButtonSharedStyles } from "../button-shared-styles.js";
 
 class Gallery extends connect(store)(PageViewElement) {
+  static get is() {
+    return "gallery-view";
+  }
 
-  static get is() { return 'gallery-view'; }
-
-  static get properties() { return {
-    _tags: { type: Array },
-    filter: { type: String }
-  }}
+  static get properties() {
+    return {
+      _tags: { type: Array },
+      filter: { type: String },
+    };
+  }
 
   constructor() {
     super();
-    this.filter = '';
+    this.filter = "";
     this._tags = [];
   }
 
   render() {
     return html`
-      ${SharedStyles}
-      ${ButtonSharedStyles}
+      ${SharedStyles} ${ButtonSharedStyles}
       <style>
+        .filter {
+          max-width: 1600px;
+          margin: 0 auto;
+        }
 
-      .filter {
-        max-width: 1600px;
-        margin: 0 auto;
-      }
+        .tags,
+        .filter-hint {
+          display: flex;
+          justify-content: flex-end;
+        }
 
-      .tags,
-      .filter-hint {
-        display: flex;
-        justify-content: flex-end;
-      }
+        .filter-hint {
+          font-size: small;
+          font-style: oblique;
+          opacity: 0.5;
+          padding: 0 1em;
+        }
 
-      .filter-hint {
-        font-size: small;
-        font-style: oblique;
-        opacity: 0.5;
-        padding: 0 1em;
-      }
+        .tags span {
+          padding: 0 1rem;
+          transition: opacity 0.2s;
+        }
 
-      .tags span {
-        padding: 0 1rem;
-        transition: opacity 0.2s;
-      }
+        .tags span:not(:last-child) {
+          border-right: 2px solid #d2d5e4;
+        }
 
-      .tags span:not(:last-child) {
-        border-right: 2px solid #d2d5e4;
-      }
-
-      .tags:hover span:not(:hover) {
-        opacity: 0.5;
-      }
-
+        .tags:hover span:not(:hover) {
+          opacity: 0.5;
+        }
       </style>
       <section class="filter">
         <span class="filter-hint">Filter by</span>
         <div class="tags">
           ${this.filter.length == 0
-          ? this._tags.map(t => html`
-              <span @click=${() => this.tagClicked(t)}>${t}</span>
-            `)
-
-          : html`<span @click=${() => this.tagClicked('')}>Clear</span>`
-          }
+            ? this._tags.map(
+                (t) => html` <span @click=${() => this.tagClicked(t)}>${t}</span> `
+              )
+            : html`<span @click=${() => this.tagClicked("")}>Clear</span>`}
         </div>
       </section>
       <section>
@@ -96,11 +94,12 @@ class Gallery extends connect(store)(PageViewElement) {
 
   // This is called every time something is updated in the store.
   stateChanged(state) {
-    const allTags = Object.values(state.shop.products).reduce((tags, item) => [... tags, ... item.tags], []);
-    this._tags = [... (new Set(allTags)).keys()];
+    const allTags = Object.values(state.shop.products).reduce(
+      (tags, item) => [...tags, ...item.tags],
+      []
+    );
+    this._tags = [...new Set(allTags).keys()];
   }
 }
-
-
 
 window.customElements.define(Gallery.is, Gallery);

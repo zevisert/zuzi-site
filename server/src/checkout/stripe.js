@@ -1,48 +1,50 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ */
 
-import Stripe from 'stripe';
-import unparsed from 'koa-body/unparsed.js';
+import Stripe from "stripe";
+import unparsed from "koa-body/unparsed.js";
 
-import { Order, OrderItem, Customer, User, Mailing } from '../models/index.js';
-import { MailingTopics } from '../models/mailing.model.js';
-import { email, withContext } from '../email/index.js';
+import { Order, OrderItem, Customer, User, Mailing } from "../models/index.js";
+import { MailingTopics } from "../models/mailing.model.js";
+import { email, withContext } from "../email/index.js";
 import {
   orderAcceptedMessage,
   orderFailedMessage,
   orderAdminGeneratedMessage,
-  orderAdminNotProcessedMessage
-} from '../email/renderers/stripe.js';
+  orderAdminNotProcessedMessage,
+} from "../email/renderers/stripe.js";
 
 const stripe = Stripe(process.env.STRIPE_SK);
 
 export async function checkout(ctx) {
+  const { amount, metadata } = ctx.request.body;
 
-  const {amount, metadata } = ctx.request.body;
-
-  const items = metadata.items.map(item => new OrderItem({
-    quantity: item.quantity,
-    item: item.postId,
-    pricing: item.pricingId
-  }));
+  const items = metadata.items.map(
+    (item) =>
+      new OrderItem({
+        quantity: item.quantity,
+        item: item.postId,
+        pricing: item.pricingId,
+      })
+  );
 
   const order = new Order({
     items,
-    type: 'stripe',
-    status: 'pending',
+    type: "stripe",
+    status: "pending",
     customer: new Customer(metadata.customer),
     date: Date.now(),
     totalCents: amount,
-    info: metadata.info
+    info: metadata.info,
   });
 
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     metadata: { order_id: order._id.toString() },
-    currency: 'cad',
-    allowed_source_types: ['card'],
+    currency: "cad",
+    allowed_source_types: ["card"],
   });
 
   order.intent_id = paymentIntent.id;
@@ -57,27 +59,31 @@ export async function checkout(ctx) {
 }
 
 export async function webhook(ctx) {
-  const sig = ctx.request.header['stripe-signature'];
+  const sig = ctx.request.header["stripe-signature"];
   let event = null;
 
   try {
-    event = stripe.webhooks.constructEvent(ctx.request.body[unparsed], sig, process.env.STRIPE_WHSEC);
+    event = stripe.webhooks.constructEvent(
+      ctx.request.body[unparsed],
+      sig,
+      process.env.STRIPE_WHSEC
+    );
   } catch (err) {
     // invalid signature
     console.log(err.message);
-    ctx.throw(400, 'invalid_signature');
+    ctx.throw(400, "invalid_signature");
   }
 
   console.log(event.type);
 
   try {
     switch (event.type) {
-      case 'payment_intent.succeeded': {
+      case "payment_intent.succeeded": {
         const intent = event.data.object;
         await intentSucceeded(intent);
         break;
       }
-      case 'payment_intent.payment_failed': {
+      case "payment_intent.payment_failed": {
         const intent = event.data.object;
         await intentFailed(intent);
         break;
@@ -89,26 +95,24 @@ export async function webhook(ctx) {
   } catch (err) {
     console.log(err);
     ctx.status = 400;
-    ctx.body = 'errored';
+    ctx.body = "errored";
   } finally {
-    if (! ctx.status) {
+    if (!ctx.status) {
       ctx.status = 200;
     }
-    if (! ctx.body) {
-      ctx.body = 'received';
+    if (!ctx.body) {
+      ctx.body = "received";
     }
   }
 }
 
-
 async function intentSucceeded(intent) {
-
   const order = await Order.findById(intent.metadata.order_id)
-    .populate({path: 'items.item', select: "title description preview slug"})
-    .populate({path: 'items.pricing'})
-    .populate({path: 'mailings'})
+    .populate({ path: "items.item", select: "title description preview slug" })
+    .populate({ path: "items.pricing" })
+    .populate({ path: "mailings" });
 
-  order.status = 'paid';
+  order.status = "paid";
 
   if (
     intent.charges &&
@@ -116,97 +120,125 @@ async function intentSucceeded(intent) {
     intent.charges.object === "list" &&
     intent.charges.data.length === 1
   ) {
-    order.receipt = intent.charges.data[0].receipt_url
+    order.receipt = intent.charges.data[0].receipt_url;
   }
 
-  await order.save()
+  await order.save();
 
-  const admins = await User.find({ admin: true })
-  await email.deliver(orderAdminGeneratedMessage(
-    withContext({
-      headline: "Newly placed order completed",
-      delivery_reason: [
-        "This message was generated in response to order placement.",
-        "Payment processing has completed successfully, thus the associated order has been accepted.",
-        "You are a recipient because this email is listed as a store administrator."
-      ].join(" ")
-    }, order),
-    admins
-  ));
+  const admins = await User.find({ admin: true });
+  await email.deliver(
+    orderAdminGeneratedMessage(
+      withContext(
+        {
+          headline: "Newly placed order completed",
+          delivery_reason: [
+            "This message was generated in response to order placement.",
+            "Payment processing has completed successfully, thus the associated order has been accepted.",
+            "You are a recipient because this email is listed as a store administrator.",
+          ].join(" "),
+        },
+        order
+      ),
+      admins
+    )
+  );
 
-  order.mailings.push(new Mailing({
-    topic: MailingTopics.orders.stripe.admin.generated.ref,
-    recipients: admins.map(admin => admin.email),
-    completed: true
-  }));
+  order.mailings.push(
+    new Mailing({
+      topic: MailingTopics.orders.stripe.admin.generated.ref,
+      recipients: admins.map((admin) => admin.email),
+      completed: true,
+    })
+  );
 
-  await order.save()
+  await order.save();
 
-  await email.deliver(orderAcceptedMessage(
-    withContext({
-      headline: "Payment Completed",
-      delivery_reason: [
-        "This message was generated in response to a status change of recently placed order associated with this email address.",
-        "Payment processing has completed successfully, and the associated order has been accepted."
-      ].join(" ")
-    }, order)
-  ));
+  await email.deliver(
+    orderAcceptedMessage(
+      withContext(
+        {
+          headline: "Payment Completed",
+          delivery_reason: [
+            "This message was generated in response to a status change of recently placed order associated with this email address.",
+            "Payment processing has completed successfully, and the associated order has been accepted.",
+          ].join(" "),
+        },
+        order
+      )
+    )
+  );
 
-  console.log('Stripe processed order for:', order.customer.name);
+  console.log("Stripe processed order for:", order.customer.name);
 
-  order.mailings.push(new Mailing({
-    topic: MailingTopics.orders.stripe.accepted.ref,
-    recipients: [order.customer.email],
-    completed: true
-  }));
+  order.mailings.push(
+    new Mailing({
+      topic: MailingTopics.orders.stripe.accepted.ref,
+      recipients: [order.customer.email],
+      completed: true,
+    })
+  );
   await order.save();
 }
 
 async function intentFailed(intent) {
   const order = await Order.findById(intent.metadata.order_id)
-    .populate({path: 'items.item', select: "title description slug preview"})
-    .populate({path: 'items.pricing'})
-    .populate({path: 'mailings'})
+    .populate({ path: "items.item", select: "title description slug preview" })
+    .populate({ path: "items.pricing" })
+    .populate({ path: "mailings" });
 
-  order.status = 'failed';
+  order.status = "failed";
   if (intent.last_payment_error) {
     order.info = intent.last_payment_error.message;
   }
 
-  await email.deliver(orderAdminNotProcessedMessage(
-    withContext({
-      headline: "Order payment failed",
-      delivery_reason: [
-        "This message was generated in response to a recently placed order that did not successfully complete payment.",
-        "Upstream payment processing by Stripe refused to create a charge for this transaction, the customer may try again later.",
-        "You are receiving notification because this email is listed as a store administrator."
-      ].join(" ")
-    }, order),
-    await User.find({ admin: true })
-  ));
+  await email.deliver(
+    orderAdminNotProcessedMessage(
+      withContext(
+        {
+          headline: "Order payment failed",
+          delivery_reason: [
+            "This message was generated in response to a recently placed order that did not successfully complete payment.",
+            "Upstream payment processing by Stripe refused to create a charge for this transaction, the customer may try again later.",
+            "You are receiving notification because this email is listed as a store administrator.",
+          ].join(" "),
+        },
+        order
+      ),
+      await User.find({ admin: true })
+    )
+  );
 
-  order.mailings.push(new Mailing({
-    topic: MailingTopics.orders.stripe.admin.notprocessed.ref,
-    recipients: [order.customer.email],
-    completed: true
-  }))
+  order.mailings.push(
+    new Mailing({
+      topic: MailingTopics.orders.stripe.admin.notprocessed.ref,
+      recipients: [order.customer.email],
+      completed: true,
+    })
+  );
 
-  await email.deliver(orderFailedMessage(
-    withContext({
-      headline: "Payment processing failed",
-      delivery_reason: [
-        "This message was generated in response to placement of an order using this email address.",
-        "The associated order can not be completed because the payment method was refused."
-      ].join(" ")
-    }, order)
-  ));
+  await email.deliver(
+    orderFailedMessage(
+      withContext(
+        {
+          headline: "Payment processing failed",
+          delivery_reason: [
+            "This message was generated in response to placement of an order using this email address.",
+            "The associated order can not be completed because the payment method was refused.",
+          ].join(" "),
+        },
+        order
+      )
+    )
+  );
 
-  order.mailings.push(new Mailing({
-    topic: MailingTopics.orders.stripe.failed.ref,
-    recipients: [order.customer.email],
-    completed: true
-  }))
+  order.mailings.push(
+    new Mailing({
+      topic: MailingTopics.orders.stripe.failed.ref,
+      recipients: [order.customer.email],
+      completed: true,
+    })
+  );
 
-  console.log('Stripe failed payment for:', order.customer.email, order.info);
+  console.log("Stripe failed payment for:", order.customer.email, order.info);
   await order.save();
 }

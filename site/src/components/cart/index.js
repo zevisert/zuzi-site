@@ -1,28 +1,30 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // This element is connected to the Redux store.
-import { store, connect } from '../../store.js';
+import { store, connect } from "../../store.js";
 
-import { CHECKOUT_STAGES_ENUM } from '../../actions/shop.js';
+import { CHECKOUT_STAGES_ENUM } from "../../actions/shop.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
-
+import { SharedStyles } from "../shared-styles.js";
 
 class Cart extends connect(store)(PageViewElement) {
+  static get is() {
+    return "cart-view";
+  }
 
-  static get is() { return 'cart-view'; }
-
-  static get properties() { return {
-    __stage: { type: String },
-  }}
+  static get properties() {
+    return {
+      __stage: { type: String },
+    };
+  }
 
   constructor() {
     super();
@@ -33,21 +35,20 @@ class Cart extends connect(store)(PageViewElement) {
     switch (this.__stage) {
       default:
       case CHECKOUT_STAGES_ENUM.CART:
-        return ['Shopping Cart', html`
-          <shop-cart></shop-cart>
-        `];
+        return ["Shopping Cart", html` <shop-cart></shop-cart> `];
 
       case CHECKOUT_STAGES_ENUM.PAYMENT_MODE:
-        return ['Payment type', html`
-          <shop-payment-select></shop-payment-select>
-        `];
+        return ["Payment type", html` <shop-payment-select></shop-payment-select> `];
 
       case CHECKOUT_STAGES_ENUM.CHECKOUT:
-        return ['Checkout', html`
-          <shop-checkout>
-            <slot name="stripe-card" slot="stripe-card"></slot>
-          </shop-checkout>
-        `];
+        return [
+          "Checkout",
+          html`
+            <shop-checkout>
+              <slot name="stripe-card" slot="stripe-card"></slot>
+            </shop-checkout>
+          `,
+        ];
     }
   }
 
@@ -65,9 +66,7 @@ class Cart extends connect(store)(PageViewElement) {
       <section>
         <h2>${title}</h2>
       </section>
-      <section>
-        ${subpage}
-      </section>
+      <section>${subpage}</section>
     `;
   }
 
@@ -77,15 +76,15 @@ class Cart extends connect(store)(PageViewElement) {
     switch (this.__stage) {
       default:
       case CHECKOUT_STAGES_ENUM.CART:
-        await import('./shop-cart.js');
+        await import("./shop-cart.js");
         break;
 
       case CHECKOUT_STAGES_ENUM.PAYMENT_MODE:
-        await import('./shop-payment-select.js');
+        await import("./shop-payment-select.js");
         break;
 
       case CHECKOUT_STAGES_ENUM.CHECKOUT:
-        await import('./shop-checkout.js');
+        await import("./shop-checkout.js");
         break;
     }
   }

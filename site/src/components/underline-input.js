@@ -1,25 +1,28 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html, LitElement } from 'lit';
+import { html, LitElement } from "lit";
 
 export class UnderlineInput extends LitElement {
+  static get is() {
+    return "underline-input";
+  }
 
-  static get is() { return 'underline-input'; }
-
-  static get properties() { return {
-    type: { type: String },
-    placeholder: { type: String },
-    value: { type: String },
-    error: { type: Boolean, reflect: true }
-  }}
+  static get properties() {
+    return {
+      type: { type: String },
+      placeholder: { type: String },
+      value: { type: String },
+      error: { type: Boolean, reflect: true },
+    };
+  }
 
   constructor() {
     super();
-    this.type = 'text';
+    this.type = "text";
     this.placeholder = null;
     this.value = null;
     this.error = false;
@@ -32,12 +35,12 @@ export class UnderlineInput extends LitElement {
         input[type="email"],
         input[type="password"],
         input[type="number"] {
-            font-size: 16px;
-            line-height: 2rem;
-            border: 0;
-            background: none;
-            outline: none;
-            width: 100%;
+          font-size: 16px;
+          line-height: 2rem;
+          border: 0;
+          background: none;
+          outline: none;
+          width: 100%;
         }
 
         :host .underline::before {
@@ -60,7 +63,7 @@ export class UnderlineInput extends LitElement {
         }
 
         .underline::before {
-          content: '';
+          content: "";
           position: absolute;
           width: 100%;
           height: 2px;
@@ -69,7 +72,7 @@ export class UnderlineInput extends LitElement {
         }
 
         .underline::after {
-          content: '';
+          content: "";
           position: absolute;
           width: 100%;
           transform: scaleX(0);
@@ -77,41 +80,43 @@ export class UnderlineInput extends LitElement {
           bottom: 0;
           left: 0;
           transform-origin: bottom right;
-          transition: transform 0.25s ease-in ;
+          transition: transform 0.25s ease-in;
         }
 
         .underline.focus::after {
           transform: scaleX(1);
           transform-origin: bottom left;
         }
-
       </style>
       <div class="underline">
-        <input id="input" .type="${this.type}" .placeholder="${this.placeholder}" .value="${this.value}">
+        <input
+          id="input"
+          .type="${this.type}"
+          .placeholder="${this.placeholder}"
+          .value="${this.value}"
+        />
       </div>
     `;
   }
 
   firstUpdated() {
     this.__els = {
-      input: this.renderRoot.getElementById('input')
+      input: this.renderRoot.getElementById("input"),
     };
 
-    [ this.__els.input
-    ].forEach(elem => {
-      elem.addEventListener('input', this.__updateValue.bind(this));
-      elem.addEventListener('focus', this.__focusUnderline.bind(this));
-      elem.addEventListener('blur', this.__focusUnderline.bind(this));
+    [this.__els.input].forEach((elem) => {
+      elem.addEventListener("input", this.__updateValue.bind(this));
+      elem.addEventListener("focus", this.__focusUnderline.bind(this));
+      elem.addEventListener("blur", this.__focusUnderline.bind(this));
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    [ this.__els.input
-    ].forEach(elem => {
-      elem.removeEventListener('input', this.__updateValue.bind(this));
-      elem.removeEventListener('focus', this.__focusUnderline.bind(this));
-      elem.removeEventListener('blur', this.__focusUnderline.bind(this));
+    [this.__els.input].forEach((elem) => {
+      elem.removeEventListener("input", this.__updateValue.bind(this));
+      elem.removeEventListener("focus", this.__focusUnderline.bind(this));
+      elem.removeEventListener("blur", this.__focusUnderline.bind(this));
     });
   }
 
@@ -122,9 +127,9 @@ export class UnderlineInput extends LitElement {
 
   __focusUnderline(e) {
     if (e.type === "focus") {
-      e.target.parentNode.classList.add('focus');
+      e.target.parentNode.classList.add("focus");
     } else if (e.type === "blur") {
-      e.target.parentNode.classList.remove('focus');
+      e.target.parentNode.classList.remove("focus");
     }
   }
 }

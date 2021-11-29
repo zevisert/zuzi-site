@@ -3,13 +3,8 @@
   "plugins": {
     "local": {
       "browserOptions": {
-        "chrome": [
-          "headless",
-          "disable-gpu"
-        ],
-        "firefox": [
-          "-headless"
-        ]
+        "chrome": ["headless", "disable-gpu"],
+        "firefox": ["-headless"]
       }
     }
   }

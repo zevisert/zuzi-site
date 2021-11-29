@@ -1,14 +1,14 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { LitElement, html } from 'lit';
+import { LitElement, html } from "lit";
 import { store, connect } from "../../store";
 import { showSnackbar, hideSnackbar } from "../../actions/app";
 
-import '@material/mwc-icon';
+import "@material/mwc-icon";
 
 class Timer {
   constructor(ms, callback) {
@@ -56,22 +56,24 @@ class Timer {
   }
 }
 
-
 class Snackbar extends connect(store)(LitElement) {
+  static get is() {
+    return "app-snackbar";
+  }
 
-  static get is() { return 'app-snackbar'; }
-
-  static get properties() { return {
-    currentActiveState: {
-      type: Boolean,
-      reflect: true,
-      attribute: 'active'
-    },
-    currentMessage: {
-      type: String,
-      attribute: 'message'
-    }
-  }}
+  static get properties() {
+    return {
+      currentActiveState: {
+        type: Boolean,
+        reflect: true,
+        attribute: "active",
+      },
+      currentMessage: {
+        type: String,
+        attribute: "message",
+      },
+    };
+  }
 
   constructor() {
     super();
@@ -124,7 +126,7 @@ class Snackbar extends connect(store)(LitElement) {
         }
 
         .snackbar::after {
-          content: '';
+          content: "";
           background-color: red;
           position: absolute;
           width: 100%;
@@ -147,7 +149,6 @@ class Snackbar extends connect(store)(LitElement) {
             max-width: 600px;
           }
         }
-
       </style>
       <div class="snackbar">
         <span>${this.currentMessage}</span>
@@ -157,20 +158,26 @@ class Snackbar extends connect(store)(LitElement) {
   }
 
   firstUpdated() {
-    const params = (new URL(document.location)).searchParams;
-    if (params.has('message')) {
-      store.dispatch(showSnackbar(params.get('message')));
+    const params = new URL(document.location).searchParams;
+    if (params.has("message")) {
+      store.dispatch(showSnackbar(params.get("message")));
 
-      params.delete('message');
-      const sep = [...params.keys()].length > 0
-      history.replaceState({}, document.title, `${document.location.pathname}${sep ? '?' : ''}${params}`);
+      params.delete("message");
+      const sep = [...params.keys()].length > 0;
+      history.replaceState(
+        {},
+        document.title,
+        `${document.location.pathname}${sep ? "?" : ""}${params}`
+      );
     }
   }
 
   stateChanged(state) {
     if (state.app.snackbar.active) {
-      const hasMessageQueued = this.__queue.some(toast => toast.message === state.app.snackbar.message);
-      if (! hasMessageQueued) {
+      const hasMessageQueued = this.__queue.some(
+        (toast) => toast.message === state.app.snackbar.message
+      );
+      if (!hasMessageQueued) {
         this.__queue.push(state.app.snackbar);
       }
     } else {
@@ -191,9 +198,8 @@ class Snackbar extends connect(store)(LitElement) {
       }
     }, 500);
 
-
     if (this.__timer.remaining === 0) {
-      this.currentMessage = '';
+      this.currentMessage = "";
       this.currentActiveState = false;
     }
   }

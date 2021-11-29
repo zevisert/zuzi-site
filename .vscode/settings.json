@@ -3,5 +3,8 @@
     "mjml.updateWhenTyping": true,
     "files.associations": {
         "*.mjml.njk": "mjml"
-    }
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true
 }

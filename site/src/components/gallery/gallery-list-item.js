@@ -1,22 +1,25 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { LitElement, html, css } from 'lit';
-import { store, connect } from '../../store';
-import { givenItemSelector } from '../../reducers/shop';
+import { LitElement, html, css } from "lit";
+import { store, connect } from "../../store";
+import { givenItemSelector } from "../../reducers/shop";
 
 // This element is *not* connected to the Redux store.
 class GalleryListItem extends connect(store)(LitElement) {
+  static get is() {
+    return "gallery-list-item";
+  }
 
-  static get is() { return 'gallery-list-item'; }
-
-  static get properties() { return {
-    key: { type: String },
-    item: { type: Object }
-  }}
+  static get properties() {
+    return {
+      key: { type: String },
+      item: { type: Object },
+    };
+  }
 
   static get styles() {
     return css`
@@ -48,7 +51,7 @@ class GalleryListItem extends connect(store)(LitElement) {
       .tile__minor {
         color: white;
         background-color: var(--tile-bg);
-        opacity: 1.0;
+        opacity: 1;
         position: absolute;
         bottom: 0;
         width: 100%;
@@ -70,39 +73,42 @@ class GalleryListItem extends connect(store)(LitElement) {
       }
 
       .tile:hover .tile__preview::after {
-        content: '';
+        content: "";
       }
 
       .tile:hover .tile__minor {
         transform: translateY(50px);
       }
-    `
+    `;
   }
 
   render() {
     return html`
-      
       <div class="tile">
         <div class="tile__preview">
-          <img src="/uploads/${this.item.preview}">
+          <img src="/uploads/${this.item.preview}" />
         </div>
-        <header class="tile__minor">
-          ${this.item.title}
-        </header>
+        <header class="tile__minor">${this.item.title}</header>
       </div>
     `;
   }
 
   updated(changedProperties) {
-    if (changedProperties.has('key')) {
+    if (changedProperties.has("key")) {
       this.item = store.getState().shop.products[this.key];
-      this.style.setProperty('--tile-vertical-position', `${this.item.display_position}%`);
+      this.style.setProperty(
+        "--tile-vertical-position",
+        `${this.item.display_position}%`
+      );
     }
   }
-  
+
   stateChanged(state) {
     this.item = givenItemSelector(this.key)(state);
-    this.style.setProperty('--tile-vertical-position', `${this.item.display_position}%`);
+    this.style.setProperty(
+      "--tile-vertical-position",
+      `${this.item.display_position}%`
+    );
   }
 }
 

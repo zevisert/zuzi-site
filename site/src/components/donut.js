@@ -1,14 +1,15 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html, LitElement } from 'lit';
+import { html, LitElement } from "lit";
 
 class DonutSpinner extends LitElement {
-
-  static get is() { return 'donut-spinner'; }
+  static get is() {
+    return "donut-spinner";
+  }
   render() {
     return html`
       <style>

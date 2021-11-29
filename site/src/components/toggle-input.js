@@ -1,25 +1,28 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html, LitElement } from 'lit';
+import { html, LitElement } from "lit";
 
 class ToggleInput extends LitElement {
+  static get is() {
+    return "toggle-input";
+  }
 
-  static get is() { return 'toggle-input'; }
-
-  static get properties() { return {
-    type: { type: String },
-    checked: { type: Boolean, reflect: true } ,
-    value: { type: String },
-    error: { type: Boolean, reflect: true }
-  }}
+  static get properties() {
+    return {
+      type: { type: String },
+      checked: { type: Boolean, reflect: true },
+      value: { type: String },
+      error: { type: Boolean, reflect: true },
+    };
+  }
 
   constructor() {
     super();
-    this.type = 'checkbox';
+    this.type = "checkbox";
     this.checked = false;
     this.value = null;
     this.error = false;
@@ -40,7 +43,7 @@ class ToggleInput extends LitElement {
         }
 
         .switch::after {
-          content: '';
+          content: "";
           position: absolute;
           width: 22px;
           height: 18px;
@@ -51,11 +54,11 @@ class ToggleInput extends LitElement {
           transition: all 0.3s;
         }
 
-        input[type='checkbox']:checked + .switch::after {
+        input[type="checkbox"]:checked + .switch::after {
           transform: translateX(20px);
         }
 
-        input[type='checkbox']:checked + .switch {
+        input[type="checkbox"]:checked + .switch {
           background-color: darkcyan;
         }
 
@@ -65,27 +68,31 @@ class ToggleInput extends LitElement {
         }
       </style>
 
-      <input id="toggle" class="offscreen" .type="${this.type}" .checked="${this.checked}" .value="${this.value}"/>
+      <input
+        id="toggle"
+        class="offscreen"
+        .type="${this.type}"
+        .checked="${this.checked}"
+        .value="${this.value}"
+      />
       <label for="toggle" class="switch"></label>
     `;
   }
 
   firstUpdated() {
     this.__els = {
-      input: this.renderRoot.getElementById('toggle')
+      input: this.renderRoot.getElementById("toggle"),
     };
 
-    [ this.__els.input
-    ].forEach(elem => {
-      elem.addEventListener('change', this.__updateValue.bind(this));
+    [this.__els.input].forEach((elem) => {
+      elem.addEventListener("change", this.__updateValue.bind(this));
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    [ this.__els.input
-    ].forEach(elem => {
-      elem.removeEventListener('change', this.__updateValue.bind(this));
+    [this.__els.input].forEach((elem) => {
+      elem.removeEventListener("change", this.__updateValue.bind(this));
     });
   }
 
@@ -93,11 +100,11 @@ class ToggleInput extends LitElement {
     const target = e.target;
     this.checked = target.checked;
     this.dispatchEvent(
-      new CustomEvent('changed', {
+      new CustomEvent("changed", {
         composed: true,
         detail: {
-          checked: this.checked
-        }
+          checked: this.checked,
+        },
       })
     );
   }

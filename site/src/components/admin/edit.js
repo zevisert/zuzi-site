@@ -1,55 +1,62 @@
 /**
-* @license
-* Copyright (c) Zev Isert, All rights reserved
-* This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
-*/
+ * @license
+ * Copyright (c) Zev Isert, All rights reserved
+ * This code is used under the licence available at https://github.com/zevisert/zuzi-site/LICENCE.txt
+ */
 
-import { html } from 'lit';
-import { PageViewElement } from '../page-view-element.js';
+import { html } from "lit";
+import { PageViewElement } from "../page-view-element.js";
 
 // These are the shared styles needed by this element.
-import { SharedStyles } from '../shared-styles.js';
-import { ButtonSharedStyles } from '../button-shared-styles.js';
-import { SharedDynamicTable } from '../dynamic-table-styles.js';
+import { SharedStyles } from "../shared-styles.js";
+import { ButtonSharedStyles } from "../button-shared-styles.js";
+import { SharedDynamicTable } from "../dynamic-table-styles.js";
 
-import { store, connect } from '../../store.js';
-import { getAllProducts } from '../../actions/shop.js';
-import { editItem, createItem } from '../../actions/admin.js';
-import { selectedItemSelector } from '../../reducers/shop.js';
+import { store, connect } from "../../store.js";
+import { getAllProducts } from "../../actions/shop.js";
+import { editItem, createItem } from "../../actions/admin.js";
+import { selectedItemSelector } from "../../reducers/shop.js";
 
-import { navigate } from '../../actions/app.js';
+import { navigate } from "../../actions/app.js";
 
-import 'simple-chip';
-import '../underline-input.js';
-import '../toggle-input.js';
-import '../donut.js';
-import './pricing-form.js';
-import './pricing-card.js';
+import "simple-chip";
+import "../underline-input.js";
+import "../toggle-input.js";
+import "../donut.js";
+import "./pricing-form.js";
+import "./pricing-card.js";
 
 const EMPTY_ITEM = {
   _id: null,
-  preview: '',
-  title: '',
-  description: '',
+  preview: "",
+  title: "",
+  description: "",
   tags: [],
   pricings: [],
   active: false,
 };
 
 const JsonType = {
-  fromAttribute: (attr) => { return JSON.parse(attr) },
-  toAttribute:   (prop) => { return JSON.stringify(prop) }
+  fromAttribute: (attr) => {
+    return JSON.parse(attr);
+  },
+  toAttribute: (prop) => {
+    return JSON.stringify(prop);
+  },
 };
 
 class AdminEdit extends connect(store)(PageViewElement) {
+  static get is() {
+    return "admin-edit";
+  }
 
-  static get is() { return 'admin-edit'; }
-
-  static get properties() { return {
-    item: { type: JsonType },
-    __imageLoading: { type: Boolean },
-    __uploadProgress: { type: String }
-  }}
+  static get properties() {
+    return {
+      item: { type: JsonType },
+      __imageLoading: { type: Boolean },
+      __uploadProgress: { type: String },
+    };
+  }
 
   constructor() {
     super();
@@ -57,21 +64,22 @@ class AdminEdit extends connect(store)(PageViewElement) {
     this.__els = {};
     this.__tiff = null;
     this.__imageLoading = false;
-    this.__uploadProgress = 'Working...';
+    this.__uploadProgress = "Working...";
 
-    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ], tags: [ ... EMPTY_ITEM.tags ] };
+    this.item = {
+      ...EMPTY_ITEM,
+      pricings: [...EMPTY_ITEM.pricings],
+      tags: [...EMPTY_ITEM.tags],
+    };
 
     store.dispatch(getAllProducts());
   }
 
   render() {
     return html`
-      ${SharedStyles}
-      ${ButtonSharedStyles}
-      ${SharedDynamicTable}
+      ${SharedStyles} ${ButtonSharedStyles} ${SharedDynamicTable}
 
       <style>
-
         :host {
           --scroller-height: 600px;
         }
@@ -121,7 +129,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
         .overlay {
           display: none;
 
-          background-color: rgba(0,0,0, 0.7);
+          background-color: rgba(0, 0, 0, 0.7);
           align-items: center;
           justify-content: center;
           flex-direction: column;
@@ -172,20 +180,28 @@ class AdminEdit extends connect(store)(PageViewElement) {
         }
 
         @media screen and (max-width: 725px) {
-          #pricing-group table tbody tr td:nth-child(1):before { content: "Medium"; }
-          #pricing-group table tbody tr td:nth-child(2):before { content: "Size"; }
-          #pricing-group table tbody tr td:nth-child(3):before { content: "Price"; }
-          #pricing-group table tbody tr td:nth-child(4):before { content: "Remove"; }
+          #pricing-group table tbody tr td:nth-child(1):before {
+            content: "Medium";
+          }
+          #pricing-group table tbody tr td:nth-child(2):before {
+            content: "Size";
+          }
+          #pricing-group table tbody tr td:nth-child(3):before {
+            content: "Price";
+          }
+          #pricing-group table tbody tr td:nth-child(4):before {
+            content: "Remove";
+          }
         }
       </style>
       <section>
         <div class="container">
-
           <h2 class="breadcrumb">
-            <a href="/admin">Admin View</a> // ${this.item._id === null ? "New" : this.item.title}
+            <a href="/admin">Admin View</a> //
+            ${this.item._id === null ? "New" : this.item.title}
           </h2>
 
-          <input id="file" type="file" hidden>
+          <input id="file" type="file" hidden />
           <div class="scroller-container">
             <div id="scroller" class="canvas-scroller">
               <canvas id="preview" @click="${() => this.__els.file.click()}"></canvas>
@@ -201,34 +217,53 @@ class AdminEdit extends connect(store)(PageViewElement) {
               <div>
                 <div class="block">
                   <label for="title">Title</label>
-                  <underline-input id="title" type="text" placeholder="Title" .value="${this.item.title}"></underline-input>
+                  <underline-input
+                    id="title"
+                    type="text"
+                    placeholder="Title"
+                    .value="${this.item.title}"
+                  ></underline-input>
                 </div>
 
                 <div class="block">
                   <label for="desc">Description</label>
-                  <underline-input id="desc" type="text" placeholder="Description" .value="${this.item.description}"></underline-input>
+                  <underline-input
+                    id="desc"
+                    type="text"
+                    placeholder="Description"
+                    .value="${this.item.description}"
+                  ></underline-input>
                 </div>
 
                 <div class="block">
                   <label for="tags">Tags</label>
-                  <simple-chip id="tags" type="text" placeholder="Tags" commitkeycode="Space"></simple-chip>
+                  <simple-chip
+                    id="tags"
+                    type="text"
+                    placeholder="Tags"
+                    commitkeycode="Space"
+                  ></simple-chip>
                 </div>
 
                 <div class="block">
                   <label for="active">Active</label>
-                  <toggle-input id="active" type="checkbox" ?checked="${this.item.active}"></toggle-input>
+                  <toggle-input
+                    id="active"
+                    type="checkbox"
+                    ?checked="${this.item.active}"
+                  ></toggle-input>
                 </div>
 
-                <div class="block" ?hidden="${!(this.__els.file && this.__els.file.files[0])}">
+                <div
+                  class="block"
+                  ?hidden="${!(this.__els.file && this.__els.file.files[0])}"
+                >
                   <label for="watermark">Watermark</label>
                   <toggle-input id="watermark" type="checkbox"></toggle-input>
                 </div>
               </div>
 
-              <button
-                ?disabled="${this.__imageLoading}"
-                @click="${this.submit}"
-              >
+              <button ?disabled="${this.__imageLoading}" @click="${this.submit}">
                 ${this.item._id === null ? "Create Posting" : "Save Changes"}
               </button>
             </div>
@@ -239,14 +274,13 @@ class AdminEdit extends connect(store)(PageViewElement) {
               </div>
               <button
                 ?disabled="${this.__imageLoading}"
-                @click="${e => this.__els.pricing.broadcastPricing(e) }"
+                @click="${(e) => this.__els.pricing.broadcastPricing(e)}"
               >
                 Add pricing
               </button>
             </div>
           </div>
         </div>
-
       </section>
 
       <section class="pricing-group">
@@ -264,20 +298,25 @@ class AdminEdit extends connect(store)(PageViewElement) {
                     </tr>
                   </thead>
                   <tbody>
-                    ${this.item.pricings.map(pricing => html`
-                      <tr>
+                    ${this.item.pricings.map(
+                      (pricing) => html` <tr>
                         <td class="column1">${pricing.medium}</td>
-                        <td class="column2">${pricing.size.width}x${pricing.size.height} ${pricing.size.unit}</td>
+                        <td class="column2">
+                          ${pricing.size.width}x${pricing.size.height}
+                          ${pricing.size.unit}
+                        </td>
                         <td class="column3">
-                          ${ pricing.available
-                          ? html`<div class="pricing">$ ${pricing.price}</div>`
-                          : html`<div class="pricing sold"> Sold </div>`
-                          }
+                          ${pricing.available
+                            ? html`<div class="pricing">$ ${pricing.price}</div>`
+                            : html`<div class="pricing sold">Sold</div>`}
                         </td>
                         <td class="column4">
                           <button
                             ?disabled="${this.__imageLoading}"
-                            @click="${(e) => { e.stopPropagation(); this.pricingRemoved(pricing); }}"
+                            @click="${(e) => {
+                              e.stopPropagation();
+                              this.pricingRemoved(pricing);
+                            }}"
                           >
                             Remove
                           </button>
@@ -291,8 +330,6 @@ class AdminEdit extends connect(store)(PageViewElement) {
           </div>
         </div>
       </section>
-
-
     `;
   }
 
@@ -302,20 +339,20 @@ class AdminEdit extends connect(store)(PageViewElement) {
     // Let the element render once so we have element references
     await this.updateComplete;
     if (item === undefined && page === "new") {
-
       this.reset();
       await this.updateComplete;
 
       const prevProducts = this.productKeys;
       this.productKeys = new Set(Object.keys(newState.shop.products));
 
-      const [id, ...rest] = [...this.productKeys].filter(key => ! prevProducts.has(key));
+      const [id, ...rest] = [...this.productKeys].filter(
+        (key) => !prevProducts.has(key)
+      );
       if (id && rest.length === 0) {
         // New item created
         store.dispatch(navigate(`/admin/${newState.shop.products[id].slug}`));
       }
     } else if (item) {
-
       this.item = item;
       this.__imageLoading = false;
 
@@ -329,47 +366,47 @@ class AdminEdit extends connect(store)(PageViewElement) {
     }
   }
 
-
   firstUpdated() {
     this.__els = {
-      preview: this.renderRoot.getElementById('preview'),
-      overlay: this.renderRoot.getElementById('overlay'),
-      scroller: this.renderRoot.getElementById('scroller'),
-      title: this.renderRoot.getElementById('title'),
-      description: this.renderRoot.getElementById('desc'),
-      tags: this.renderRoot.getElementById('tags'),
-      active: this.renderRoot.getElementById('active'),
-      pricing: this.renderRoot.getElementById('pricing'),
-      file: this.renderRoot.getElementById('file'),
-      watermark: this.renderRoot.getElementById('watermark'),
+      preview: this.renderRoot.getElementById("preview"),
+      overlay: this.renderRoot.getElementById("overlay"),
+      scroller: this.renderRoot.getElementById("scroller"),
+      title: this.renderRoot.getElementById("title"),
+      description: this.renderRoot.getElementById("desc"),
+      tags: this.renderRoot.getElementById("tags"),
+      active: this.renderRoot.getElementById("active"),
+      pricing: this.renderRoot.getElementById("pricing"),
+      file: this.renderRoot.getElementById("file"),
+      watermark: this.renderRoot.getElementById("watermark"),
     };
 
-    this.__els.file.addEventListener('change', this.readLocalImage.bind(this));
+    this.__els.file.addEventListener("change", this.readLocalImage.bind(this));
 
-    this.__els.pricing.addEventListener('admin-pricing-added', this.pricingAdded.bind(this));
-
+    this.__els.pricing.addEventListener(
+      "admin-pricing-added",
+      this.pricingAdded.bind(this)
+    );
   }
 
   async reset() {
-    this.item = { ... EMPTY_ITEM, pricings: [ ... EMPTY_ITEM.pricings ]};
+    this.item = { ...EMPTY_ITEM, pricings: [...EMPTY_ITEM.pricings] };
     this.__els.title.value = this.item.title;
-    this.__els.description.value = this.item.description
+    this.__els.description.value = this.item.description;
     this.__els.active.checked = this.item.active;
 
     this.__freeImage();
-    const ctx = this.__els.preview.getContext('2d');
+    const ctx = this.__els.preview.getContext("2d");
     ctx.clearRect(0, 0, this.__els.preview.width, this.__els.preview.height);
 
-    this.renderRoot.host.style.removeProperty('--image-height');
+    this.renderRoot.host.style.removeProperty("--image-height");
 
     this.__imageLoading = false;
-    this.__uploadProgress = 'Working...';
+    this.__uploadProgress = "Working...";
 
-
-    this.__els.file.value = '';
+    this.__els.file.value = "";
     if (!/safari/i.test(navigator.userAgent)) {
-      this.__els.file.type = '';
-      this.__els.file.type = 'file';
+      this.__els.file.type = "";
+      this.__els.file.type = "file";
     }
 
     await this.__els.tags.updateComplete;
@@ -387,7 +424,7 @@ class AdminEdit extends connect(store)(PageViewElement) {
       active: this.__els.active.checked,
       image: this.__els.file.files[0],
       display_position: this.display_position,
-      should_watermark: this.__els.watermark.checked
+      should_watermark: this.__els.watermark.checked,
     };
     this.__imageLoading = true;
     const progressCallback = this.uploadProgress.bind(this);
@@ -401,37 +438,42 @@ class AdminEdit extends connect(store)(PageViewElement) {
   }
 
   pricingAdded(e) {
-    const pricing = { ...e.detail.pricing, size: { ... e.detail.pricing.size } };
-    const match = p => JSON.stringify(pricing) === JSON.stringify(p);
+    const pricing = { ...e.detail.pricing, size: { ...e.detail.pricing.size } };
+    const match = (p) => JSON.stringify(pricing) === JSON.stringify(p);
     if (this.item.pricings.filter(match).length === 0) {
       this.item.pricings.push(pricing);
-      this.requestUpdate('item');
+      this.requestUpdate("item");
     }
   }
 
   pricingRemoved(pricing) {
-    const drop = p => JSON.stringify(pricing) !== JSON.stringify(p);
+    const drop = (p) => JSON.stringify(pricing) !== JSON.stringify(p);
     this.item.pricings = this.item.pricings.filter(drop);
-    this.requestUpdate('item');
+    this.requestUpdate("item");
   }
 
   __freeImage() {
-    if (this.__els.preview.dataset.src && this.__els.preview.dataset.src.startsWith('blob')) {
+    if (
+      this.__els.preview.dataset.src &&
+      this.__els.preview.dataset.src.startsWith("blob")
+    ) {
       URL.revokeObjectURL(this.__els.preview.dataset.src);
     }
   }
 
   uploadProgress(e) {
     if (e.lengthComputable) {
-      this.__uploadProgress = `Uploading: (${Number(e.loaded / e.total * 100).toFixed(0)} %)`;
+      this.__uploadProgress = `Uploading: (${Number((e.loaded / e.total) * 100).toFixed(
+        0
+      )} %)`;
     } else {
-      this.__uploadProgress = 'Working...'
+      this.__uploadProgress = "Working...";
     }
   }
 
   uploadDone() {
     this.__imageLoading = false;
-    this.__uploadProgress = 'Working...';
+    this.__uploadProgress = "Working...";
   }
 
   async readLocalImage() {
@@ -439,37 +481,35 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
     // Is a file selected?
     if (input.files && input.files[0]) {
-
       // Try and free an existing blob
       this.__freeImage();
 
       // Setup loading indicators
       this.__imageLoading = true;
-      this.__uploadProgress = 'Working...';
+      this.__uploadProgress = "Working...";
 
       // Get file extension
-      const [ extension='' ] = /(?:\.([^.]+))?$/.exec(input.files[0].name);
+      const [extension = ""] = /(?:\.([^.]+))?$/.exec(input.files[0].name);
       let blob = null;
 
       // Test for .tiff
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
-        await import('tiff.js');
+        await import("tiff.js");
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
         Tiff.initialize({ TOTAL_MEMORY: 1e9 });
         const tiff = new Tiff({ buffer });
         const canvas = tiff.toCanvas();
         blob = await new Promise((resolve, reject) => {
-          if (! canvas) {
+          if (!canvas) {
             reject();
           }
 
-          canvas.toBlob(blob => {
+          canvas.toBlob((blob) => {
             tiff.close();
             resolve(blob);
           });
         });
-
       } else {
         // Not .tiff, use response to blob
         blob = await new Response(input.files[0]).blob();
@@ -482,21 +522,22 @@ class AdminEdit extends connect(store)(PageViewElement) {
   loadImage(source) {
     const img = new Image();
     img.onload = () => {
-
       const canvas = this.__els.preview;
 
       canvas.width = img.width;
       canvas.height = img.height;
 
-      this.renderRoot.host.style.setProperty('--image-height', `${(1000 / img.width) * img.height}px`);
+      this.renderRoot.host.style.setProperty(
+        "--image-height",
+        `${(1000 / img.width) * img.height}px`
+      );
 
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0);
       this.__imageLoading = false;
 
-      this.display_position = this.item.display_position
-
-    }
+      this.display_position = this.item.display_position;
+    };
 
     this.__els.preview.dataset.src = source;
     img.src = this.__els.preview.dataset.src;
@@ -504,27 +545,19 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
   get display_position() {
     const pos = Number(
-      100
-      * this.__els.scroller.scrollTop
-      / (
-          + this.__els.scroller.scrollHeight
-          - this.__els.scroller.clientHeight
-        )
-    )
+      (100 * this.__els.scroller.scrollTop) /
+        (+this.__els.scroller.scrollHeight - this.__els.scroller.clientHeight)
+    );
 
-    return Number.isNaN(pos) ? 50 : pos.toFixed(1)
+    return Number.isNaN(pos) ? 50 : pos.toFixed(1);
   }
 
   set display_position(value) {
-    const pos = (
-      (value / 100)
-      * (
-        + this.__els.scroller.scrollHeight
-        - this.__els.scroller.clientHeight
-      )
-    )
+    const pos =
+      (value / 100) *
+      (+this.__els.scroller.scrollHeight - this.__els.scroller.clientHeight);
 
-    this.__els.scroller.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1)
+    this.__els.scroller.scrollTop = Number.isNaN(pos) ? 0 : pos.toFixed(1);
   }
 }
 

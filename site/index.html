@@ -1,11 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Zuzi Art</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Artwork by Zuzana">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Artwork by Zuzana" />
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
@@ -15,53 +15,74 @@
       a) Add a `basePath` property to the build configuration in your `polymer.json`.
       b) Use the `--base-path` command-line option for `polymer build`.
     -->
-    <base href="/">
+    <base href="/" />
 
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="icon" href="images/favicon.ico" />
 
     <!-- See https://goo.gl/OOhYW5 -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" />
 
     <!-- See https://goo.gl/qRE0vM -->
-    <meta name="theme-color" content="#3f51b5">
+    <meta name="theme-color" content="#3f51b5" />
 
     <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Zuzi Art">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Zuzi Art" />
 
     <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Zuzi Art">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Zuzi Art" />
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
+    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="images/manifest/icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="images/manifest/icon-192x192.png"
+    />
 
     <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png">
-    <meta name="msapplication-TileColor" content="#3f51b5">
-    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png" />
+    <meta name="msapplication-TileColor" content="#3f51b5" />
+    <meta name="msapplication-tap-highlight" content="no" />
 
     <!-- Default twitter cards -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Zuzana Riha's gallery and online store">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Zuzi Art">
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Zuzana Riha's gallery and online store" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zuzi Art" />
     <meta property="og:image" content="images/manifest/icon-144x144.png" />
 
     <!-- Performance tip: hint to the browser to start the handshake for the fonts site -->
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate" />
-    <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate" rel="stylesheet">
-    
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" />
-    <link href="https://fonts.googleapis.com/css?family=Material+Icons&display=block" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
 
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Julius+Sans+One|Thasadith:700|Syncopate"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
+      rel="stylesheet"
+    />
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
@@ -70,16 +91,19 @@
 
     <script>
       // Load and register pre-caching Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register(new URL('service-worker.js', document.baseURI).pathname, {
-            scope: '/',
-          })
-          .then(function(swReg) {
-            window.process.swRegistration = swReg;
-            console.log("Service worker registered")
-            document.dispatchEvent(new CustomEvent('zuzi-app-sw-registered', { detail: swReg }));
-          });
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker
+            .register(new URL("service-worker.js", document.baseURI).pathname, {
+              scope: "/",
+            })
+            .then(function (swReg) {
+              window.process.swRegistration = swReg;
+              console.log("Service worker registered");
+              document.dispatchEvent(
+                new CustomEvent("zuzi-app-sw-registered", { detail: swReg })
+              );
+            });
         });
       }
 
@@ -87,10 +111,10 @@
       // https://github.com/reactjs/redux/issues/2907
       window.process = {
         env: {
-          NODE_ENV: 'production',
-          API_URL: '/api/v1'
+          NODE_ENV: "production",
+          API_URL: "/api/v1",
         },
-        stripe: null
+        stripe: null,
       };
 
       (async () => {
@@ -104,7 +128,8 @@
       body {
         margin: 0;
         /* This is a font-stack that tries to use the system-default sans-serifs first */
-        font-family: 'Thasadith', Helvetica, Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+        font-family: "Thasadith", Helvetica, Arial, sans-serif, "Apple Color Emoji",
+          "Segoe UI Emoji", "Segoe UI Symbol";
         line-height: 1.5;
         min-height: 100vh;
         -webkit-font-smoothing: antialiased;
@@ -115,9 +140,6 @@
     <zuzi-app appTitle="Zuzi Art">
       <div slot="stripe-card" id="stripe-card-mount"></div>
     </zuzi-app>
-    <noscript>
-      Please enable JavaScript to view this website.
-    </noscript>
-
+    <noscript> Please enable JavaScript to view this website. </noscript>
   </body>
 </html>
