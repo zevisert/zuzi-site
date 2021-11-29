@@ -68,7 +68,7 @@ export class SubscriptionSetup extends connect(store)(LitElement) {
           <p>Sign up below to be notified when new artwork is posted.</p>
         </summary>
         ${(() => {
-          if ('Notification' in window && navigator.serviceWorker) {
+          if ('Notification' in window && 'serviceWorker' in navigator && ! /Safari/.test(navigator.userAgent)) {
             return html`<push-subscription-setup></push-subscription-setup>`
           }
         })()}
