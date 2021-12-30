@@ -10,7 +10,7 @@ spec:
   version: "5.0.3"
   security:
     authentication:
-      modes: 
+      modes:
         - SCRAM
   users:
     - name: koa
@@ -37,18 +37,18 @@ spec:
         spec:
           affinity:
             podAntiAffinity:
-              # read: A pod should not be scheduled on the node if a pod with 
+              # read: A pod should not be scheduled on the node if a pod with
               # the label environment=production is already running on it.
               preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                podAffinityTerm:
-                  labelSelector:
-                    matchExpressions:
-                    - key: environment
-                      operator: In
-                      values:
-                      - production
-                  topologyKey: kubernetes.io/hostname
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: environment
+                          operator: In
+                          values:
+                            - production
+                    topologyKey: kubernetes.io/hostname
           containers:
             - name: mongod
               resources:
@@ -67,42 +67,40 @@ spec:
                   cpu: 100m
                   memory: 100M
 ---
-
 # These resources are from the mongodb-kubernetes-operator repository
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: mongodb-database
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - patch
+      - delete
+      - get
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: mongodb-kubernetes-operator
+  name: mongodb-database
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: mongodb-kubernetes-operator
-rules:
-- apiGroups: [""]
-  verbs:     ["create", "delete", "get", "list", "patch", "update", "watch"]
-  resources: ["pods", "services", "configmaps", "secrets"]
-
-- apiGroups: ["apps"]
-  verbs:     ["create", "delete", "get", "list", "patch", "update", "watch"]
-  resources: ["statefulsets"]
-
-- apiGroups: ["mongodbcommunity.mongodb.com"]
-  verbs:     ["get", "patch", "list", "update", "watch"]
-  resources:
-  - mongodbcommunity
-  - mongodbcommunity/status
-  - mongodbcommunity/spec
-  - mongodbcommunity/finalizers
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: mongodb-kubernetes-operator
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: mongodb-kubernetes-operator
+  name: mongodb-database
 subjects:
-- kind: ServiceAccount
-  name: mongodb-kubernetes-operator
+  - kind: ServiceAccount
+    name: mongodb-database
+roleRef:
+  kind: Role
+  name: mongodb-database
+  apiGroup: rbac.authorization.k8s.io
