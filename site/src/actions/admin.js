@@ -65,14 +65,16 @@ export const createItem = (data, image, onProgress, done) => async (dispatch) =>
   ajax.send(formData);
 };
 
-export const editItem = (slug, data, onProgress, done) => async (dispatch) => {
+export const editItem = (slug, data, image, onProgress, done) => async (dispatch) => {
   const formData = new FormData();
-  for (const [key, value] of Object.entries(data)) {
-    if (key === "image" && value === undefined) {
-      continue;
-    }
 
-    formData.append(key, value);
+  formData.append(
+    "metadata",
+    new Blob([JSON.stringify(data)], { type: "application/json" })
+  );
+
+  if (image !== undefined) {
+    formData.append("image", image);
   }
 
   const ajax = new XMLHttpRequest();
