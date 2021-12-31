@@ -78,7 +78,9 @@
       href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
       rel="stylesheet"
     />
-    <script type="module">
+
+    <script>
+      // Can't use type="module" to set this across all scripts
       window.process = {
         env: {
           NODE_ENV: "production",
@@ -106,7 +108,8 @@
       }
 
       (async function () {
-        const resp = await fetch(`${process.env.API_URL}/env`);
+        // Stop vite from replacing this by using obj[key] notation
+        const resp = await fetch(`${process["env"].API_URL}/env`);
         const { env } = await resp.json();
         window.process.env = { ...window.process.env, ...env };
       })();

@@ -104,7 +104,7 @@ export const login =
   ({ email, password }) =>
   async (dispatch, getState) => {
     try {
-      const loginReq = await fetch(`${window.process.env.API_URL}/auth/login`, {
+      const loginReq = await fetch(`${window.process["env"].API_URL}/auth/login`, {
         method: "POST",
         credentials: "same-origin",
         headers: new Headers({ "content-type": "application/json" }),
@@ -162,7 +162,7 @@ export const hideSnackbar = () => {
 };
 
 export const getAboutText = () => async (dispatch) => {
-  const aboutTextReq = await fetch(`${window.process.env.API_URL}/about/text`, {
+  const aboutTextReq = await fetch(`${window.process["env"].API_URL}/about/text`, {
     method: "GET",
     credentials: "same-origin",
     headers: new Headers({ "content-type": "application/json" }),
@@ -179,7 +179,7 @@ export const getAboutText = () => async (dispatch) => {
 };
 
 export const updateAboutText = (lines) => async (dispatch) => {
-  const textUpdateReq = await fetch(`${window.process.env.API_URL}/about/text`, {
+  const textUpdateReq = await fetch(`${window.process["env"].API_URL}/about/text`, {
     method: "POST",
     credentials: "same-origin",
     headers: new Headers({ "content-type": "application/json" }),

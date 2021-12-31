@@ -14,14 +14,17 @@ export const EMAIL_SUBSCRIBE = "EMAIL_SUBSCRIBE";
 export const EMAIL_UNSUBSCRIBE = "EMAIL_UNSUBSCRIBE";
 
 export const createEmailSubscriber = (email) => async (dispatch) => {
-  const createUserReq = await fetch(`${window.process.env.API_URL}/subscriber/create`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: new Headers({ "content-type": "application/json" }),
-    body: JSON.stringify({
-      email,
-    }),
-  });
+  const createUserReq = await fetch(
+    `${window.process["env"].API_URL}/subscriber/create`,
+    {
+      method: "POST",
+      credentials: "same-origin",
+      headers: new Headers({ "content-type": "application/json" }),
+      body: JSON.stringify({
+        email,
+      }),
+    }
+  );
 
   const { success } = await createUserReq.json();
 
@@ -49,7 +52,7 @@ function urlB64ToUint8Array(base64String) {
 }
 
 export const createPushSubscriber = () => async (dispatch, getState) => {
-  const applicationServerKey = urlB64ToUint8Array(process.env.PUSH_PUBKEY);
+  const applicationServerKey = urlB64ToUint8Array(process["env"].PUSH_PUBKEY);
   const state = getState();
   if (state.subscriptions.push.registered) {
     try {
@@ -75,14 +78,17 @@ export const createPushSubscriber = () => async (dispatch, getState) => {
 };
 
 export const syncPushSubToServer = (subscription) => async (dispatch) => {
-  const createUserReq = await fetch(`${window.process.env.API_URL}/subscriber/create`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: new Headers({ "content-type": "application/json" }),
-    body: JSON.stringify({
-      subscription,
-    }),
-  });
+  const createUserReq = await fetch(
+    `${window.process["env"].API_URL}/subscriber/create`,
+    {
+      method: "POST",
+      credentials: "same-origin",
+      headers: new Headers({ "content-type": "application/json" }),
+      body: JSON.stringify({
+        subscription,
+      }),
+    }
+  );
 
   const { success, isNew } = await createUserReq.json();
 

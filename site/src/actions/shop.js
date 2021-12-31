@@ -40,7 +40,7 @@ export const getAllProducts = () => async (dispatch) => {
   // Here you would normally get the data from the server. We're simulating
   // that by dispatching an async action (that you would dispatch when you
   // succesfully got the data back)
-  const response = await fetch(`${process.env.API_URL}/artwork`, {
+  const response = await fetch(`${process["env"].API_URL}/artwork`, {
     credentials: "same-origin",
   });
 
@@ -65,7 +65,7 @@ export const checkoutStripe =
       return;
     }
 
-    const response = await fetch(`${process.env.API_URL}/stripe/checkout/intent`, {
+    const response = await fetch(`${process["env"].API_URL}/stripe/checkout/intent`, {
       method: "POST",
       credentials: "same-origin",
       headers: new Headers({ "content-type": "application/json" }),
@@ -104,7 +104,7 @@ export const checkoutStripe =
 export const checkoutEtransfer =
   ({ amount, metadata }) =>
   async (dispatch) => {
-    const response = await fetch(`${process.env.API_URL}/etransfer/checkout`, {
+    const response = await fetch(`${process["env"].API_URL}/etransfer/checkout`, {
       method: "POST",
       credentials: "same-origin",
       headers: new Headers({ "content-type": "application/json" }),

@@ -23,7 +23,7 @@ export const createItem = (data, image, onProgress, done) => async (dispatch) =>
   formData.append("image", image);
 
   const ajax = new XMLHttpRequest();
-  ajax.open("POST", `${process.env.API_URL}/artwork`);
+  ajax.open("POST", `${process["env"].API_URL}/artwork`);
   ajax.responseType = "json";
 
   ajax.upload.onprogress = onProgress;
@@ -76,7 +76,7 @@ export const editItem = (slug, data, onProgress, done) => async (dispatch) => {
   }
 
   const ajax = new XMLHttpRequest();
-  ajax.open("PUT", `${process.env.API_URL}/artwork/${slug}`);
+  ajax.open("PUT", `${process["env"].API_URL}/artwork/${slug}`);
   ajax.responseType = "json";
 
   ajax.upload.onprogress = onProgress;
@@ -120,7 +120,7 @@ export const editItem = (slug, data, onProgress, done) => async (dispatch) => {
 };
 
 export const deleteItem = (slug) => async (dispatch) => {
-  const response = await fetch(`${process.env.API_URL}/artwork/${slug}`, {
+  const response = await fetch(`${process["env"].API_URL}/artwork/${slug}`, {
     method: "DELETE",
     credentials: "same-origin",
   });
@@ -148,7 +148,7 @@ export const getOrders =
         },
       });
     } else {
-      const response = await fetch(`${process.env.API_URL}/orders/${orderId}`, {
+      const response = await fetch(`${process["env"].API_URL}/orders/${orderId}`, {
         credentials: "same-origin",
       });
       const { orders: ordersList } = await response.json();
@@ -172,7 +172,7 @@ export const getOrders =
 export const processEtransfer =
   ({ accepted = false, orderId = "", reason = undefined }) =>
   async (dispatch) => {
-    const response = await fetch(`${process.env.API_URL}/etransfer/webhook`, {
+    const response = await fetch(`${process["env"].API_URL}/etransfer/webhook`, {
       method: "POST",
       credentials: "same-origin",
       headers: new Headers({
@@ -204,7 +204,7 @@ export const processEtransfer =
 
 export const changePassword = (email, oldPassword, newPassword) => async (dispatch) => {
   try {
-    const response = await fetch(`${process.env.API_URL}/auth/change-password`, {
+    const response = await fetch(`${process["env"].API_URL}/auth/change-password`, {
       credentials: "same-origin",
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),

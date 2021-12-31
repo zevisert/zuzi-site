@@ -216,7 +216,7 @@ export class ShopCheckout extends connect(store)(LitElement) {
 
     if (this._paymentMethod === CHECKOUT_METHODS_ENUM.STRIPE) {
       if (!process.stripe) {
-        process.stripe = Stripe(process.env.STRIPE_PK, {
+        process.stripe = Stripe(process["env"].STRIPE_PK, {
           betas: ["payment_intent_beta_3"],
         });
       }

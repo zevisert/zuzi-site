@@ -276,7 +276,7 @@ class ZuziApp extends connect(store)(LitElement) {
             <span>
               ${this._loggedIn
                 ? html` <a href="/admin/change-password">Change Password</a>
-                    <a href="${process.env.API_URL}/auth/logout" target="_self"
+                    <a href="${process["env"].API_URL}/auth/logout" target="_self"
                       >Logout</a
                     >`
                 : html`<a href="/${str.pages.login}">Login</a>`}
@@ -303,7 +303,7 @@ class ZuziApp extends connect(store)(LitElement) {
       store.dispatch(credentials(JSON.parse(sessionStorage.getItem("credentials"))));
     }
 
-    if (process.env.SENTRY_ENABLE) {
+    if (process["env"].SENTRY_ENABLE) {
       window.requestIdleCallback =
         window.requestIdleCallback ||
         function (handler) {
@@ -325,7 +325,7 @@ class ZuziApp extends connect(store)(LitElement) {
         Promise.all([import("@sentry/browser"), import("@sentry/tracing")]).then(
           ([{ init }, { Integrations }]) => {
             init({
-              dsn: process.env.SENTRY_DSN,
+              dsn: process["env"].SENTRY_DSN,
               integrations: [new Integrations.BrowserTracing()],
               tracesSampleRate: 1.0,
             });
