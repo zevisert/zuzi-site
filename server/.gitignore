@@ -1,5 +1,2 @@
 .build/
 node_modules/
-
-/uploads/
-!uploads/.gitfolder

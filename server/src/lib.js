@@ -20,7 +20,7 @@ export async function processImage(image, shouldWatermark = false) {
 
   const watermarkName = path.join(process.cwd(), "images", "watermark.png");
   const tmpLocalName = path.join(os.tmpdir(), `${id}.png`);
-  const localName = path.join(process.cwd(), "server", "uploads", uploadName);
+  const localName = path.join(process.cwd(), "uploads", uploadName);
   const cdnName = path.join(process.env.CDN_DIR, uploadName);
 
   // Resize and downscale image
