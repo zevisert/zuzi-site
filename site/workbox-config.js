@@ -6,7 +6,7 @@
 
 export default {
   importScripts: ["./push-listener.js"],
-  swDest: "build/modern/service-worker.js",
+  swDest: ".build/modern/service-worker.js",
   globDirectory: ".",
   globPatterns: [
     "manifest.json",

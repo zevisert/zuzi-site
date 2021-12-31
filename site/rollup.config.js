@@ -25,32 +25,33 @@ export default [
     ],
     preserveEntrySignatures: true,
     output: {
-      dir: `build/modern/`,
+      dir: `.build/modern/`,
       format: "es",
       preserveModules: true,
+      sourcemap: true,
     },
-    external: ["tiff.js"],
+    external: ["tiff.js", "https://js.stripe.com/v3/"],
     plugins: [
       minifyHTML(),
       copy({
         targets: [
           {
             src: "node_modules/@webcomponents",
-            dest: "build/modern/node_modules",
+            dest: ".build/modern/node_modules",
           },
           {
             src: "node_modules/tiff.js",
-            dest: "build/modern/node_modules",
+            dest: ".build/modern/node_modules",
           },
-          { src: "images", dest: "build/modern" },
+          { src: "images", dest: ".build/modern" },
           {
             src: "index.html",
-            dest: "build/modern",
+            dest: ".build/modern",
             transform: (contents, filename) =>
               contents.toString().replace('<base href="/">', '<base href="/modern/">'),
           },
-          { src: "manifest.json", dest: "build/modern" },
-          { src: "push-manifest.json", dest: "build/modern" },
+          { src: "manifest.json", dest: ".build/modern" },
+          { src: "push-manifest.json", dest: ".build/modern" },
         ],
       }),
       externals(),
@@ -64,7 +65,7 @@ export default [
     input: ["service-worker.js", "push-listener.js"],
     output: {
       format: "es",
-      dir: "build/modern",
+      dir: ".build/modern",
     },
     plugins: [generateSW(workboxConfig)],
   },
@@ -81,9 +82,9 @@ export default [
       "src/components/gallery/index.js",
       "src/components/zuzi-app/index.js",
     ],
-    external: ["tiff.js"],
+    external: ["tiff.js", "https://js.stripe.com/v3/"],
     output: {
-      dir: `build/legacy/`,
+      dir: `.build/legacy/`,
       format: "systemjs",
     },
     preserveEntrySignatures: false,
@@ -109,22 +110,22 @@ export default [
         targets: [
           {
             src: "node_modules/@webcomponents",
-            dest: "build/legacy/node_modules",
+            dest: ".build/legacy/node_modules",
           },
           {
             src: "node_modules/systemjs/dist/s.min.js",
-            dest: "build/legacy/node_modules/systemjs/dist",
+            dest: ".build/legacy/node_modules/systemjs/dist",
           },
           {
             src: "images",
-            dest: "build/legacy",
+            dest: ".build/legacy",
           },
           {
             src: "index-legacy.html",
-            dest: "build/legacy",
+            dest: ".build/legacy",
             rename: "index.html",
           },
-          { src: "manifest.json", dest: "build/legacy" },
+          { src: "manifest.json", dest: ".build/legacy" },
         ],
       }),
       process.env.NODE_ENV !== "development" ? terser() : () => {},
@@ -134,7 +135,7 @@ export default [
   {
     input: "src/babel-polyfills-nomodule.js",
     output: {
-      file: "build/legacy/babel-polyfills-nomodule.js",
+      file: ".build/legacy/babel-polyfills-nomodule.js",
       format: "iife",
     },
     plugins: [

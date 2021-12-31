@@ -8,37 +8,47 @@ build:
   local:
     useBuildkit: true
   artifacts:
-  - image: zevisert/zuzi-site-frontend
-    context: site
-    docker:
-      dockerfile: site/Dockerfile
-      target: prpl
-    sync: {}
-  - image: zevisert/zuzi-site-server
-    context: server
-    docker:
-      dockerfile: server/Dockerfile
+    - image: zevisert/zuzi-site-frontend
+      context: site
+      docker:
+        dockerfile: site/Dockerfile
+        target: prpl
+      sync: {}
+    - image: zevisert/zuzi-site-server
+      context: server
+      docker:
+        dockerfile: server/Dockerfile
 
 deploy:
   kubectl:
     defaultNamespace: zuzi-staging
     manifests:
-    - k8s/staging/namespace.yaml
-    - k8s/staging/env.secret.yaml
-    - k8s/staging/ingress.yaml
-    - k8s/api.service.yaml
-    - k8s/http.service.yaml
-    - k8s/server.deployment.yaml
-    - k8s/frontend.deployment.yaml
-    - k8s/mongodb.yaml
+      - k8s/staging/namespace.yaml
+      - k8s/staging/env.secret.yaml
+      - k8s/staging/ingress.yaml
+      - k8s/api.service.yaml
+      - k8s/http.service.yaml
+      - k8s/server.deployment.yaml
+      - k8s/frontend.deployment.yaml
+      - k8s/mongodb.yaml
+    hooks:
+      after: []
 
 profiles:
   - activation:
       - command: dev
         kubeContext: docker-desktop
+      - command: debug
+        kubeContext: docker-desktop
     name: dev
+    portForward:
+      - resourceType: service
+        resourceName: mongodb-svc
+        namespace: zuzi-dev
+        localPort: 27017
+        port: 27017
     patches:
-        # Set the namespace to zuzi-dev
+      # Set the namespace to zuzi-dev
       - op: replace
         path: /deploy/kubectl/defaultNamespace
         value: zuzi-dev
@@ -52,22 +62,18 @@ profiles:
       - op: replace
         path: /deploy/kubectl/manifests/1
         value: k8s/dev/env.secret.yaml
-        
+
         # Target the dev config
       - op: replace
         path: /deploy/kubectl/manifests/2
         value: k8s/dev/ingress.yaml
-
-        # Don't deploy mongo - using mlab here
-      - op: remove
-        path: /deploy/kubectl/manifests/7
 
         # Docker build target is the dev image
       - op: replace
         path: /build/artifacts/0/docker/target
         value: dev
 
-        # Set sync config for fast reload 
+        # Set sync config for fast reload
       - op: replace
         path: /build/artifacts/0/sync
         value:
@@ -80,6 +86,38 @@ profiles:
               dest: /site
             - src: site/images/**/*.ico
               dest: /site/
+      # Auto-restore the mongo database from backup
+      - op: replace
+        path: /deploy/kubectl/hooks/after
+        value:
+          - host:
+              command:
+                - echo
+                - Waiting for mongo to be up before restoring
+                  zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
+          - host:
+              command:
+                - kubectl
+                - wait
+                - --timeout=5m
+                - --for=jsonpath=status.phase=Running
+                - mdbc
+                - mongodb
+
+          - host:
+              command:
+                - bash
+                - -c
+                - kubectl port-forward svc/mongodb-svc 27017:27017 &
+                  mongorestore
+                  --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
+                  --nsFrom='zuzi-site.*'
+                  --nsTo='zuzi-site.*'
+                  --host localhost
+                  --username $(kubectl get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
+                  --password $(kubectl get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
+                  --authenticationDatabase $(kubectl get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
+                  kill %1
 
   - name: prod
     patches:
@@ -97,7 +135,7 @@ profiles:
       - op: replace
         path: /deploy/kubectl/manifests/1
         value: k8s/prod/env.secret.yaml
-        
+
         # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/2
