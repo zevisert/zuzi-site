@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Zuzi Art</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Artwork by Zuzana" />
+    <title>Zuzi Art</title>
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
       1) Differential serving. 2) Serving from a non-root path.
 
-      Instead of manually editing the `<base>` tag yourself, you should generally either:
-      a) Add a `basePath` property to the build configuration in your `polymer.json`.
-      b) Use the `--base-path` command-line option for `polymer build`.
+      Instead of manually editing the `<base>` tag yourself, you should generally have
+      your build system modify it.
     -->
     <base href="/" />
 
-    <link rel="icon" href="images/favicon.ico" />
-
-    <!-- See https://goo.gl/OOhYW5 -->
-    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="/images/favicon.ico" />
 
     <!-- See https://goo.gl/qRE0vM -->
     <meta name="theme-color" content="#3f51b5" />
@@ -35,22 +30,22 @@
     <meta name="apple-mobile-web-app-title" content="Zuzi Art" />
 
     <!-- Homescreen icons -->
-    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png" />
+    <link rel="apple-touch-icon" href="/images/manifest/icon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/manifest/icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="/images/manifest/icon-96x96.png" />
     <link
       rel="apple-touch-icon"
       sizes="144x144"
-      href="images/manifest/icon-144x144.png"
+      href="/images/manifest/icon-144x144.png"
     />
     <link
       rel="apple-touch-icon"
       sizes="192x192"
-      href="images/manifest/icon-192x192.png"
+      href="/images/manifest/icon-192x192.png"
     />
 
     <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png" />
+    <meta name="msapplication-TileImage" content="/images/manifest/icon-144x144.png" />
     <meta name="msapplication-TileColor" content="#3f51b5" />
     <meta name="msapplication-tap-highlight" content="no" />
 
@@ -59,7 +54,7 @@
     <meta name="twitter:title" content="Zuzana Riha's gallery and online store" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Zuzi Art" />
-    <meta property="og:image" content="images/manifest/icon-144x144.png" />
+    <meta property="og:image" content="/images/manifest/icon-144x144.png" />
 
     <!-- Performance tip: hint to the browser to start the handshake for the fonts site -->
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
@@ -83,32 +78,7 @@
       href="https://fonts.googleapis.com/css?family=Material+Icons&display=block"
       rel="stylesheet"
     />
-
-    <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
-    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <!-- Built with love using PWA Starter Kit -->
-    <script type="module" src="src/components/zuzi-app/index.js" crossorigin></script>
-
-    <script>
-      // Load and register pre-caching Service Worker
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker
-            .register(new URL("service-worker.js", document.baseURI).pathname, {
-              scope: "/",
-            })
-            .then(function (swReg) {
-              window.process.swRegistration = swReg;
-              console.log("Service worker registered");
-              document.dispatchEvent(
-                new CustomEvent("zuzi-app-sw-registered", { detail: swReg })
-              );
-            });
-        });
-      }
-
-      // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
-      // https://github.com/reactjs/redux/issues/2907
+    <script type="module">
       window.process = {
         env: {
           NODE_ENV: "production",
@@ -117,13 +87,32 @@
         stripe: null,
       };
 
-      (async () => {
-        const { env } = await (await fetch(`${process.env.API_URL}/env`)).json();
+      // Load and register pre-caching Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async function () {
+          const swReg = await navigator.serviceWorker.register(
+            new URL("service-worker.js", document.baseURI).pathname,
+            {
+              scope: "/",
+            }
+          );
+
+          window.process.swRegistration = swReg;
+          console.log("Service worker registered");
+          document.dispatchEvent(
+            new CustomEvent("zuzi-app-sw-registered", { detail: swReg })
+          );
+        });
+      }
+
+      (async function () {
+        const resp = await fetch(`${process.env.API_URL}/env`);
+        const { env } = await resp.json();
         window.process.env = { ...window.process.env, ...env };
       })();
     </script>
 
-    <!-- Add any global styles for body, document, etc. -->
+    <script type="module" src="./src/components/zuzi-app/index.js"></script>
     <style>
       body {
         margin: 0;

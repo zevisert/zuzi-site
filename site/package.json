@@ -1,60 +1,37 @@
 {
-  "name": "zuzi-site-frontend",
-  "version": "1.6.3",
-  "type": "module",
-  "contributors": [
-    "@zevisert",
-    "The Polymer Authors"
+  "name": "zuzi-site",
+  "version": "0.0.0",
+  "main": "dist/my-element.es.js",
+  "exports": {
+    ".": "./dist/my-element.es.js"
+  },
+  "types": "types/my-element.d.ts",
+  "files": [
+    "dist",
+    "types"
   ],
-  "license": "BSD-3-Clause",
-  "repository": "zevisert/zuzi-site",
   "scripts": {
-    "dev": "es-dev-server --app-index=index.html --node-resolve --watch",
-    "build": "del-cli build && rollup -c rollup.config.js",
-    "start": "prpl-server --root build/ --config prpl.config.json"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@material/mwc-icon": "^0.20.0",
-    "@sentry/browser": "^6.2.1",
-    "@sentry/tracing": "^6.2.1",
-    "@webcomponents/webcomponentsjs": "^2.5.0",
-    "@zevisert/prpl-server": "^1.4.3",
-    "lit": "^2.0.0",
-    "mjml": "^4.9.0",
+    "@material/mwc-icon": "^0.25.3",
+    "@sentry/browser": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
+    "lit": "^2.0.2",
     "pwa-helpers": "^0.9.1",
-    "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
-    "reselect": "^4.0.0",
-    "sharp": "^0.27.2",
-    "simple-chip": "^1.2.3",
-    "tiff.js": "^1.0.0",
-    "web-push": "^3.4.4"
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.1",
+    "reselect": "^4.1.5",
+    "rollup-plugin-minify-html-literals": "^1.2.6",
+    "simple-chip": "^1.3.0",
+    "utif": "^3.1.0",
+    "vite-plugin-pwa": "^0.11.12",
+    "web-push": "^3.4.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.10",
-    "@babel/core": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
-    "@polymer/test-fixture": "^4.0.2",
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-node-resolve": "^11.2.0",
-    "@rollup/plugin-replace": "^2.4.1",
-    "core-js": "^3.9.1",
-    "del": "^6.0.0",
-    "del-cli": "^3.0.1",
-    "es-dev-server": "^2.1.0",
-    "eslint": "^7.22.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
-    "regenerator-runtime": "^0.13.7",
-    "rollup": "^2.40.0",
-    "rollup-plugin-auto-external": "^2.0.0",
-    "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-filesize": "^9.1.1",
-    "rollup-plugin-minify-html-literals": "^1.2.5",
-    "rollup-plugin-node-externals": "^2.2.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-workbox": "^6.1.1",
-    "workbox-cli": "^6.1.1"
+    "typescript": "^4.4.4",
+    "vite": "^2.7.2"
   }
 }

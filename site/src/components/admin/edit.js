@@ -416,13 +416,12 @@ class AdminEdit extends connect(store)(PageViewElement) {
   }
 
   async submit() {
-    const data = {
+    const metadata = {
       title: this.__els.title.value,
       description: this.__els.description.value,
-      tags: JSON.stringify(this.__els.tags.values),
-      pricings: JSON.stringify(this.item.pricings),
+      tags: this.__els.tags.values,
+      pricings: this.item.pricings,
       active: this.__els.active.checked,
-      image: this.__els.file.files[0],
       display_position: this.display_position,
       should_watermark: this.__els.watermark.checked,
     };
@@ -431,9 +430,19 @@ class AdminEdit extends connect(store)(PageViewElement) {
     const doneCallback = this.uploadDone.bind(this);
 
     if (this.item._id === null) {
-      store.dispatch(createItem(data, progressCallback, doneCallback));
+      store.dispatch(
+        createItem(metadata, this.__els.file.files[0], progressCallback, doneCallback)
+      );
     } else {
-      store.dispatch(editItem(this.item.slug, data, progressCallback, doneCallback));
+      store.dispatch(
+        editItem(
+          this.item.slug,
+          metadata,
+          this.__els.file.files[0],
+          progressCallback,
+          doneCallback
+        )
+      );
     }
   }
 
@@ -494,19 +503,32 @@ class AdminEdit extends connect(store)(PageViewElement) {
 
       // Test for .tiff
       if ([".tiff", ".tif"].includes(extension.toLowerCase())) {
-        await import("tiff.js");
+        const UTIF = await import("utif");
         const buffer = await new Response(input.files[0]).arrayBuffer();
 
-        Tiff.initialize({ TOTAL_MEMORY: 1e9 });
-        const tiff = new Tiff({ buffer });
-        const canvas = tiff.toCanvas();
+        const [ifd] = UTIF.decode(buffer);
+        UTIF.decodeImage(buffer, ifd);
+
+        const canvas = document.createElement("canvas");
+
+        canvas
+          .getContext("2d")
+          .putImageData(
+            new ImageData(
+              new Uint8ClampedArray(UTIF.toRGBA8(ifd)),
+              ifd.width,
+              ifd.height
+            ),
+            0,
+            0
+          );
+
         blob = await new Promise((resolve, reject) => {
           if (!canvas) {
             reject();
           }
 
           canvas.toBlob((blob) => {
-            tiff.close();
             resolve(blob);
           });
         });

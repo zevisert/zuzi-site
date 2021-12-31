@@ -12,11 +12,15 @@ export const ADMIN_DELETE_ITEM = "ADMIN_DELETE_ITEM";
 
 export const ADMIN_GET_ORDERS = "ADMIN_GET_ORDERS";
 
-export const createItem = (data, onProgress, done) => async (dispatch) => {
+export const createItem = (data, image, onProgress, done) => async (dispatch) => {
   const formData = new FormData();
-  for (const [key, value] of Object.entries(data)) {
-    formData.append(key, value);
-  }
+
+  formData.append(
+    "metadata",
+    new Blob([JSON.stringify(data)], { type: "application/json" })
+  );
+
+  formData.append("image", image);
 
   const ajax = new XMLHttpRequest();
   ajax.open("POST", `${process.env.API_URL}/artwork`);

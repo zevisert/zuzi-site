@@ -5,10 +5,7 @@
  */
 
 import { LitElement, html } from "lit";
-import { installMediaQueryWatcher } from "pwa-helpers/media-query.js";
-import { installOfflineWatcher } from "pwa-helpers/network.js";
-import { installRouter } from "pwa-helpers/router.js";
-import { updateMetadata } from "pwa-helpers/metadata.js";
+import { installOfflineWatcher, installRouter, updateMetadata } from "pwa-helpers";
 
 // This element is connected to the Redux store.
 import { store, connect } from "../../store.js";
@@ -26,6 +23,15 @@ import { cartQuantitySelector } from "../../reducers/shop.js";
 
 import "./nav-box";
 import "../snackbar";
+
+/**
+  Based on PWA-helpers media query watcher, but using addEventListener instead of addListener
+*/
+const installMediaQueryWatcher = (mediaQuery, layoutChangedCallback) => {
+  let mql = window.matchMedia(mediaQuery);
+  mql.addEventListener("change", (e) => layoutChangedCallback(e.matches));
+  layoutChangedCallback(mql.matches);
+};
 
 class ZuziApp extends connect(store)(LitElement) {
   static get is() {

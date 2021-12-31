@@ -76,7 +76,7 @@ class About extends connect(store)(PageViewElement) {
       <section>
         <article>
           <h2 class="title">Welcome to <br />Zuzana Riha Art</h2>
-          <img class="about-img" src="images/about-bg.jpg" />
+          <img class="about-img" src="/images/about-bg.jpg" />
 
           <p>${this.__lines.map((line) => html`${line}<br />`)}</p>
 

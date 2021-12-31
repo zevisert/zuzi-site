@@ -12,16 +12,12 @@ build:
       context: site
       docker:
         dockerfile: site/Dockerfile
-        target: prpl
+        target: static
       sync:
         manual:
           - src: site/src/**/*.js
             dest: /site/
-          - src: site/images/**/*.png
-            dest: /site/
-          - src: site/images/**/*.jpg
-            dest: /site
-          - src: site/images/**/*.ico
+          - src: site/public/**/*
             dest: /site/
     - image: zevisert/zuzi-site-server
       context: server

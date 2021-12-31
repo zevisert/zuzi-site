@@ -18,8 +18,8 @@ self.addEventListener("push", function (event) {
       // dir: "<String of 'auto' | 'ltr' | 'rtl'>",
       body: data.body,
       image: data.image,
-      icon: "images/favicon.ico",
-      badge: "images/favicon.ico",
+      icon: "/images/favicon.ico",
+      badge: "/images/favicon.ico",
 
       // Behavioural Options
       // tag: "<String>",
