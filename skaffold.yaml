@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta23.json
-apiVersion: skaffold/v2beta23
+apiVersion: skaffold/v2beta26
 kind: Config
 metadata:
   name: zuzi-site
@@ -13,11 +13,24 @@ build:
       docker:
         dockerfile: site/Dockerfile
         target: prpl
-      sync: {}
+      sync:
+        manual:
+          - src: site/src/**/*.js
+            dest: /site/
+          - src: site/images/**/*.png
+            dest: /site/
+          - src: site/images/**/*.jpg
+            dest: /site
+          - src: site/images/**/*.ico
+            dest: /site/
     - image: zevisert/zuzi-site-server
       context: server
       docker:
         dockerfile: server/Dockerfile
+      sync:
+        manual:
+          - src: server/src/**/*.js
+            dest: /app/
 
 deploy:
   kubectl:
@@ -72,19 +85,6 @@ profiles:
         path: /build/artifacts/0/docker/target
         value: dev
 
-        # Set sync config for fast reload
-      - op: replace
-        path: /build/artifacts/0/sync
-        value:
-          manual:
-            - src: site/src/**/*.js
-              dest: /site/
-            - src: site/images/**/*.png
-              dest: /site/
-            - src: site/images/**/*.jpg
-              dest: /site
-            - src: site/images/**/*.ico
-              dest: /site/
       # Auto-restore the mongo database from backup
       - op: add
         path: /deploy/kubectl/hooks
@@ -110,6 +110,7 @@ profiles:
                   - -c
                   - kubectl port-forward svc/mongodb-svc 27017:27017 &
                     mongorestore
+                    --quiet
                     --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
                     --nsFrom='zuzi-site.*'
                     --nsTo='zuzi-site.*'
