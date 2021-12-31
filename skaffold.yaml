@@ -31,8 +31,7 @@ deploy:
       - k8s/server.deployment.yaml
       - k8s/frontend.deployment.yaml
       - k8s/mongodb.yaml
-    hooks:
-      after: []
+    hooks: {}
 
 profiles:
   - activation:
@@ -87,37 +86,38 @@ profiles:
             - src: site/images/**/*.ico
               dest: /site/
       # Auto-restore the mongo database from backup
-      - op: replace
-        path: /deploy/kubectl/hooks/after
+      - op: add
+        path: /deploy/kubectl/hooks
         value:
-          - host:
-              command:
-                - echo
-                - Waiting for mongo to be up before restoring
-                  zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
-          - host:
-              command:
-                - kubectl
-                - wait
-                - --timeout=5m
-                - --for=jsonpath=status.phase=Running
-                - mdbc
-                - mongodb
+          after:
+            - host:
+                command:
+                  - echo
+                  - Waiting for mongo to be up before restoring
+                    zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
+            - host:
+                command:
+                  - kubectl
+                  - wait
+                  - --timeout=5m
+                  - --for=jsonpath=status.phase=Running
+                  - mdbc
+                  - mongodb
 
-          - host:
-              command:
-                - bash
-                - -c
-                - kubectl port-forward svc/mongodb-svc 27017:27017 &
-                  mongorestore
-                  --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
-                  --nsFrom='zuzi-site.*'
-                  --nsTo='zuzi-site.*'
-                  --host localhost
-                  --username $(kubectl get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
-                  --password $(kubectl get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
-                  --authenticationDatabase $(kubectl get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
-                  kill %1
+            - host:
+                command:
+                  - bash
+                  - -c
+                  - kubectl port-forward svc/mongodb-svc 27017:27017 &
+                    mongorestore
+                    --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
+                    --nsFrom='zuzi-site.*'
+                    --nsTo='zuzi-site.*'
+                    --host localhost
+                    --username $(kubectl get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
+                    --password $(kubectl get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
+                    --authenticationDatabase $(kubectl get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
+                    kill %1
 
   - name: prod
     patches:
