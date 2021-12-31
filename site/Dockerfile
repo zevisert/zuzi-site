@@ -27,8 +27,8 @@ RUN pnpm run build
 
 
 FROM nginx:alpine as static
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=build /site/.build /usr/share/nginx/html
-
 
 FROM base as dev
 CMD ["npm", "run", "dev", "--", "--host=0.0.0.0", "--port=80"]
