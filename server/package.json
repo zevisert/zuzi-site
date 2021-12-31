@@ -10,7 +10,7 @@
   "repository": "zevisert/zuzi-site",
   "scripts": {
     "email:render": "gulp renderEmails",
-    "start": "node --experimental-modules server/src/index.js"
+    "start": "node --experimental-modules src/index.js"
   },
   "dependencies": {
     "@koa/multer": "^3.0.0",

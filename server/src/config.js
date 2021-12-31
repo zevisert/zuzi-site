@@ -100,10 +100,7 @@ export const db_connect = (server) => {
   };
 
   server.context.db = mongoose.connection;
-  server.context.db.on(
-    "error",
-    console.error.bind(console, "connection error:")
-  );
+  server.context.db.on("error", console.error.bind(console, "connection error:"));
   server.context.db.on("disconnected", function () {
     console.error("connection lost: reconnecting in 1 minute");
     setTimeout(connect, 6000);

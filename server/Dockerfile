@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json /app/
 RUN npm clean-install
 
-COPY src/ /app/server/src/
+COPY src/ /app/src/
 
 EXPOSE 80
 CMD [ "npm", "start" ]
