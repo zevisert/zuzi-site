@@ -29,15 +29,13 @@ export async function put(ctx) {
     post.slug = toSlug(post.title);
 
     if (metadata.tags) {
-      const tags = JSON.parse(metadata.tags);
-      post.tags = tags;
+      post.tags = metadata.tags;
     }
 
     if (metadata.pricings) {
-      const pricings = JSON.parse(metadata.pricings);
       post.pricings = [];
 
-      for (const obj of pricings) {
+      for (const obj of metadata.pricings) {
         const pricing = new Pricing();
         pricing.price = obj.price;
         pricing.medium = obj.medium;
