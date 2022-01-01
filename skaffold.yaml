@@ -99,17 +99,17 @@ profiles:
                   - bash
                   - -c
                   - echo 'Waiting for mongo to be up before restoring zuzi-site-k8s-prod-2021-11-09.5.0.3.archive';
-                    kubectl wait --timeout=5m --for=jsonpath=status.phase=Running mdbc mongodb;
-                    kubectl port-forward svc/mongodb-svc 27017:27017 &
+                    kubectl wait --namespace zuzi-dev --timeout=5m --for=jsonpath=status.phase=Running mdbc mongodb;
+                    kubectl --namespace zuzi-dev port-forward svc/mongodb-svc 27017:27017 &
                     mongorestore
                     --quiet
                     --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
                     --nsFrom='zuzi-site.*'
                     --nsTo='zuzi-site.*'
                     --host localhost
-                    --username $(kubectl get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
-                    --password $(kubectl get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
-                    --authenticationDatabase $(kubectl get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
+                    --username $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
+                    --password $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
+                    --authenticationDatabase $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
                     kill %1
 
   - name: prod
