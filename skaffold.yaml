@@ -14,6 +14,7 @@ build:
         dockerfile: site/Dockerfile
         target: static
       sync:
+        # Sync is only applicable in dev
         manual:
           - src: site/src/**/*.js
             dest: /site/
@@ -42,6 +43,13 @@ deploy:
       - k8s/mongodb.yaml
     hooks: {}
 
+portForward:
+  - resourceType: service
+    resourceName: mongodb-svc
+    namespace: zuzi-dev # Applicable only to dev/debug anyway
+    localPort: 27017
+    port: 27017
+
 profiles:
   - activation:
       - command: dev
@@ -49,37 +57,32 @@ profiles:
       - command: debug
         kubeContext: docker-desktop
     name: dev
-    portForward:
-      - resourceType: service
-        resourceName: mongodb-svc
-        namespace: zuzi-dev
-        localPort: 27017
-        port: 27017
+
     patches:
       # Set the namespace to zuzi-dev
       - op: replace
         path: /deploy/kubectl/defaultNamespace
         value: zuzi-dev
 
-        # Target the dev config
+      # Docker build target is the dev image
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: dev
+
+      # Use the dev namespace manifest
       - op: replace
         path: /deploy/kubectl/manifests/0
         value: k8s/dev/namespace.yaml
 
-        # Target the dev config
+      # Use the dev secrets manifest
       - op: replace
         path: /deploy/kubectl/manifests/1
         value: k8s/dev/env.secret.yaml
 
-        # Target the dev config
+      # Use the dev ingress manifest
       - op: replace
         path: /deploy/kubectl/manifests/2
         value: k8s/dev/ingress.yaml
-
-        # Docker build target is the dev image
-      - op: replace
-        path: /build/artifacts/0/docker/target
-        value: dev
 
       # Auto-restore the mongo database from backup
       - op: add
@@ -88,23 +91,16 @@ profiles:
           after:
             - host:
                 command:
-                  - echo
-                  - Waiting for mongo to be up before restoring
-                    zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
-            - host:
-                command:
-                  - kubectl
-                  - wait
-                  - --timeout=5m
-                  - --for=jsonpath=status.phase=Running
-                  - mdbc
-                  - mongodb
-
-            - host:
-                command:
+                  # This script:
+                  # a) Waits for db ready (requires kubectl 1.23), then
+                  # b) port-forwards in the background,
+                  # c) runs mongorestore, then
+                  # d) then kills background port-forwarding
                   - bash
                   - -c
-                  - kubectl port-forward svc/mongodb-svc 27017:27017 &
+                  - echo 'Waiting for mongo to be up before restoring zuzi-site-k8s-prod-2021-11-09.5.0.3.archive';
+                    kubectl wait --timeout=5m --for=jsonpath=status.phase=Running mdbc mongodb;
+                    kubectl port-forward svc/mongodb-svc 27017:27017 &
                     mongorestore
                     --quiet
                     --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
