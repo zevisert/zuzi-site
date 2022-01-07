@@ -13,8 +13,60 @@ import {
   UPDATE_ABOUT_TEXT,
 } from "../actions/app.js";
 
-const INITIAL_STATE = {
+import { Action } from "../store.js";
+
+interface UpdatePageAction extends Action {
+  type: typeof UPDATE_PAGE;
+  payload: {
+    page: string;
+    subPage: string;
+  };
+}
+interface UpdateOfflineAction extends Action {
+  type: typeof UPDATE_OFFLINE;
+  payload: {
+    offline: boolean;
+  };
+}
+interface UpdateCredentialsAction extends Action {
+  type: typeof UPDATE_CREDENTIALS;
+  payload: {
+    credentials: string;
+  };
+}
+interface UpdateSnackbarAction extends Action {
+  type: typeof SHOW_SNACKBAR | typeof HIDE_SNACKBAR;
+  payload: {
+    active: boolean;
+    message: string;
+  };
+}
+interface UpdateAboutTextAction extends Action {
+  type: typeof UPDATE_ABOUT_TEXT;
+  payload: {
+    lines: string[];
+  };
+}
+type SnackbarState = {
+  active: boolean;
+  message: string;
+};
+
+type AppState = {
+  page: string;
+  subPage: string;
+  credentials: string | null;
+  offline: boolean;
+  about: {
+    lines: string[];
+  };
+  snackbar: SnackbarState;
+};
+
+const INITIAL_STATE: AppState = {
   page: "",
+  subPage: "",
+  credentials: null,
   offline: false,
   about: {
     lines: [],
@@ -25,7 +77,15 @@ const INITIAL_STATE = {
   },
 };
 
-const app = (state = INITIAL_STATE, action) => {
+const app = (
+  state = INITIAL_STATE,
+  action:
+    | UpdatePageAction
+    | UpdateOfflineAction
+    | UpdateCredentialsAction
+    | UpdateSnackbarAction
+    | UpdateAboutTextAction
+): AppState => {
   switch (action.type) {
     case UPDATE_PAGE:
       return {
@@ -63,7 +123,10 @@ const app = (state = INITIAL_STATE, action) => {
 
 export default app;
 
-const snackbar = (state, action) => {
+const snackbar = (
+  state: SnackbarState,
+  action: UpdateSnackbarAction
+): SnackbarState => {
   switch (action.type) {
     case SHOW_SNACKBAR:
       return {

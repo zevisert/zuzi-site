@@ -5,14 +5,26 @@
  */
 
 import { ADMIN_GET_ORDERS } from "../actions/admin.js";
+import { Action } from "../store.js";
 
 import { createSelector } from "reselect";
 
-const INITIAL_STATE = {
+interface AdminGetOrders extends Action {
+  type: typeof ADMIN_GET_ORDERS;
+  payload: {
+    orders: { [id: string]: unknown };
+  };
+}
+
+type AdminState = {
+  orders: { [id: string]: unknown };
+};
+
+const INITIAL_STATE: AdminState = {
   orders: {},
 };
 
-export const admin = (state = INITIAL_STATE, action) => {
+export const admin = (state = INITIAL_STATE, action: AdminGetOrders) => {
   switch (action.type) {
     case ADMIN_GET_ORDERS:
       return {
@@ -27,10 +39,10 @@ export const admin = (state = INITIAL_STATE, action) => {
   }
 };
 
-const ordersSelector = (state) => state.admin.orders;
+const ordersSelector = (state: { admin: AdminState }) => state.admin.orders;
 
-export const orderSelector = (orderId) =>
-  createSelector(ordersSelector, (orders) => {
+export const orderSelector = (orderId: string) =>
+  createSelector(ordersSelector, (orders: AdminState["orders"]) => {
     const order = orders[orderId];
     return order;
   });

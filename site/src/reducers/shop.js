@@ -23,7 +23,15 @@ import {
 } from "../actions/admin.js";
 
 import { createSelector } from "reselect";
-
+import { Action } from "../store.js";
+export interface ShopState {
+  products: {},
+  cart: {},
+  stage: CHECKOUT_STAGES_ENUM.CART,
+  method: CHECKOUT_METHODS_ENUM.STRIPE,
+  error: "",
+  message: "",
+};
 const INITIAL_STATE = {
   products: {},
   cart: {},
