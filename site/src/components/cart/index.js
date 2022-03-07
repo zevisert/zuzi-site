@@ -35,20 +35,7 @@ class Cart extends connect(store)(PageViewElement) {
     switch (this.__stage) {
       default:
       case CHECKOUT_STAGES_ENUM.CART:
-        return ["Shopping Cart", html` <shop-cart></shop-cart> `];
-
-      case CHECKOUT_STAGES_ENUM.PAYMENT_MODE:
-        return ["Payment type", html` <shop-payment-select></shop-payment-select> `];
-
-      case CHECKOUT_STAGES_ENUM.CHECKOUT:
-        return [
-          "Checkout",
-          html`
-            <shop-checkout>
-              <slot name="stripe-card" slot="stripe-card"></slot>
-            </shop-checkout>
-          `,
-        ];
+        return ["Sorry for the interruption!", html` <shop-cart></shop-cart> `];
     }
   }
 

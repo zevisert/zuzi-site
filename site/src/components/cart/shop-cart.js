@@ -58,9 +58,10 @@ class ShopCart extends connect(store)(LitElement) {
         }
       </style>
 
-      <p ?hidden="${this._items.length !== 0}">
-        You can add artwork and prints to your cart using when viewing individual
-        artwork in the gallery.
+      <p>
+        We're working to bring you a new checkout experience. In the mean time, please
+        <a href="mailto:zuzi-@hotmail.com">email me directly (zuzi-@hotmail.com)</a>
+        if you want to purchase some artwork!
       </p>
 
       <article>
@@ -78,17 +79,23 @@ class ShopCart extends connect(store)(LitElement) {
         )}
       </article>
 
-      <p>Number of items in the cart: <b>${this._quantity}</b></p>
       <p ?hidden="${!this._items.length}"><b>Total:</b> $ ${this._total.toFixed(2)}</p>
 
       <button ?hidden="${this._quantity == 0}" @click="${this._paymentButtonClicked}">
-        Proceed to Payment Selection
+        Email me
       </button>
     `;
   }
 
   _paymentButtonClicked() {
-    store.dispatch(advanceCheckout());
+    const params = new URLSearchParams({
+      subject: "I'd like to buy some art!",
+      body: `I'm interested in ${this._items.map((item) => item.label).join(", ")}.`,
+    }).toString();
+    var mail = document.createElement("a");
+    mail.href = `mailto:zuzi-@hotmail.com?${params}`;
+    mail.target = "_blank";
+    mail.click();
   }
 
   // This is called every time something is updated in the store.
