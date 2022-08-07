@@ -1,10 +1,28 @@
 {
-    "mjml.autoPreview": true,
-    "mjml.updateWhenTyping": true,
-    "files.associations": {
-        "*.mjml.njk": "mjml"
-    },
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true
+  "mjml.autoPreview": true,
+  "mjml.updateWhenTyping": true,
+  "files.associations": {
+    "*.mjml.njk": "mjml"
+  },
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "eslint.workingDirectories": ["./site"],
+  "prettier.configPath": "site/.prettierrc.js",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "eslint.options": {
+    "extensions": [".html", ".js", ".vue", ".jsx", ".ts", ".tsx"]
+  },
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.tabSize": 2
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "headwind.runOnSave": false
 }

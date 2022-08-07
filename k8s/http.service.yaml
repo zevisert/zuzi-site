@@ -3,15 +3,14 @@ kind: Service
 metadata:
   labels:
     app: http
-  name: http
-  
+  name: next
+
 spec:
   type: ClusterIP
   selector:
-    app: frontend
+    app: next
   ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: 80
-  
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http

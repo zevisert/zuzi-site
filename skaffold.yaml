@@ -8,47 +8,37 @@ build:
   local:
     useBuildkit: true
   artifacts:
-    - image: zevisert/zuzi-site-frontend
+    - image: zevisert/zuzi-site
       context: site
       docker:
         dockerfile: site/Dockerfile
-        target: static
+        target: runner
       sync:
         # Sync is only applicable in dev
         manual:
-          - src: site/src/**/*.js
+          - src: src/**/*.{js,ts,tsx,css}
             dest: /site/
-          - src: site/public/**/*
+          - src: public/**/*
             dest: /site/
-    - image: zevisert/zuzi-site-server
-      context: server
-      docker:
-        dockerfile: server/Dockerfile
-      sync:
-        manual:
-          - src: server/src/**/*.js
-            dest: /app/
 
 deploy:
   kubectl:
     defaultNamespace: zuzi-staging
     manifests:
-      - k8s/staging/namespace.yaml
-      - k8s/staging/env.secret.yaml
-      - k8s/staging/ingress.yaml
-      - k8s/api.service.yaml
+      - k8s/environments/staging/namespace.yaml
+      - k8s/environments/staging/env.secret.yaml
+      - k8s/environments/staging/ingress.yaml
       - k8s/http.service.yaml
-      - k8s/server.deployment.yaml
-      - k8s/frontend.deployment.yaml
-      - k8s/mongodb.yaml
+      - k8s/next.deployment.yaml
+      - k8s/postgres.yaml
     hooks: {}
 
 portForward:
   - resourceType: service
-    resourceName: mongodb-svc
+    resourceName: db-primary
     namespace: zuzi-dev # Applicable only to dev/debug anyway
-    localPort: 27017
-    port: 27017
+    localPort: 5432
+    port: postgres
 
 profiles:
   - activation:
@@ -67,50 +57,22 @@ profiles:
       # Docker build target is the dev image
       - op: replace
         path: /build/artifacts/0/docker/target
-        value: dev
+        value: dev-server
 
       # Use the dev namespace manifest
       - op: replace
         path: /deploy/kubectl/manifests/0
-        value: k8s/dev/namespace.yaml
+        value: k8s/environments/dev/namespace.yaml
 
       # Use the dev secrets manifest
       - op: replace
         path: /deploy/kubectl/manifests/1
-        value: k8s/dev/env.secret.yaml
+        value: k8s/environments/dev/env.secret.yaml
 
       # Use the dev ingress manifest
       - op: replace
         path: /deploy/kubectl/manifests/2
-        value: k8s/dev/ingress.yaml
-
-      # Auto-restore the mongo database from backup
-      - op: add
-        path: /deploy/kubectl/hooks
-        value:
-          after:
-            - host:
-                command:
-                  # This script:
-                  # a) Waits for db ready (requires kubectl 1.23), then
-                  # b) port-forwards in the background,
-                  # c) runs mongorestore, then
-                  # d) then kills background port-forwarding
-                  - bash
-                  - -c
-                  - echo 'Waiting for mongo to be up before restoring zuzi-site-k8s-prod-2021-11-09.5.0.3.archive';
-                    kubectl wait --namespace zuzi-dev --timeout=5m --for=jsonpath=status.phase=Running mdbc mongodb;
-                    kubectl --namespace zuzi-dev port-forward svc/mongodb-svc 27017:27017 &
-                    mongorestore
-                    --quiet
-                    --archive=$PWD/server/.build/dump/zuzi-site-k8s-prod-2021-11-09.5.0.3.archive
-                    --nsFrom='zuzi-site.*'
-                    --nsTo='zuzi-site.*'
-                    --host localhost
-                    --username $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_USER}' | base64 --decode)
-                    --password $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_PW}' | base64 --decode)
-                    --authenticationDatabase $(kubectl --namespace zuzi-dev get secret env -o jsonpath='{.data.MONGO_AUTHSOURCE}' | base64 --decode);
-                    kill %1
+        value: k8s/environments/dev/ingress.yaml
 
   - name: prod
     patches:
@@ -122,14 +84,14 @@ profiles:
         # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/0
-        value: k8s/prod/namespace.yaml
+        value: k8s/environments/prod/namespace.yaml
 
         # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/1
-        value: k8s/prod/env.secret.yaml
+        value: k8s/environments/prod/env.secret.yaml
 
         # Target the prod config
       - op: replace
         path: /deploy/kubectl/manifests/2
-        value: k8s/prod/ingress.yaml
+        value: k8s/environments/prod/ingress.yaml

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: next
+  name: next
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: next
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: next
+    spec:
+      containers:
+        - image: zevisert/zuzi-site
+          imagePullPolicy: IfNotPresent
+          name: zuzi-site
+          ports:
+            - containerPort: 3000
+              name: http
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1000M
+            requests:
+              cpu: 100m
+              memory: 100M
+          env:
+            - name: DB_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: host
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: port
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: dbname
+            - name: DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: uri
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-pguser-next
+                  key: password
+          envFrom:
+            - secretRef:
+                name: env
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
