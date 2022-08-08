@@ -14,7 +14,6 @@ export const getServerSideProps = async () => {
     props: {
       about: { lines: about.sort((a, b) => a.order - b.order).map((item) => item.text) },
     },
-    revalidate: 600,
   };
 };
 
