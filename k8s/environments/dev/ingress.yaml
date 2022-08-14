@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: zuzi.local
+    - host: local.zuzi.art
       http:
         paths:
           - path: /
@@ -20,5 +20,5 @@ spec:
                   name: http
   tls:
     - hosts:
-        - zuzi.local
+        - local.zuzi.art
       secretName: k8s-dev-cert

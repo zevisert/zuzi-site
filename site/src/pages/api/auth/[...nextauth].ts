@@ -20,7 +20,7 @@ function getOptions(_req: NextApiRequest): NextAuthOptions {
         email: _email,
         credentials: _credentials,
       }) {
-        const isAllowedToSignIn = ['coder@zuzi.local'].includes(user.email ?? '');
+        const isAllowedToSignIn = ['coder@zuzi.art'].includes(user.email ?? '');
         if (isAllowedToSignIn) {
           return true;
         } else {
@@ -65,13 +65,13 @@ function getOptions(_req: NextApiRequest): NextAuthOptions {
         },
         async authorize(credentials, _req) {
           // Add logic here to look up the user from the credentials supplied
-          if (credentials?.email == 'coder@zuzi.local') {
+          if (credentials?.email == 'coder@zuzi.art') {
             const match = await bcrypt.compare(
               credentials?.password,
               '$2a$12$SH3Amxhf4ZZvIjDvalbZeO48kj8o2XIPPPooCM8auF9Rr3N0RsSjS'
             );
             if (match) {
-              return { id: 1337, name: 'Developer', email: 'coder@zuzi.local' };
+              return { id: 1337, name: 'Developer', email: 'coder@zuzi.art' };
             }
           }
           return null;

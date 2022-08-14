@@ -4,6 +4,15 @@
   "files.associations": {
     "*.mjml.njk": "mjml"
   },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "site/.build": true,
+    "site/.next": true,
+    "k8s/postgres-operator": true,
+    "k8s/.schemas": true
+  },
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "editor.formatOnType": true,
