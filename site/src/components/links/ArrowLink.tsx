@@ -8,6 +8,7 @@ import { UnstyledLinkProps } from '@/components/links/UnstyledLink';
 type ArrowLinkProps<C extends React.ElementType> = {
   as?: C;
   direction?: 'left' | 'right';
+  ref: React.Ref<C>;
 } & UnstyledLinkProps &
   React.ComponentProps<C>;
 
@@ -16,12 +17,13 @@ export default function ArrowLink<C extends React.ElementType>({
   className,
   direction = 'right',
   as,
+  ref,
   ...rest
 }: ArrowLinkProps<C>) {
   const Component = as || UnderlineLink;
-
   return (
     <Component
+      ref={ref}
       {...rest}
       className={clsxm('group gap-[0.25em]', direction === 'left' && 'flex-row-reverse', className)}
     >

@@ -17,7 +17,6 @@ type NextImageProps = (
 
 export default function NextImage({
   className,
-
   src,
   width,
   height,
