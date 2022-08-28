@@ -7,8 +7,9 @@ import Seo from '@/components/Seo';
 
 import AboutBg from '~/images/about-bg.jpg';
 
+const prisma = new PrismaClient();
+
 export const getServerSideProps = async () => {
-  const prisma = new PrismaClient();
   const about = await prisma.about.findMany();
   return {
     props: {
