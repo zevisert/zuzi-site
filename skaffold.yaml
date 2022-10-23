@@ -85,11 +85,12 @@ profiles:
                   - >
                     set -e; set -x;
                     echo 'Waiting for postgres to be up before pushing prisma db';
-                    while ! kubectl --namespace zuzi-dev wait pod --for=condition=Ready --timeout=1m --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master; do sleep 1; done;
-                    PG_CLUSTER_PRIMARY_POD=$(kubectl --namespace zuzi-dev get pod --output name --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master);
-                    kubectl --namespace zuzi-dev port-forward $PG_CLUSTER_PRIMARY_POD 5432:5432 &
+                    function k { kubectl --namespace zuzi-dev --context docker-desktop "$@"; };
+                    while ! k wait pod --for=condition=Ready --timeout=1m --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master; do sleep 1; done;
+                    PG_CLUSTER_PRIMARY_POD=$(k get pod --output name --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master);
+                    k port-forward $PG_CLUSTER_PRIMARY_POD 5432:5432 &
                     cd site;
-                    DB_URI="$(kubectl --namespace zuzi-dev get secrets db-pguser-next --output go-template='{{ .data.uri | base64decode }}' | sed 's/db-primary.zuzi-dev.svc/localhost/')" npx prisma db push;
+                    DB_URI="$(k get secrets db-pguser-next --output go-template='{{ .data.uri | base64decode }}' | sed 's/db-primary.zuzi-dev.svc/localhost/')" npx prisma db push;
                     kill %1
   - name: prod
     patches:
@@ -124,9 +125,10 @@ profiles:
                   - >
                     set -e; set -x;
                     echo 'Waiting for postgres to be up before pushing prisma db';
-                    while ! kubectl --namespace zuzi-site wait pod --for=condition=Ready --timeout=1m --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master; do sleep 1; done;
-                    PG_CLUSTER_PRIMARY_POD=$(kubectl --namespace zuzi-site get pod --output name --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master);
-                    kubectl --namespace zuzi-site port-forward $PG_CLUSTER_PRIMARY_POD 5432:5432 &
+                    function k { kubectl --namespace zuzi-site --context doku "$@"; };
+                    while ! k wait pod --for=condition=Ready --timeout=1m --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master; do sleep 1; done;
+                    PG_CLUSTER_PRIMARY_POD=$(k get pod --output name --selector postgres-operator.crunchydata.com/cluster=db,postgres-operator.crunchydata.com/role=master);
+                    k port-forward $PG_CLUSTER_PRIMARY_POD 5432:5432 &
                     cd site;
-                    DB_URI="$(kubectl --namespace zuzi-site get secrets db-pguser-next --output go-template='{{ .data.uri | base64decode }}' | sed 's/db-primary.zuzi-site.svc/localhost/')" npx prisma migrate deploy;
+                    DB_URI="$(k get secrets db-pguser-next --output go-template='{{ .data.uri | base64decode }}' | sed 's/db-primary.zuzi-site.svc/localhost/')" npx prisma migrate deploy;
                     kill %1
