@@ -4,7 +4,6 @@ kind: PostgresCluster
 metadata:
   name: db
 spec:
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:centos8-14.2-0
   postgresVersion: 14
   users:
     - name: next
@@ -41,7 +40,6 @@ spec:
 
   backups:
     pgbackrest:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:centos8-2.36-1
       repos:
         - name: repo1
           volume:

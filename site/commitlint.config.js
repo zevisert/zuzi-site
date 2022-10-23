@@ -17,7 +17,8 @@ module.exports = {
         'test',
         'perf',
         'revert',
-        'vercel',
+        'build',
+        'ops'
       ],
     ],
   },
