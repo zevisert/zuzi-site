@@ -13,7 +13,7 @@ module.exports = withSentryConfig({
   },
 
   images: {
-    domains: ['zuzanariha.art'],
+    domains: [process.env.NEXT_PUBLIC_HOSTNAME],
   },
 
   output: 'standalone',

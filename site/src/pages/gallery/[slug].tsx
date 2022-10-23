@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, PreviewData } from 'next';
+import Image from 'next/future/image';
 import { ReactNode } from 'react';
 import Stripe from 'stripe';
 
@@ -6,7 +7,6 @@ import { toArtwork } from '@/lib/to-artwork';
 import { toSlug } from '@/lib/to-slug';
 import { Artwork, SingleCartItem } from '@/lib/types';
 
-import NextImage from '@/components/NextImage';
 import PricingTable from '@/components/PricingTable';
 import Seo from '@/components/Seo';
 import Skeleton from '@/components/Skeleton';
@@ -130,15 +130,14 @@ export default function GalleryPage({
       description={artwork.description ?? 'No description provided'}
       prices={prices}
     >
-      <NextImage
+      <Image
         className='relative flex w-full max-w-full flex-col items-center p-5 align-middle'
         src={new URL(artwork.images[0]).toString()}
         alt={artwork.name}
-        layout='fixed'
-        width={`${(width / Math.max(width, height)) * 1000}px`}
-        height={`${(height / Math.max(width, height)) * 1000}px`}
-        objectFit='contain'
-      ></NextImage>
+        unoptimized
+        width={(width / Math.max(width, height)) * 1000}
+        height={(height / Math.max(width, height)) * 1000}
+      ></Image>
     </Shell>
   );
 }
