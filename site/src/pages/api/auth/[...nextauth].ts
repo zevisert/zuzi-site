@@ -71,7 +71,7 @@ function getOptions(_req: NextApiRequest): NextAuthOptions {
               '$2a$12$SH3Amxhf4ZZvIjDvalbZeO48kj8o2XIPPPooCM8auF9Rr3N0RsSjS'
             );
             if (match) {
-              return { id: 1337, name: 'Developer', email: 'coder@zuzi.art' };
+              return { id: '1337', name: 'Developer', email: 'coder@zuzi.art' };
             }
           }
           return null;
