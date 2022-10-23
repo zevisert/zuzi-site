@@ -18,7 +18,10 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 COPY prisma/ /site/prisma
 RUN npx prisma generate
-RUN --mount=type=secret,id=nextenv,dst=/site/.env.local yarn build
+RUN \
+    --mount=type=secret,id=nextenv,dst=/site/.env.local \
+    --mount=type=secret,id=sentry,dst=/site/.sentryclirc \
+    yarn build
 
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner

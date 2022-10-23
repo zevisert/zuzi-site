@@ -16,6 +16,8 @@ build:
         secrets:
           - id: nextenv
             src: k8s/environments/staging/process.env
+          - id: sentry
+            src: site/.sentryclirc
       sync:
         manual:
           - src: src/**/*.{js,ts,tsx,css}
