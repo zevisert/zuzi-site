@@ -38,14 +38,18 @@ export default function GalleryItem({ product, shown, ...rest }: GalleyItemProps
         )}
         {...rest}
       >
-        <NextImage
-          className='relative -z-10 max-h-64 min-h-[16rem]'
-          src={product.images[0]}
-          alt={product.name}
-          layout='fill'
-          objectFit='cover'
-          objectPosition={`center ${product.metadata.display_position ?? '50'}%`}
-        ></NextImage>
+        <div className='relative -z-10 max-h-64 min-h-[16rem] '>
+          <NextImage
+            className='object-cover'
+            style={{
+              objectPosition: `center ${product.metadata.display_position ?? '50'}%`,
+            }}
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            unoptimized
+          ></NextImage>
+        </div>
         {/* Caption background colour from globals css */}
         <figcaption className='absolute bottom-0 h-8 w-full px-2 align-middle text-white transition-transform group-hover:translate-y-8'>
           {product.name}

@@ -121,13 +121,15 @@ function ItemDisplay({
         leaveTo='opacity-0 translate-y-6'
       >
         <div className='grid grid-cols-4 bg-primary-100 p-8'>
-          <NextImage
-            className='relative m-4 h-48 border-2 border-primary-200 bg-primary-50'
-            src={item.product.images[0]}
-            alt={item.product.name}
-            layout='fill'
-            objectFit='contain'
-          ></NextImage>
+          <div className='relative m-4 h-48 border-2 border-primary-200 bg-primary-50'>
+            <NextImage
+              className='object-contain'
+              src={item.product.images[0]}
+              alt={item.product.name}
+              fill
+              unoptimized
+            ></NextImage>
+          </div>
           <div className='col-span-2'>
             <h2 className='font-julius-sans'>{item.product.name}</h2>
             <blockquote>{item.product.description}</blockquote>

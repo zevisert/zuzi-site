@@ -1,5 +1,4 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, PreviewData } from 'next';
-import Image from 'next/future/image';
 import { ReactNode } from 'react';
 import Stripe from 'stripe';
 
@@ -7,6 +6,7 @@ import { toArtwork } from '@/lib/to-artwork';
 import { toSlug } from '@/lib/to-slug';
 import { Artwork, SingleCartItem } from '@/lib/types';
 
+import NextImage from '@/components/NextImage';
 import PricingTable from '@/components/PricingTable';
 import Seo from '@/components/Seo';
 import Skeleton from '@/components/Skeleton';
@@ -97,21 +97,23 @@ export default function GalleryPage({
     prices?: SingleCartItem[];
     title?: string;
     description?: string;
-  }) => (
-    <>
-      <Seo templateTitle='Gallery' />
-      <main>
-        <section>
-          <figure className='relative h-auto max-h-screen w-full border-b-2 border-primary-500'>
-            {children}
-            <figcaption className='relative text-xl'>{title}</figcaption>
-          </figure>
-          <blockquote>{description}</blockquote>
-        </section>
-        <PricingTable prices={prices} />
-      </main>
-    </>
-  );
+  }) => {
+    return (
+      <>
+        <Seo templateTitle='Gallery' />
+        <main>
+          <section>
+            <figure className='border-b-2 border-primary-500'>
+              {children}
+              <figcaption className='text-xl'>{title}</figcaption>
+            </figure>
+            <blockquote>{description}</blockquote>
+          </section>
+          <PricingTable prices={prices} />
+        </main>
+      </>
+    );
+  };
 
   if (!artwork)
     return (
@@ -130,14 +132,18 @@ export default function GalleryPage({
       description={artwork.description ?? 'No description provided'}
       prices={prices}
     >
-      <Image
-        className='relative flex w-full max-w-full flex-col items-center p-5 align-middle'
-        src={new URL(artwork.images[0]).toString()}
-        alt={artwork.name}
-        unoptimized
-        width={(width / Math.max(width, height)) * 1000}
-        height={(height / Math.max(width, height)) * 1000}
-      ></Image>
+      {/* Aspect ratio as style since tailwind can't generate classes for it post-build */}
+      <div
+        className='relative mx-auto max-h-[90vh]'
+        style={{ aspectRatio: `${width} / ${height}` }}
+      >
+        <NextImage
+          src={new URL(artwork.images[0]).toString()}
+          alt={artwork.name}
+          unoptimized
+          fill
+        ></NextImage>
+      </div>
     </Shell>
   );
 }

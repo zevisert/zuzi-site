@@ -29,7 +29,10 @@ export default function HomePage({
           <div className='layout flex flex-col items-center justify-center text-center'>
             <h1 className='font-syncopate'>Welcome to Zuzana Riha Art</h1>
           </div>
-          <NextImage src={AboutBg}></NextImage>
+          <NextImage
+            src={AboutBg}
+            alt='A picture of Zuzana Riha with her sculpture and artwork.'
+          ></NextImage>
           {about.lines.map((line, i) => (
             <p key={i} className='mb-3 px-5 text-lg'>
               {line}

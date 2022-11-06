@@ -1,4 +1,4 @@
-import Image, { ImageLoaderProps, ImageProps, StaticImageData } from 'next/image';
+import Image, { ImageProps, StaticImageData } from 'next/future/image';
 import * as React from 'react';
 
 import clsxm from '@/lib/clsxm';
@@ -7,7 +7,7 @@ type NextImageProps = (
   | { width: string | number; height: string | number }
   | { src: StaticImageData; width?: string | number; height?: string | number }
   | {
-      layout: 'fill';
+      fill: true;
       width?: string | number;
       height?: string | number;
     }
@@ -15,37 +15,19 @@ type NextImageProps = (
   ImageProps &
   Record<string, unknown>;
 
-export default function NextImage({
-  className,
-  src,
-  width,
-  height,
-  layout,
-  alt,
-  ...rest
-}: NextImageProps) {
+export default function NextImage({ className, src, alt, ...rest }: NextImageProps) {
   return (
-    <div className={clsxm(className)}>
-      <Image
-        src={src}
-        width={width}
-        height={height}
-        layout={layout}
-        alt={alt}
-        loader={customLoader}
-        placeholder='blur'
-        blurDataURL={`data:image/svg+xml;base64,${toBase64(
-          shimmer(width ? +width : 700, height ? +height : 475)
-        )}`}
-        {...rest}
-      />
-    </div>
+    <Image
+      className={clsxm(className)}
+      src={src}
+      alt={alt}
+      placeholder='blur'
+      unoptimized
+      blurDataURL={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}
+      {...rest}
+    />
   );
 }
-
-const customLoader = ({ src, width, quality }: ImageLoaderProps): string => {
-  return `${src}?w=${width}&q=${quality || 75}`;
-};
 
 const shimmer = (w: number, h: number) => `
 <svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

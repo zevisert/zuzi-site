@@ -171,14 +171,16 @@ export default function AdminArtworkTable() {
           }
           onClick={() => router.push(`/admin/edit/${toSlug(item.name)}`)}
           icon={
-            <NextImage
-              className='relative h-12 max-h-16'
-              src={item.images[0]}
-              alt={item.name}
-              layout='fill'
-              objectFit='cover'
-              objectPosition={`center ${item.metadata.display_position ?? '50'}%`}
-            ></NextImage>
+            <div className='relative h-12 max-h-16 '>
+              <NextImage
+                className='object-cover'
+                src={item.images[0]}
+                alt={item.name}
+                fill
+                unoptimized
+                style={{ objectPosition: `center ${item.metadata.display_position ?? '50'}%` }}
+              ></NextImage>
+            </div>
           }
         ></Row>
       ))}

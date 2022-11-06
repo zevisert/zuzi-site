@@ -159,13 +159,15 @@ function PurchasedItem({ id, quantity }: { id: string; quantity: number }) {
         leaveTo='opacity-0 translate-y-6'
       >
         <div className='grid grid-cols-4 bg-primary-100 p-8'>
-          <NextImage
-            className='relative m-4 h-48 border-2 border-primary-200 bg-primary-50'
-            src={price.product.images[0]}
-            alt={price.product.name}
-            layout='fill'
-            objectFit='contain'
-          ></NextImage>
+          <div className='relative m-4 h-48 border-2 border-primary-200 bg-primary-50 '>
+            <NextImage
+              className='object-contain'
+              src={price.product.images[0]}
+              alt={price.product.name}
+              fill
+              unoptimized
+            ></NextImage>
+          </div>
           <div className='col-span-2'>
             <h2 className='font-julius-sans'>{price.product.name}</h2>
             <blockquote>{price.product.description}</blockquote>
