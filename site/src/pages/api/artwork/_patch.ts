@@ -1,4 +1,4 @@
-import status from 'fastatus';
+import status, { description } from 'fastatus';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 import { z } from 'zod';
@@ -21,7 +21,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 // Not default, so this doesn't become /api/artwork/patch instead of PATCH:/api/artwork
 export async function patch(req: NextApiRequest, res: NextApiResponse<ApiResponse>) {
   if (!(await authGuard(req, res))) {
-    return;
+    return res.json({ error: { message: description.HTTP_401_UNAUTHORIZED } });
   }
 
   if (req.headers['content-type'] !== 'application/json') {

@@ -1,4 +1,4 @@
-import status from 'fastatus';
+import status, { description } from 'fastatus';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import authGuard from '@/lib/api/auth';
@@ -10,10 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
 
     case 'PATCH':
-      if (await authGuard(req, res)) {
+      if (!(await authGuard(req, res))) {
+        return res.json({ error: { message: description.HTTP_401_UNAUTHORIZED } });
+      } else {
         patch(req, res);
       }
-      return;
+      break;
 
     default:
       res

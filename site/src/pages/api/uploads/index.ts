@@ -1,4 +1,4 @@
-import status from 'fastatus';
+import status, { description } from 'fastatus';
 import { NextApiRequest, NextApiResponse } from 'next';
 import getRawBody from 'raw-body';
 import sharp from 'sharp';
@@ -14,10 +14,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return;
 
     case 'POST':
-      if (await authGuard(req, res)) {
+      if (!(await authGuard(req, res))) {
+        return res.json({ error: { message: description.HTTP_401_UNAUTHORIZED } });
+      } else {
         await post(req, res);
       }
-      return;
+      break;
 
     default:
       res
