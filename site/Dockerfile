@@ -1,5 +1,5 @@
 # Install dependencies only when needed
-FROM node:16-alpine AS deps
+FROM node:16-alpine3.16 AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /site
@@ -7,7 +7,7 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # Rebuild the source code only when needed
-FROM node:16-alpine AS builder
+FROM node:16-alpine3.16 AS builder
 WORKDIR /site
 COPY --from=deps /site/node_modules ./node_modules
 COPY . .
@@ -24,7 +24,7 @@ RUN \
     yarn build
 
 # Production image, copy all the files and run next
-FROM node:16-alpine AS runner
+FROM node:16-alpine3.16 AS runner
 WORKDIR /site
 
 ENV NODE_ENV production
@@ -54,7 +54,7 @@ CMD ["node", "server.js"]
 
 
 # Rebuild the source code only when needed
-FROM node:16-alpine AS dev-server
+FROM node:16-alpine3.16 AS dev-server
 WORKDIR /site
 COPY --from=deps /site/node_modules ./node_modules
 COPY prisma/ /site/prisma

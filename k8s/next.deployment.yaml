@@ -22,7 +22,7 @@ spec:
         app: next
     spec:
       containers:
-        - image: zevisert/zuzi-site
+        - image: zevisert/zuzi-site:latest
           imagePullPolicy: IfNotPresent
           name: zuzi-site
           ports:
