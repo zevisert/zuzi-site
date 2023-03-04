@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { InferGetServerSidePropsType } from 'next';
-import * as React from 'react';
 
+import ArrowLink from '@/components/links/ArrowLink';
 import NextImage from '@/components/NextImage';
 import Seo from '@/components/Seo';
 
@@ -38,6 +38,16 @@ export default function HomePage({
               {line}
             </p>
           ))}
+          <hr />
+          <div className='flex flex-col items-center justify-around pt-4'>
+            <span>
+              Browse through the{' '}
+              <ArrowLink direction='right' href='/gallery'>
+                Gallery
+              </ArrowLink>{' '}
+              to see if you like anything I&apos;ve made!
+            </span>
+          </div>
         </section>
       </main>
     </>

@@ -16,7 +16,7 @@ import SigSVG from '~/svg/zuzi-sig.svg';
 export default function Header() {
   const router = useRouter();
   const { cart } = useContext(CartContext);
-  const [cartLabel, setCartLabel] = useState('Cart');
+  const [_cartLabel, setCartLabel] = useState('Cart');
 
   useEffect(() => {
     const count = cart.reduce((count, item) => count + item.quantity, 0);
@@ -26,7 +26,7 @@ export default function Header() {
   const links = [
     { current: router.pathname == '/', href: '/', label: 'About' },
     { current: router.pathname == '/gallery', href: '/gallery', label: 'Gallery' },
-    { current: router.pathname == '/cart', href: '/cart', label: cartLabel },
+    // { current: router.pathname == '/cart', href: '/cart', label: cartLabel },
     { current: router.pathname == '/tour', href: '/tour', label: '3D Exhibit' },
   ];
 

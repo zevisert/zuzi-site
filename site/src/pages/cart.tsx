@@ -10,6 +10,16 @@ import NextImage from '@/components/NextImage';
 import Price from '@/components/Price';
 import Seo from '@/components/Seo';
 
+export function getStaticProps() {
+  return {
+    // Shop is disabled for now - redirect to home page.
+    redirect: {
+      destination: '/gallery',
+      permanent: false,
+    },
+  };
+}
+
 export default function CartPage() {
   const { cart, removeFromCart } = useContext(CartContext);
   const [hasMounted, setHasMounted] = useState(false);

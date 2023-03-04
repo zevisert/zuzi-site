@@ -1,13 +1,14 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType, PreviewData } from 'next';
 import { ReactNode } from 'react';
+import React from 'react';
 import Stripe from 'stripe';
 
 import { toArtwork } from '@/lib/to-artwork';
 import { toSlug } from '@/lib/to-slug';
 import { Artwork, SingleCartItem } from '@/lib/types';
 
+import UnderlineLink from '@/components/links/UnderlineLink';
 import NextImage from '@/components/NextImage';
-import PricingTable from '@/components/PricingTable';
 import Seo from '@/components/Seo';
 import Skeleton from '@/components/Skeleton';
 
@@ -64,19 +65,20 @@ export const getStaticProps: GetStaticProps<
 
   const artwork = toArtwork(products.data[0]);
 
-  const prices = await stripe.prices.search({
-    query: `active:'true' AND product:'${artwork.id}'`,
-    // Could expand: ['data.product'], but the type to return is an Artwork,
-    // So, I chose to fill it in a .map instead.
-  });
+  // const prices = await stripe.prices.search({
+  //   query: `active:'true' AND product:'${artwork.id}'`,
+  //   // Could expand: ['data.product'], but the type to return is an Artwork,
+  //   // So, I chose to fill it in a .map instead.
+  // });
 
   return {
     props: {
       artwork,
-      prices: prices.data.map((price) => ({
-        ...price,
-        product: artwork,
-      })),
+      prices: [],
+      // prices: prices.data.map((price) => ({
+      //   ...price,
+      //   product: artwork,
+      // })),
     },
   };
 };
@@ -87,34 +89,6 @@ export default function GalleryPage({
   artwork,
   prices,
 }: StaticFallback<InferGetStaticPropsType<typeof getStaticProps>>) {
-  const Shell = ({
-    children,
-    prices,
-    title = 'Loading...',
-    description = 'Loading...',
-  }: {
-    children: ReactNode;
-    prices?: SingleCartItem[];
-    title?: string;
-    description?: string;
-  }) => {
-    return (
-      <>
-        <Seo templateTitle='Gallery' />
-        <main>
-          <section>
-            <figure className='border-b-2 border-primary-500'>
-              {children}
-              <figcaption className='text-xl'>{title}</figcaption>
-            </figure>
-            <blockquote>{description}</blockquote>
-          </section>
-          <PricingTable prices={prices} />
-        </main>
-      </>
-    );
-  };
-
   if (!artwork)
     return (
       <Shell>
@@ -147,3 +121,42 @@ export default function GalleryPage({
     </Shell>
   );
 }
+
+const Shell = React.memo(
+  ({
+    children,
+    prices: _prices,
+    title = 'Loading...',
+    description = 'Loading...',
+  }: {
+    children: ReactNode;
+    prices?: SingleCartItem[];
+    title?: string;
+    description?: string;
+  }) => {
+    const params = new URLSearchParams({ subject: title });
+    return (
+      <>
+        <Seo templateTitle='Gallery' />
+        <main>
+          <section>
+            <figure className='border-b-2 border-primary-500'>
+              {children}
+              <figcaption className='text-xl'>{title}</figcaption>
+            </figure>
+            <blockquote>{description}</blockquote>
+          </section>
+          <div className='flex flex-col items-center justify-around pt-32'>
+            <span>
+              Like this piece?{' '}
+              <UnderlineLink href={`mailto:zuzi-@hotmail.com?${params.toString()}`}>
+                Contact me for pricing or commission!
+              </UnderlineLink>
+            </span>
+          </div>
+          {/* <PricingTable prices={prices} /> */}
+        </main>
+      </>
+    );
+  }
+);
