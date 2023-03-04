@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs/content/en/schemas/v2beta29.json
-apiVersion: skaffold/v2beta29
+# yaml-language-server: $schema=https://raw.githubusercontent.com/GoogleContainerTools/skaffold/main/docs-v2/content/en/schemas/v4beta1.json
+apiVersion: skaffold/v4beta1
 kind: Config
 metadata:
   name: zuzi-site
@@ -25,16 +25,17 @@ build:
           - src: public/**/*
             dest: /site/
 
+manifests:
+  rawYaml:
+    - k8s/environments/staging/namespace.yaml
+    - k8s/environments/staging/env.secret.yaml
+    - k8s/environments/staging/ingress.yaml
+    - k8s/http.service.yaml
+    - k8s/next.deployment.yaml
+    - k8s/postgres.yaml
 deploy:
   kubectl:
     defaultNamespace: zuzi-staging
-    manifests:
-      - k8s/environments/staging/namespace.yaml
-      - k8s/environments/staging/env.secret.yaml
-      - k8s/environments/staging/ingress.yaml
-      - k8s/http.service.yaml
-      - k8s/next.deployment.yaml
-      - k8s/postgres.yaml
     hooks: {}
 
 portForward:
@@ -60,16 +61,16 @@ profiles:
         path: /build/artifacts/0/docker/target
         value: dev-server
       - op: replace
-        path: /deploy/kubectl/manifests/0
+        path: /manifests/rawYaml/0
         value: k8s/environments/dev/namespace.yaml
       - op: replace
         path: /build/artifacts/0/docker/secrets/0/src
         value: k8s/environments/dev/process.env
       - op: replace
-        path: /deploy/kubectl/manifests/1
+        path: /manifests/rawYaml/1
         value: k8s/environments/dev/env.secret.yaml
       - op: replace
-        path: /deploy/kubectl/manifests/2
+        path: /manifests/rawYaml/2
         value: k8s/environments/dev/ingress.yaml
       - op: add
         path: /deploy/kubectl/hooks
@@ -100,16 +101,16 @@ profiles:
         path: /deploy/kubectl/defaultNamespace
         value: zuzi-site
       - op: replace
-        path: /deploy/kubectl/manifests/0
+        path: /manifests/rawYaml/0
         value: k8s/environments/prod/namespace.yaml
       - op: replace
         path: /build/artifacts/0/docker/secrets/0/src
         value: k8s/environments/prod/process.env
       - op: replace
-        path: /deploy/kubectl/manifests/1
+        path: /manifests/rawYaml/1
         value: k8s/environments/prod/env.secret.yaml
       - op: replace
-        path: /deploy/kubectl/manifests/2
+        path: /manifests/rawYaml/2
         value: k8s/environments/prod/ingress.yaml
       - op: add
         path: /deploy/kubectl/hooks
