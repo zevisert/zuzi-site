@@ -11,7 +11,7 @@ import Price from '@/components/Price';
 import Seo from '@/components/Seo';
 import Skeleton from '@/components/Skeleton';
 
-export function getStaticProps() {
+export function getServerSideProps() {
   return {
     // Shop is disabled for now - redirect to home page.
     redirect: {

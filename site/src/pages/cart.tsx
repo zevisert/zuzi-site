@@ -10,7 +10,7 @@ import NextImage from '@/components/NextImage';
 import Price from '@/components/Price';
 import Seo from '@/components/Seo';
 
-export function getStaticProps() {
+export function getServerSideProps() {
   return {
     // Shop is disabled for now - redirect to home page.
     redirect: {
